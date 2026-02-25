@@ -1,0 +1,27 @@
+package com.example.salesstysetgps.data.local
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface StopDao {
+    @Query("SELECT * FROM stops ORDER BY startWallTimeMillis ASC")
+    fun observeStops(): Flow<List<StopEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(stop: StopEntity)
+
+    @Query("UPDATE stops SET name = :name WHERE id = :id")
+    suspend fun updateName(id: Long, name: String)
+
+    @Query("DELETE FROM stops")
+    suspend fun clearAll()
+
+}
+
+
+

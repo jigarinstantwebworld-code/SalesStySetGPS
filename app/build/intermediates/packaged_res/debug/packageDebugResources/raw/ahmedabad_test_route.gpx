@@ -1,0 +1,29 @@
+<gpx version="1.1" creator="test">
+  <trk>
+    <name>Ahmedabad test: Nehrunagar → Vadaj (stop) → New Ranip</name>
+    <trkseg>
+      <!-- Start: Nehrunagar -->
+      <trkpt lat="23.011800" lon="72.532900"><time>2025-09-10T12:00:00Z</time></trkpt>
+      <trkpt lat="23.017500" lon="72.540500"><time>2025-09-10T12:01:00Z</time></trkpt>
+      <trkpt lat="23.028000" lon="72.550500"><time>2025-09-10T12:02:00Z</time></trkpt>
+      <trkpt lat="23.040500" lon="72.559000"><time>2025-09-10T12:03:00Z</time></trkpt>
+      <trkpt lat="23.050000" lon="72.565000"><time>2025-09-10T12:04:00Z</time></trkpt>
+      <!-- Arrive: Vadaj area -->
+      <trkpt lat="23.058000" lon="72.571000"><time>2025-09-10T12:05:00Z</time></trkpt>
+      <!-- Stop within ~15–50m radius for ~2 minutes to trigger stop detection -->
+      <trkpt lat="23.058015" lon="72.571015"><time>2025-09-10T12:05:30Z</time></trkpt>
+      <trkpt lat="23.058010" lon="72.571000"><time>2025-09-10T12:06:00Z</time></trkpt>
+      <trkpt lat="23.058020" lon="72.571020"><time>2025-09-10T12:06:30Z</time></trkpt>
+      <trkpt lat="23.058000" lon="72.571000"><time>2025-09-10T12:07:00Z</time></trkpt>
+      <!-- Resume towards New Ranip -->
+      <trkpt lat="23.066000" lon="72.570000"><time>2025-09-10T12:08:00Z</time></trkpt>
+      <trkpt lat="23.075000" lon="72.568500"><time>2025-09-10T12:09:00Z</time></trkpt>
+      <trkpt lat="23.083000" lon="72.567500"><time>2025-09-10T12:10:00Z</time></trkpt>
+      <trkpt lat="23.088500" lon="72.566700"><time>2025-09-10T12:11:00Z</time></trkpt>
+      <!-- End: New Ranip -->
+      <trkpt lat="23.091800" lon="72.566000"><time>2025-09-10T12:12:00Z</time></trkpt>
+    </trkseg>
+  </trk>
+</gpx>
+
+

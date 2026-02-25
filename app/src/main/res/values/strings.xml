@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">SalesStySet GPS</string>
+    <string name="google_maps_key">AIzaSyBlPxpesc1oWxHbPq0UCtXjqobMdFr1qRo</string>
+
+    <string name="notification_channel_id">location_tracking_channel</string>
+    <string name="notification_channel_name">Location Tracking</string>
+    <string name="notification_channel_desc">Shows that location tracking is active.</string>
+    <string name="notification_title">Tracking location</string>
+    <string name="notification_text">Your location is being tracked for routes and stops.</string>
+
+    <string name="start_tracking">Start</string>
+    <string name="stop_tracking">Stop</string>
+    <string name="reset_session">Reset</string>
+    <string name="export_pdf">Pdf</string>
+    <string name="request_permission">Grant Location Permissions</string>
+    <string name="request_notifications">Grant Notification Permission</string>
+    <string name="tracking_status_running">Tracking is running</string>
+    <string name="tracking_status_stopped">Tracking is stopped</string>
+
+    <string name="places_title">Places</string>
+    <string name="filter_today">Today</string>
+    <string name="filter_yesterday">Yesterday</string>
+    <string name="filter_last_3_days">Last 3 days</string>
+    <string name="filter_last_week">Last week</string>
+    <string name="filter_last_month">Last month</string>
+    <string name="filter_custom">Custom</string>
+    <string name="places_empty_for_filter">No places found for the selected date range.</string>
+</resources>
+
