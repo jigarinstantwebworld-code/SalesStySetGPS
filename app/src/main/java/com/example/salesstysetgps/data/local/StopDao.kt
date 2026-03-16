@@ -21,6 +21,18 @@ interface StopDao {
     @Query("DELETE FROM stops")
     suspend fun clearAll()
 
+    // Add this method to get stops for a specific route by time range
+    @Query("""
+    SELECT * FROM stops 
+    WHERE startWallTimeMillis >= :routeStartTime 
+    AND (endWallTimeMillis <= :routeEndTime OR endWallTimeMillis IS NULL)
+    ORDER BY startWallTimeMillis ASC
+""")
+    suspend fun getStopsInTimeRange(routeStartTime: Long, routeEndTime: Long): List<StopEntity>
+
+
+    @Query("SELECT * FROM stops WHERE id = :stopId")
+    suspend fun getStopById(stopId: Long): StopEntity?
 }
 
 

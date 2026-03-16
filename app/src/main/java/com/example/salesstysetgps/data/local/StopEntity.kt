@@ -17,7 +17,7 @@ data class StopEntity(
     val endWallTimeMillis: Long?,
     val durationElapsedMinutes: Long,
     val startElapsedRealtimeMillis: Long,
-    val endElapsedRealtimeMillis: Long?
+    val endElapsedRealtimeMillis: Long?,
+    val letter: String? = null  // Add this field
 )
-
 

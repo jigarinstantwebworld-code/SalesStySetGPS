@@ -3,19 +3,52 @@ package com.example.salesstysetgps.data.local
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface RoutePointDao {
+interface RouteDao {
     @Insert
-    suspend fun insert(point: RoutePointEntity)
+    suspend fun insertRoute(route: RouteEntity): Long
+
+    @Update
+    suspend fun updateRoute(route: RouteEntity)
+
+    @Query("UPDATE routes SET screenshotPath = :path WHERE id = :routeId")
+    suspend fun updateScreenshotPath(routeId: Long, path: String)
+
+    @Insert
+    suspend fun insertRoutePoint(point: RoutePointEntity)
+
+    @Query("SELECT * FROM routes ORDER BY startTimeMillis DESC")
+    fun observeAllRoutes(): Flow<List<RouteEntity>>
+
+    @Query("SELECT * FROM routes WHERE id = :routeId")
+    suspend fun getRouteById(routeId: Long): RouteEntity?
+
+
+    @Insert
+    suspend fun insertRouteStopRelation(relation: RouteStopRelation)
+
+    @Query("SELECT stopId FROM route_stop_relations WHERE routeId = :routeId")
+    suspend fun getStopIdsForRoute(routeId: Long): List<Long>
 
     @Query("""
-        SELECT * FROM route_points
-        WHERE timestampMillis BETWEEN :start AND :end
-        ORDER BY timestampMillis ASC
+        SELECT s.* FROM stops s 
+        INNER JOIN route_stop_relations r ON s.id = r.stopId 
+        WHERE r.routeId = :routeId 
+        ORDER BY s.startWallTimeMillis ASC
     """)
-    suspend fun getBetween(start: Long, end: Long): List<RoutePointEntity>
+    suspend fun getStopsForRoute(routeId: Long): List<StopEntity>
 
-    @Query("DELETE FROM route_points")
-    suspend fun clearAll()
+    @Query("SELECT * FROM route_points WHERE routeId = :routeId ORDER BY timestamp ASC")
+    suspend fun getRoutePoints(routeId: Long): List<RoutePointEntity>
+
+
+    @Query("SELECT * FROM routes WHERE startTimeMillis BETWEEN :startMillis AND :endMillis ORDER BY startTimeMillis ASC")
+    suspend fun getRoutesInTimeRange(startMillis: Long, endMillis: Long): List<RouteEntity>
+
+
+    @Query("DELETE FROM routes")
+    suspend fun deleteAllRoutes()
 }

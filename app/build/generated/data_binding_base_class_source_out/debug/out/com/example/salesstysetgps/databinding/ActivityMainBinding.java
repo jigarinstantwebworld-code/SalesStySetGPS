@@ -4,46 +4,53 @@ package com.example.salesstysetgps.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.example.salesstysetgps.R;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.navigation.NavigationView;
 import java.lang.NullPointerException;
 import java.lang.Override;
 import java.lang.String;
 
 public final class ActivityMainBinding implements ViewBinding {
   @NonNull
-  private final CoordinatorLayout rootView;
+  private final DrawerLayout rootView;
 
   @NonNull
-  public final MaterialButton btnExportGpx;
+  public final Button btnReset;
 
   @NonNull
-  public final MaterialButton btnExportPdf;
+  public final Button btnStart;
 
   @NonNull
-  public final MaterialButton btnMapType;
+  public final Button btnStop;
 
   @NonNull
-  public final MaterialButton btnPlaces;
+  public final CardView controlsCard;
 
   @NonNull
-  public final MaterialButton btnReset;
+  public final DrawerLayout drawerLayout;
 
   @NonNull
-  public final MaterialButton btnStart;
+  public final LinearLayout mainContent;
 
   @NonNull
-  public final MaterialButton btnStop;
+  public final RelativeLayout mapContainer;
 
   @NonNull
-  public final MaterialCardView controlsCard;
+  public final NavigationView navView;
+
+  @NonNull
+  public final Toolbar toolbar;
 
   @NonNull
   public final TextView tvStatus;
@@ -51,32 +58,28 @@ public final class ActivityMainBinding implements ViewBinding {
   @NonNull
   public final TextView tvTimer;
 
-  @NonNull
-  public final TextView tvTitle;
-
-  private ActivityMainBinding(@NonNull CoordinatorLayout rootView,
-      @NonNull MaterialButton btnExportGpx, @NonNull MaterialButton btnExportPdf,
-      @NonNull MaterialButton btnMapType, @NonNull MaterialButton btnPlaces,
-      @NonNull MaterialButton btnReset, @NonNull MaterialButton btnStart,
-      @NonNull MaterialButton btnStop, @NonNull MaterialCardView controlsCard,
-      @NonNull TextView tvStatus, @NonNull TextView tvTimer, @NonNull TextView tvTitle) {
+  private ActivityMainBinding(@NonNull DrawerLayout rootView, @NonNull Button btnReset,
+      @NonNull Button btnStart, @NonNull Button btnStop, @NonNull CardView controlsCard,
+      @NonNull DrawerLayout drawerLayout, @NonNull LinearLayout mainContent,
+      @NonNull RelativeLayout mapContainer, @NonNull NavigationView navView,
+      @NonNull Toolbar toolbar, @NonNull TextView tvStatus, @NonNull TextView tvTimer) {
     this.rootView = rootView;
-    this.btnExportGpx = btnExportGpx;
-    this.btnExportPdf = btnExportPdf;
-    this.btnMapType = btnMapType;
-    this.btnPlaces = btnPlaces;
     this.btnReset = btnReset;
     this.btnStart = btnStart;
     this.btnStop = btnStop;
     this.controlsCard = controlsCard;
+    this.drawerLayout = drawerLayout;
+    this.mainContent = mainContent;
+    this.mapContainer = mapContainer;
+    this.navView = navView;
+    this.toolbar = toolbar;
     this.tvStatus = tvStatus;
     this.tvTimer = tvTimer;
-    this.tvTitle = tvTitle;
   }
 
   @Override
   @NonNull
-  public CoordinatorLayout getRoot() {
+  public DrawerLayout getRoot() {
     return rootView;
   }
 
@@ -101,75 +104,71 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
-      id = R.id.btn_export_gpx;
-      MaterialButton btnExportGpx = ViewBindings.findChildViewById(rootView, id);
-      if (btnExportGpx == null) {
-        break missingId;
-      }
-
-      id = R.id.btn_export_pdf;
-      MaterialButton btnExportPdf = ViewBindings.findChildViewById(rootView, id);
-      if (btnExportPdf == null) {
-        break missingId;
-      }
-
-      id = R.id.btn_map_type;
-      MaterialButton btnMapType = ViewBindings.findChildViewById(rootView, id);
-      if (btnMapType == null) {
-        break missingId;
-      }
-
-      id = R.id.btn_places;
-      MaterialButton btnPlaces = ViewBindings.findChildViewById(rootView, id);
-      if (btnPlaces == null) {
-        break missingId;
-      }
-
-      id = R.id.btn_reset;
-      MaterialButton btnReset = ViewBindings.findChildViewById(rootView, id);
+      id = R.id.btnReset;
+      Button btnReset = ViewBindings.findChildViewById(rootView, id);
       if (btnReset == null) {
         break missingId;
       }
 
-      id = R.id.btn_start;
-      MaterialButton btnStart = ViewBindings.findChildViewById(rootView, id);
+      id = R.id.btnStart;
+      Button btnStart = ViewBindings.findChildViewById(rootView, id);
       if (btnStart == null) {
         break missingId;
       }
 
-      id = R.id.btn_stop;
-      MaterialButton btnStop = ViewBindings.findChildViewById(rootView, id);
+      id = R.id.btnStop;
+      Button btnStop = ViewBindings.findChildViewById(rootView, id);
       if (btnStop == null) {
         break missingId;
       }
 
       id = R.id.controlsCard;
-      MaterialCardView controlsCard = ViewBindings.findChildViewById(rootView, id);
+      CardView controlsCard = ViewBindings.findChildViewById(rootView, id);
       if (controlsCard == null) {
         break missingId;
       }
 
-      id = R.id.tv_status;
+      DrawerLayout drawerLayout = (DrawerLayout) rootView;
+
+      id = R.id.main_content;
+      LinearLayout mainContent = ViewBindings.findChildViewById(rootView, id);
+      if (mainContent == null) {
+        break missingId;
+      }
+
+      id = R.id.mapContainer;
+      RelativeLayout mapContainer = ViewBindings.findChildViewById(rootView, id);
+      if (mapContainer == null) {
+        break missingId;
+      }
+
+      id = R.id.nav_view;
+      NavigationView navView = ViewBindings.findChildViewById(rootView, id);
+      if (navView == null) {
+        break missingId;
+      }
+
+      id = R.id.toolbar;
+      Toolbar toolbar = ViewBindings.findChildViewById(rootView, id);
+      if (toolbar == null) {
+        break missingId;
+      }
+
+      id = R.id.tvStatus;
       TextView tvStatus = ViewBindings.findChildViewById(rootView, id);
       if (tvStatus == null) {
         break missingId;
       }
 
-      id = R.id.tv_timer;
+      id = R.id.tvTimer;
       TextView tvTimer = ViewBindings.findChildViewById(rootView, id);
       if (tvTimer == null) {
         break missingId;
       }
 
-      id = R.id.tv_title;
-      TextView tvTitle = ViewBindings.findChildViewById(rootView, id);
-      if (tvTitle == null) {
-        break missingId;
-      }
-
-      return new ActivityMainBinding((CoordinatorLayout) rootView, btnExportGpx, btnExportPdf,
-          btnMapType, btnPlaces, btnReset, btnStart, btnStop, controlsCard, tvStatus, tvTimer,
-          tvTitle);
+      return new ActivityMainBinding((DrawerLayout) rootView, btnReset, btnStart, btnStop,
+          controlsCard, drawerLayout, mainContent, mapContainer, navView, toolbar, tvStatus,
+          tvTimer);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

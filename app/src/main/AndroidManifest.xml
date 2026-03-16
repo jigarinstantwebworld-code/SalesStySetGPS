@@ -6,9 +6,23 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" tools:targetApi="33" />
+    <uses-permission
+        android:name="android.permission.POST_NOTIFICATIONS"
+        tools:targetApi="33" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:name=".SalesStySetApp"
@@ -18,25 +32,47 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SalesStySetGPS">
+        <activity
+            android:name=".ui.LeadActivity"
+            android:exported="false" />
+        <activity
+            android:name=".VisitDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity2"
+            android:exported="true"></activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-
+            android:value="@string/google_maps_key" /> <!-- Google Play Services version (already there) -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" /> <!-- Add these for Calendar API -->
+        <!-- <meta-data -->
+        <!-- android:name="com.google.android.gms.auth.api.signin" -->
+        <!-- android:value="@integer/google_play_services_version" /> -->
         <service
             android:name=".location.LocationForegroundService"
             android:exported="false"
-            android:foregroundServiceType="location" />
-
+            android:foregroundServiceType="location" /> <!-- Calendar Sync Service -->
+        <!-- <service -->
+        <!-- android:name=".services.CalendarSyncService" -->
+        <!-- android:exported="false" /> -->
+        <!-- &lt;!&ndash; WorkManager Provider &ndash;&gt; -->
+        <!-- <provider -->
+        <!-- android:name="androidx.work.impl.WorkManagerInitializer" -->
+        <!-- android:authorities="${applicationId}.workmanager-init" -->
+        <!-- android:exported="false" -->
+        <!-- tools:node="remove" /> -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.PlacesActivity"
             android:exported="false" />

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">SalesStySet GPS</string>
     <string name="google_maps_key">AIzaSyBlPxpesc1oWxHbPq0UCtXjqobMdFr1qRo</string>
+    <string name="google_server_client_id">952861855187-bjbe44ek9os88f4g6g6vg3bqspbeoi4u.apps.googleusercontent.com</string>
 
     <string name="notification_channel_id">location_tracking_channel</string>
     <string name="notification_channel_name">Location Tracking</string>
@@ -25,5 +26,10 @@
     <string name="filter_last_month">Last month</string>
     <string name="filter_custom">Custom</string>
     <string name="places_empty_for_filter">No places found for the selected date range.</string>
+
+    <string name="calendar_event_tag">SellerVisit</string>
+    <string name="calendar_account_name">Google Calendar</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
 

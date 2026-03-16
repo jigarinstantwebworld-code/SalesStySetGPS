@@ -1,7 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <cache-path name="cache" path="." />
-    <external-cache-path name="ext_cache" path="." />
+<paths>
+    <!-- For external storage (SD card) - use with caution -->
+    <external-path
+        name="external"
+        path="." />
+
+    <!-- For app-specific external storage -->
+    <external-files-path
+        name="external_files"
+        path="." />
+
+    <!-- For cache directory -->
+    <cache-path
+        name="cache"
+        path="/" />
+
+    <!-- For external cache -->
+    <external-cache-path
+        name="external_cache"
+        path="/" />
+
+    <!-- For app's internal files directory - THIS IS WHAT YOU NEED FOR SELLER IMAGES -->
+    <files-path
+        name="seller_images"
+        path="seller_images/" />
+
+    <!-- For app's internal files root (if needed) -->
+    <files-path
+        name="files"
+        path="." />
 </paths>
-
-
