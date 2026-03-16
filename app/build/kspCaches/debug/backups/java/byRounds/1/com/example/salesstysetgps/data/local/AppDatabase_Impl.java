@@ -28,20 +28,24 @@ import javax.annotation.processing.Generated;
 public final class AppDatabase_Impl extends AppDatabase {
   private volatile StopDao _stopDao;
 
+  private volatile RoutePointDao _routePointDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(1) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(3) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS `stops` (`id` INTEGER NOT NULL, `name` TEXT, `address` TEXT, `phone` TEXT, `imageUri` TEXT, `lat` REAL NOT NULL, `lng` REAL NOT NULL, `startWallTimeMillis` INTEGER NOT NULL, `endWallTimeMillis` INTEGER, `durationElapsedMinutes` INTEGER NOT NULL, `startElapsedRealtimeMillis` INTEGER NOT NULL, `endElapsedRealtimeMillis` INTEGER, PRIMARY KEY(`id`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `stops` (`id` INTEGER NOT NULL, `name` TEXT, `locationLabel` TEXT, `address` TEXT, `phone` TEXT, `imageUri` TEXT, `lat` REAL NOT NULL, `lng` REAL NOT NULL, `startWallTimeMillis` INTEGER NOT NULL, `endWallTimeMillis` INTEGER, `durationElapsedMinutes` INTEGER NOT NULL, `startElapsedRealtimeMillis` INTEGER NOT NULL, `endElapsedRealtimeMillis` INTEGER, PRIMARY KEY(`id`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `route_points` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestampMillis` INTEGER NOT NULL, `lat` REAL NOT NULL, `lng` REAL NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c257578eec08ec8cc0c0c23b6f7ef951')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f509679d1942804809c282bf2090b905')");
       }
 
       @Override
       public void dropAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS `stops`");
+        db.execSQL("DROP TABLE IF EXISTS `route_points`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -85,9 +89,10 @@ public final class AppDatabase_Impl extends AppDatabase {
       @NonNull
       public RoomOpenHelper.ValidationResult onValidateSchema(
           @NonNull final SupportSQLiteDatabase db) {
-        final HashMap<String, TableInfo.Column> _columnsStops = new HashMap<String, TableInfo.Column>(12);
+        final HashMap<String, TableInfo.Column> _columnsStops = new HashMap<String, TableInfo.Column>(13);
         _columnsStops.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsStops.put("name", new TableInfo.Column("name", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsStops.put("locationLabel", new TableInfo.Column("locationLabel", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsStops.put("address", new TableInfo.Column("address", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsStops.put("phone", new TableInfo.Column("phone", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsStops.put("imageUri", new TableInfo.Column("imageUri", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -107,9 +112,23 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoStops + "\n"
                   + " Found:\n" + _existingStops);
         }
+        final HashMap<String, TableInfo.Column> _columnsRoutePoints = new HashMap<String, TableInfo.Column>(4);
+        _columnsRoutePoints.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsRoutePoints.put("timestampMillis", new TableInfo.Column("timestampMillis", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsRoutePoints.put("lat", new TableInfo.Column("lat", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsRoutePoints.put("lng", new TableInfo.Column("lng", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysRoutePoints = new HashSet<TableInfo.ForeignKey>(0);
+        final HashSet<TableInfo.Index> _indicesRoutePoints = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoRoutePoints = new TableInfo("route_points", _columnsRoutePoints, _foreignKeysRoutePoints, _indicesRoutePoints);
+        final TableInfo _existingRoutePoints = TableInfo.read(db, "route_points");
+        if (!_infoRoutePoints.equals(_existingRoutePoints)) {
+          return new RoomOpenHelper.ValidationResult(false, "route_points(com.example.salesstysetgps.data.local.RoutePointEntity).\n"
+                  + " Expected:\n" + _infoRoutePoints + "\n"
+                  + " Found:\n" + _existingRoutePoints);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "c257578eec08ec8cc0c0c23b6f7ef951", "5d978bfc499e1f2151e1a6f8c19fedf4");
+    }, "f509679d1942804809c282bf2090b905", "de64b9f52f35e1c8b2ad2e766123d849");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -120,7 +139,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "stops");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "stops","route_points");
   }
 
   @Override
@@ -130,6 +149,7 @@ public final class AppDatabase_Impl extends AppDatabase {
     try {
       super.beginTransaction();
       _db.execSQL("DELETE FROM `stops`");
+      _db.execSQL("DELETE FROM `route_points`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -145,6 +165,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected Map<Class<?>, List<Class<?>>> getRequiredTypeConverters() {
     final HashMap<Class<?>, List<Class<?>>> _typeConvertersMap = new HashMap<Class<?>, List<Class<?>>>();
     _typeConvertersMap.put(StopDao.class, StopDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(RoutePointDao.class, RoutePointDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -173,6 +194,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _stopDao = new StopDao_Impl(this);
         }
         return _stopDao;
+      }
+    }
+  }
+
+  @Override
+  public RoutePointDao routePointDao() {
+    if (_routePointDao != null) {
+      return _routePointDao;
+    } else {
+      synchronized(this) {
+        if(_routePointDao == null) {
+          _routePointDao = new RoutePointDao_Impl(this);
+        }
+        return _routePointDao;
       }
     }
   }

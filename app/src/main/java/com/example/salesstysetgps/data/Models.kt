@@ -15,10 +15,14 @@ data class StopPoint(
     val startTimeMillis: Long,
     val endTimeMillis: Long? = null,
     val name: String? = null,
+    // Human-readable location resolved from LatLng (non-editable)
+    val locationLabel: String? = null,
+    // User-provided address (editable)
     val address: String? = null,
     val phone: String? = null,
     val imageUri: String? = null,
-    val timeSpentMinutes: Long = 0
+    val timeSpentMinutes: Long = 0,
+    val letter: String? = null
 )
 
 class TrackingSessionState {
@@ -37,19 +41,36 @@ class TrackingSessionState {
         _routePoints.value = _routePoints.value + point
     }
 
-    fun addOrUpdateStop(stop: StopPoint) {
-        val existing = _stopPoints.value
-        if (existing.isEmpty()) {
-            _stopPoints.value = listOf(stop)
+    // In TrackingSessionState class
+    fun addStopAndForceUpdate(stop: StopPoint): List<StopPoint> {
+        val currentList = _stopPoints.value.toMutableList()
+        val existingIndex = currentList.indexOfFirst { it.id == stop.id }
+
+        if (existingIndex >= 0) {
+            currentList[existingIndex] = stop
         } else {
-            // Replace by id if present as last item; otherwise append
-            val updated = existing.map { if (it.id == stop.id) stop else it }
-            _stopPoints.value = if (updated == existing){
-                existing + stop
-            } else{
-                updated
-            }
+            currentList.add(stop)
         }
+
+        val newList = currentList.sortedBy { it.startTimeMillis }
+        _stopPoints.value = newList
+        return newList
+    }
+
+    fun addOrUpdateStop(stop: StopPoint) {
+        val currentList = _stopPoints.value.toMutableList()
+        val existingIndex = currentList.indexOfFirst { it.id == stop.id }
+
+        if (existingIndex >= 0) {
+            // Update existing stop
+            currentList[existingIndex] = stop
+        } else {
+            // Add new stop
+            currentList.add(stop)
+        }
+
+        // ALWAYS sort by start time for correct letter order
+        _stopPoints.value = currentList.sortedBy { it.startTimeMillis }
     }
 
     fun updateStopName(stopId: Long, newName: String) {

@@ -3039,6 +3039,8 @@ drawable amu_bubble_mask
 drawable amu_bubble_shadow
 drawable avd_hide_password
 drawable avd_show_password
+drawable bg_dialog_rounded
+drawable bg_info_window
 drawable btn_checkbox_checked_mtrl
 drawable btn_checkbox_checked_to_unchecked_mtrl_animation
 drawable btn_checkbox_unchecked_mtrl
@@ -3094,6 +3096,7 @@ drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
 drawable ic_notification_location
 drawable ic_search_black_24
+drawable ic_start_arrow
 drawable indeterminate_static
 drawable m3_avd_hide_password
 drawable m3_avd_show_password
@@ -3241,6 +3244,7 @@ id action_text
 id actions
 id activity_chooser_view_content
 id add
+id address
 id adjust_height
 id adjust_width
 id alertTitle
@@ -3271,7 +3275,9 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
+id btn_export_gpx
 id btn_export_pdf
+id btn_map_type
 id btn_places
 id btn_reset
 id btn_start
@@ -3436,6 +3442,7 @@ id line3
 id linear
 id listMode
 id list_item
+id location
 id m3_side_sheet
 id map_fragment
 id marquee
@@ -3546,6 +3553,7 @@ id path
 id pathRelative
 id peekHeight
 id percent
+id phone
 id pin
 id position
 id postLayout
@@ -3683,6 +3691,7 @@ id tvCoords
 id tvDuration
 id tvEmpty
 id tvFilterSummary
+id tvLocation
 id tvName
 id tvPhone
 id tvWindow
@@ -3865,6 +3874,7 @@ layout m3_alert_dialog_actions
 layout m3_alert_dialog_title
 layout m3_auto_complete_simple_item
 layout m3_side_sheet_dialog
+layout map_info_window
 layout material_chip_input_combo
 layout material_clock_display
 layout material_clock_display_divider
@@ -3926,6 +3936,7 @@ mipmap ic_launcher_round
 plurals mtrl_badge_content_description
 raw ahmedabad_nehrunagar_vadaj_newranip
 raw ahmedabad_test_route
+raw map_style_with_labels
 string abc_action_bar_home_description
 string abc_action_bar_up_description
 string abc_action_menu_overflow_description

@@ -1,58 +1,82 @@
 [
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/layout_item_place.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/layout/item_place.xml"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\raw_ahmedabad_nehrunagar_vadaj_newranip.gpx.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\raw\\ahmedabad_nehrunagar_vadaj_newranip.gpx"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/mipmap-anydpi-v26/ic_launcher_round.xml"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\drawable_bg_info_window.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\drawable\\bg_info_window.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/raw_ahmedabad_nehrunagar_vadaj_newranip.gpx.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/raw/ahmedabad_nehrunagar_vadaj_newranip.gpx"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\layout_item_place.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\layout\\item_place.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/xml_file_paths.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/xml/file_paths.xml"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\drawable_ic_launcher_background.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\drawable\\ic_launcher_background.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/drawable/ic_launcher_foreground.xml"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\layout_dialog_stop_form.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\layout\\dialog_stop_form.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/drawable_ic_launcher_background.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/drawable/ic_launcher_background.xml"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\xml_file_paths.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\xml\\file_paths.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/drawable_ic_notification_location.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/drawable/ic_notification_location.xml"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\drawable_ic_launcher_foreground.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\drawable\\ic_launcher_foreground.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/raw_ahmedabad_test_route.gpx.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/raw/ahmedabad_test_route.gpx"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\mipmap-anydpi-v26\\ic_launcher.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/layout_dialog_places.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/layout/dialog_places.xml"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\layout_activity_places.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\layout\\activity_places.xml"
+    },
+    {
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\drawable_bg_dialog_rounded.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\drawable\\bg_dialog_rounded.xml"
+    },
+    {
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\raw_ahmedabad_test_route.gpx.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\raw\\ahmedabad_test_route.gpx"
+    },
+    {
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\raw_map_style_with_labels.json.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\raw\\map_style_with_labels.json"
     },
     {
         "merged": "com.example.salesstysetgps.app-debug-43:/layout_activity_main.xml.flat",
         "source": "com.example.salesstysetgps.app-main-45:/layout/activity_main.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/layout_dialog_stop_form.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/layout/dialog_stop_form.xml"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\layout\\activity_main.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/mipmap-anydpi-v26/ic_launcher.xml"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\layout_map_info_window.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\layout\\map_info_window.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/layout_item_place_card.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/layout/item_place_card.xml"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\drawable_ic_start_arrow.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\drawable\\ic_start_arrow.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-43:/layout_activity_places.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-45:/layout/activity_places.xml"
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\drawable_ic_notification_location.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\drawable\\ic_notification_location.xml"
+    },
+    {
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\layout_item_place_card.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\layout\\item_place_card.xml"
+    },
+    {
+        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-debug-43:\\layout_dialog_places.xml.flat",
+        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-45:\\layout\\dialog_places.xml"
     }
 ]

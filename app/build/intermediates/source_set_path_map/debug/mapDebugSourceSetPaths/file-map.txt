@@ -37,10 +37,10 @@ com.example.salesstysetgps.app-jetified-lifecycle-runtime-release-35 C:\Users\DM
 com.example.salesstysetgps.app-sqlite-2.4.0-36 C:\Users\DM Intern\.gradle\caches\8.9\transforms\d427c4d8f99204a8b774e69aa8d789be\transformed\sqlite-2.4.0\res
 com.example.salesstysetgps.app-jetified-lifecycle-runtime-ktx-release-37 C:\Users\DM Intern\.gradle\caches\8.9\transforms\e3b4a0ead256e9a565d7c845394ccf50\transformed\jetified-lifecycle-runtime-ktx-release\res
 com.example.salesstysetgps.app-transition-1.5.0-38 C:\Users\DM Intern\.gradle\caches\8.9\transforms\fddf84fb689d3f75cb10fdebc7863d3e\transformed\transition-1.5.0\res
-com.example.salesstysetgps.app-pngs-39 C:\Users\DM Intern\OneDrive\Documents\CodeBase\SalesStySet\app\build\generated\res\pngs\debug
-com.example.salesstysetgps.app-resValues-40 C:\Users\DM Intern\OneDrive\Documents\CodeBase\SalesStySet\app\build\generated\res\resValues\debug
-com.example.salesstysetgps.app-packageDebugResources-41 C:\Users\DM Intern\OneDrive\Documents\CodeBase\SalesStySet\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
-com.example.salesstysetgps.app-packageDebugResources-42 C:\Users\DM Intern\OneDrive\Documents\CodeBase\SalesStySet\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
-com.example.salesstysetgps.app-debug-43 C:\Users\DM Intern\OneDrive\Documents\CodeBase\SalesStySet\app\build\intermediates\merged_res\debug\mergeDebugResources
-com.example.salesstysetgps.app-debug-44 C:\Users\DM Intern\OneDrive\Documents\CodeBase\SalesStySet\app\src\debug\res
-com.example.salesstysetgps.app-main-45 C:\Users\DM Intern\OneDrive\Documents\CodeBase\SalesStySet\app\src\main\res
+com.example.salesstysetgps.app-pngs-39 C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\build\generated\res\pngs\debug
+com.example.salesstysetgps.app-resValues-40 C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\build\generated\res\resValues\debug
+com.example.salesstysetgps.app-packageDebugResources-41 C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.example.salesstysetgps.app-packageDebugResources-42 C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.example.salesstysetgps.app-debug-43 C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.example.salesstysetgps.app-debug-44 C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\debug\res
+com.example.salesstysetgps.app-main-45 C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\res

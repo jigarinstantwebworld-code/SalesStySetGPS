@@ -22,7 +22,13 @@ public final class ActivityMainBinding implements ViewBinding {
   private final CoordinatorLayout rootView;
 
   @NonNull
+  public final MaterialButton btnExportGpx;
+
+  @NonNull
   public final MaterialButton btnExportPdf;
+
+  @NonNull
+  public final MaterialButton btnMapType;
 
   @NonNull
   public final MaterialButton btnPlaces;
@@ -49,12 +55,15 @@ public final class ActivityMainBinding implements ViewBinding {
   public final TextView tvTitle;
 
   private ActivityMainBinding(@NonNull CoordinatorLayout rootView,
-      @NonNull MaterialButton btnExportPdf, @NonNull MaterialButton btnPlaces,
+      @NonNull MaterialButton btnExportGpx, @NonNull MaterialButton btnExportPdf,
+      @NonNull MaterialButton btnMapType, @NonNull MaterialButton btnPlaces,
       @NonNull MaterialButton btnReset, @NonNull MaterialButton btnStart,
       @NonNull MaterialButton btnStop, @NonNull MaterialCardView controlsCard,
       @NonNull TextView tvStatus, @NonNull TextView tvTimer, @NonNull TextView tvTitle) {
     this.rootView = rootView;
+    this.btnExportGpx = btnExportGpx;
     this.btnExportPdf = btnExportPdf;
+    this.btnMapType = btnMapType;
     this.btnPlaces = btnPlaces;
     this.btnReset = btnReset;
     this.btnStart = btnStart;
@@ -92,9 +101,21 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btn_export_gpx;
+      MaterialButton btnExportGpx = ViewBindings.findChildViewById(rootView, id);
+      if (btnExportGpx == null) {
+        break missingId;
+      }
+
       id = R.id.btn_export_pdf;
       MaterialButton btnExportPdf = ViewBindings.findChildViewById(rootView, id);
       if (btnExportPdf == null) {
+        break missingId;
+      }
+
+      id = R.id.btn_map_type;
+      MaterialButton btnMapType = ViewBindings.findChildViewById(rootView, id);
+      if (btnMapType == null) {
         break missingId;
       }
 
@@ -146,8 +167,9 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityMainBinding((CoordinatorLayout) rootView, btnExportPdf, btnPlaces,
-          btnReset, btnStart, btnStop, controlsCard, tvStatus, tvTimer, tvTitle);
+      return new ActivityMainBinding((CoordinatorLayout) rootView, btnExportGpx, btnExportPdf,
+          btnMapType, btnPlaces, btnReset, btnStart, btnStop, controlsCard, tvStatus, tvTimer,
+          tvTitle);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

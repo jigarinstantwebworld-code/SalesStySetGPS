@@ -1,5 +1,6 @@
 package com.example.salesstysetgps.ui
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -207,7 +208,7 @@ class PlacesActivity : AppCompatActivity() {
                 val first = list.minByOrNull { it.startTimeMillis }!!
                 val last = list.maxByOrNull { it.endTimeMillis ?: it.startTimeMillis }!!
                 val stopWithDetails = list.firstOrNull {
-                    !it.address.isNullOrBlank() || !it.phone.isNullOrBlank() || !it.imageUri.isNullOrBlank()
+                    !it.locationLabel.isNullOrBlank() || !it.address.isNullOrBlank() || !it.phone.isNullOrBlank() || !it.imageUri.isNullOrBlank()
                 } ?: first
                 StopPoint(
                     id = first.id,
@@ -215,6 +216,7 @@ class PlacesActivity : AppCompatActivity() {
                     startTimeMillis = first.startTimeMillis,
                     endTimeMillis = last.endTimeMillis,
                     name = name,
+                    locationLabel = stopWithDetails.locationLabel,
                     address = stopWithDetails.address,
                     phone = stopWithDetails.phone,
                     imageUri = stopWithDetails.imageUri,
@@ -317,7 +319,7 @@ class PlacesActivity : AppCompatActivity() {
             val it = items[position]
             holder.tvName.text = it.name ?: "(unnamed)"
             
-            // Address
+            // Address (user-entered)
             if (!it.address.isNullOrBlank()) {
                 holder.tvAddress.text = it.address
                 holder.tvAddress.visibility = View.VISIBLE
@@ -345,21 +347,33 @@ class PlacesActivity : AppCompatActivity() {
                 holder.imgSeller.visibility = View.GONE
             }
 
-            // Location line: prefer address, fall back to coordinates
-            holder.tvCoords.text = if (!it.address.isNullOrBlank()) {
-                "Location: ${it.address}"
-            } else {
-                String.format(
-                    Locale.getDefault(),
-                    "Location: %.5f, %.5f",
-                    it.center.latitude,
-                    it.center.longitude
-                )
-            }
+            // Location line: prefer non-editable location label, fall back to coordinates
+            holder.tvCoords.text =
+                if (!it.locationLabel.isNullOrBlank()) {
+                    "Location: ${it.locationLabel}"
+                } else {
+                    String.format(
+                        Locale.getDefault(),
+                        "Location: %.5f, %.5f",
+                        it.center.latitude,
+                        it.center.longitude
+                    )
+                }
             holder.tvDuration.text = "Time spent: ${it.timeSpentMinutes} min"
             val start = sdf.format(it.startTimeMillis)
             val end = it.endTimeMillis?.let { e -> sdf.format(e) } ?: "—"
             holder.tvWindow.text = "$start  →  $end"
+
+            holder.itemView.setOnClickListener { view ->
+                val context = view.context
+                val intent = Intent(context, MainActivity::class.java).apply {
+                    putExtra("center_lat", it.center.latitude)
+                    putExtra("center_lng", it.center.longitude)
+                    putExtra("stop_id", it.id)
+                }
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                context.startActivity(intent)
+            }
         }
 
         override fun getItemCount(): Int = items.size

@@ -43,7 +43,7 @@ public final class StopDao_Impl implements StopDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `stops` (`id`,`name`,`address`,`phone`,`imageUri`,`lat`,`lng`,`startWallTimeMillis`,`endWallTimeMillis`,`durationElapsedMinutes`,`startElapsedRealtimeMillis`,`endElapsedRealtimeMillis`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `stops` (`id`,`name`,`locationLabel`,`address`,`phone`,`imageUri`,`lat`,`lng`,`startWallTimeMillis`,`endWallTimeMillis`,`durationElapsedMinutes`,`startElapsedRealtimeMillis`,`endElapsedRealtimeMillis`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -55,35 +55,40 @@ public final class StopDao_Impl implements StopDao {
         } else {
           statement.bindString(2, entity.getName());
         }
-        if (entity.getAddress() == null) {
+        if (entity.getLocationLabel() == null) {
           statement.bindNull(3);
         } else {
-          statement.bindString(3, entity.getAddress());
+          statement.bindString(3, entity.getLocationLabel());
         }
-        if (entity.getPhone() == null) {
+        if (entity.getAddress() == null) {
           statement.bindNull(4);
         } else {
-          statement.bindString(4, entity.getPhone());
+          statement.bindString(4, entity.getAddress());
         }
-        if (entity.getImageUri() == null) {
+        if (entity.getPhone() == null) {
           statement.bindNull(5);
         } else {
-          statement.bindString(5, entity.getImageUri());
+          statement.bindString(5, entity.getPhone());
         }
-        statement.bindDouble(6, entity.getLat());
-        statement.bindDouble(7, entity.getLng());
-        statement.bindLong(8, entity.getStartWallTimeMillis());
+        if (entity.getImageUri() == null) {
+          statement.bindNull(6);
+        } else {
+          statement.bindString(6, entity.getImageUri());
+        }
+        statement.bindDouble(7, entity.getLat());
+        statement.bindDouble(8, entity.getLng());
+        statement.bindLong(9, entity.getStartWallTimeMillis());
         if (entity.getEndWallTimeMillis() == null) {
-          statement.bindNull(9);
+          statement.bindNull(10);
         } else {
-          statement.bindLong(9, entity.getEndWallTimeMillis());
+          statement.bindLong(10, entity.getEndWallTimeMillis());
         }
-        statement.bindLong(10, entity.getDurationElapsedMinutes());
-        statement.bindLong(11, entity.getStartElapsedRealtimeMillis());
+        statement.bindLong(11, entity.getDurationElapsedMinutes());
+        statement.bindLong(12, entity.getStartElapsedRealtimeMillis());
         if (entity.getEndElapsedRealtimeMillis() == null) {
-          statement.bindNull(12);
+          statement.bindNull(13);
         } else {
-          statement.bindLong(12, entity.getEndElapsedRealtimeMillis());
+          statement.bindLong(13, entity.getEndElapsedRealtimeMillis());
         }
       }
     };
@@ -186,6 +191,7 @@ public final class StopDao_Impl implements StopDao {
         try {
           final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
           final int _cursorIndexOfName = CursorUtil.getColumnIndexOrThrow(_cursor, "name");
+          final int _cursorIndexOfLocationLabel = CursorUtil.getColumnIndexOrThrow(_cursor, "locationLabel");
           final int _cursorIndexOfAddress = CursorUtil.getColumnIndexOrThrow(_cursor, "address");
           final int _cursorIndexOfPhone = CursorUtil.getColumnIndexOrThrow(_cursor, "phone");
           final int _cursorIndexOfImageUri = CursorUtil.getColumnIndexOrThrow(_cursor, "imageUri");
@@ -206,6 +212,12 @@ public final class StopDao_Impl implements StopDao {
               _tmpName = null;
             } else {
               _tmpName = _cursor.getString(_cursorIndexOfName);
+            }
+            final String _tmpLocationLabel;
+            if (_cursor.isNull(_cursorIndexOfLocationLabel)) {
+              _tmpLocationLabel = null;
+            } else {
+              _tmpLocationLabel = _cursor.getString(_cursorIndexOfLocationLabel);
             }
             final String _tmpAddress;
             if (_cursor.isNull(_cursorIndexOfAddress)) {
@@ -247,7 +259,7 @@ public final class StopDao_Impl implements StopDao {
             } else {
               _tmpEndElapsedRealtimeMillis = _cursor.getLong(_cursorIndexOfEndElapsedRealtimeMillis);
             }
-            _item = new StopEntity(_tmpId,_tmpName,_tmpAddress,_tmpPhone,_tmpImageUri,_tmpLat,_tmpLng,_tmpStartWallTimeMillis,_tmpEndWallTimeMillis,_tmpDurationElapsedMinutes,_tmpStartElapsedRealtimeMillis,_tmpEndElapsedRealtimeMillis);
+            _item = new StopEntity(_tmpId,_tmpName,_tmpLocationLabel,_tmpAddress,_tmpPhone,_tmpImageUri,_tmpLat,_tmpLng,_tmpStartWallTimeMillis,_tmpEndWallTimeMillis,_tmpDurationElapsedMinutes,_tmpStartElapsedRealtimeMillis,_tmpEndElapsedRealtimeMillis);
             _result.add(_item);
           }
           return _result;

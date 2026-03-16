@@ -1,12 +1,12 @@
-#Wed Feb 25 15:09:59 IST 2026
-base.0=C\:\\Users\\DM Intern\\OneDrive\\Documents\\CodeBase\\SalesStySet\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
-base.1=C\:\\Users\\DM Intern\\OneDrive\\Documents\\CodeBase\\SalesStySet\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
-base.2=C\:\\Users\\DM Intern\\OneDrive\\Documents\\CodeBase\\SalesStySet\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\12\\classes.dex
-base.3=C\:\\Users\\DM Intern\\OneDrive\\Documents\\CodeBase\\SalesStySet\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\15\\classes.dex
-base.4=C\:\\Users\\DM Intern\\OneDrive\\Documents\\CodeBase\\SalesStySet\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\4\\classes.dex
-base.5=C\:\\Users\\DM Intern\\OneDrive\\Documents\\CodeBase\\SalesStySet\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\5\\classes.dex
-base.6=C\:\\Users\\DM Intern\\OneDrive\\Documents\\CodeBase\\SalesStySet\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\9\\classes.dex
-base.7=C\:\\Users\\DM Intern\\OneDrive\\Documents\\CodeBase\\SalesStySet\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
+#Mon Mar 16 11:38:13 IST 2026
+base.0=C\:\\Users\\DM Intern\\AndroidStudioProjects\\SalesStySetGPS\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
+base.1=C\:\\Users\\DM Intern\\AndroidStudioProjects\\SalesStySetGPS\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
+base.2=C\:\\Users\\DM Intern\\AndroidStudioProjects\\SalesStySetGPS\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\12\\classes.dex
+base.3=C\:\\Users\\DM Intern\\AndroidStudioProjects\\SalesStySetGPS\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\15\\classes.dex
+base.4=C\:\\Users\\DM Intern\\AndroidStudioProjects\\SalesStySetGPS\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\4\\classes.dex
+base.5=C\:\\Users\\DM Intern\\AndroidStudioProjects\\SalesStySetGPS\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\5\\classes.dex
+base.6=C\:\\Users\\DM Intern\\AndroidStudioProjects\\SalesStySetGPS\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\9\\classes.dex
+base.7=C\:\\Users\\DM Intern\\AndroidStudioProjects\\SalesStySetGPS\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
 path.0=classes.dex
 path.1=0/classes.dex
 path.2=12/classes.dex

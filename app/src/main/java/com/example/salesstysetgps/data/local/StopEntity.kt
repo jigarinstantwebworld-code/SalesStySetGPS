@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class StopEntity(
     @PrimaryKey val id: Long,
     val name: String?,
+    val locationLabel: String?,
     val address: String?,
     val phone: String?,
     val imageUri: String?,

@@ -19,6 +19,7 @@ class StopRepository(context: Context) {
                 startTimeMillis = e.startWallTimeMillis,
                 endTimeMillis = e.endWallTimeMillis,
                 name = e.name,
+                locationLabel = e.locationLabel,
                 address = e.address,
                 phone = e.phone,
                 imageUri = e.imageUri,
@@ -31,6 +32,7 @@ class StopRepository(context: Context) {
         val e = StopEntity(
             id = stop.id,
             name = stop.name,
+            locationLabel = stop.locationLabel,
             address = stop.address,
             phone = stop.phone,
             imageUri = stop.imageUri,

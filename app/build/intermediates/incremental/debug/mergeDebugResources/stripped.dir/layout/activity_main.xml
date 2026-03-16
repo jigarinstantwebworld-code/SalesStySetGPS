@@ -115,6 +115,25 @@
                     android:text="@string/export_pdf" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_export_gpx"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    android:textAllCaps="false"
+                    android:text="Export GPX" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_map_type"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAllCaps="false"
+                    android:text="Map Type" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_reset"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="0dp"
@@ -122,6 +141,7 @@
                     android:layout_weight="1"
                     android:textAllCaps="false"
                     android:text="@string/reset_session" />
+
 
             </LinearLayout>
         </LinearLayout>

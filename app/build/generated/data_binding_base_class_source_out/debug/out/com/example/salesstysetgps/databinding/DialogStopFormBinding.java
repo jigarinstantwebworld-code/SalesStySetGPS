@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
@@ -28,12 +29,21 @@ public final class DialogStopFormBinding implements ViewBinding {
   @NonNull
   public final EditText etPhone;
 
+  @NonNull
+  public final TextView tvDuration;
+
+  @NonNull
+  public final TextView tvLocation;
+
   private DialogStopFormBinding(@NonNull LinearLayout rootView, @NonNull EditText etAddress,
-      @NonNull EditText etName, @NonNull EditText etPhone) {
+      @NonNull EditText etName, @NonNull EditText etPhone, @NonNull TextView tvDuration,
+      @NonNull TextView tvLocation) {
     this.rootView = rootView;
     this.etAddress = etAddress;
     this.etName = etName;
     this.etPhone = etPhone;
+    this.tvDuration = tvDuration;
+    this.tvLocation = tvLocation;
   }
 
   @Override
@@ -81,7 +91,20 @@ public final class DialogStopFormBinding implements ViewBinding {
         break missingId;
       }
 
-      return new DialogStopFormBinding((LinearLayout) rootView, etAddress, etName, etPhone);
+      id = R.id.tvDuration;
+      TextView tvDuration = ViewBindings.findChildViewById(rootView, id);
+      if (tvDuration == null) {
+        break missingId;
+      }
+
+      id = R.id.tvLocation;
+      TextView tvLocation = ViewBindings.findChildViewById(rootView, id);
+      if (tvLocation == null) {
+        break missingId;
+      }
+
+      return new DialogStopFormBinding((LinearLayout) rootView, etAddress, etName, etPhone,
+          tvDuration, tvLocation);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
