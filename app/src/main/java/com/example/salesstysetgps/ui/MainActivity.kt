@@ -2795,6 +2795,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 }
+
 data class StopMarkerData(
     val type: String, // "START", "END", or "STOP"
     val time: String? = null,
