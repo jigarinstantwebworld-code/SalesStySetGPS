@@ -137,6 +137,10 @@ class StopRepository(context: Context) {
         }
     }
 
+    suspend fun getOngoingStops() : List<StopEntity> {
+      return  dao.getOngoingStops()
+    }
+
     suspend fun clearAll() {
         dao.clearAll()
     }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark theme colors -->
+    <color name="md_theme_dark_primary">#BB86FC</color>
+    <color name="md_theme_dark_onPrimary">#E8DEF8</color>
+    <color name="md_theme_dark_primaryContainer">#9889AB</color>
+    <color name="md_theme_dark_onPrimaryContainer">#E8DEF8</color>
+
+    <color name="md_theme_dark_secondary">#9889AB</color>
+    <color name="md_theme_dark_onSecondary">#000000</color>
+    <color name="md_theme_dark_secondaryContainer">#CF9EFF</color>
+    <color name="md_theme_dark_onSecondaryContainer">#E8DEF8</color>
+
+    <color name="md_theme_dark_tertiary">#CF9EFF</color>
+    <color name="md_theme_dark_onTertiary">#381E72</color>
+    <color name="md_theme_dark_tertiaryContainer">#4A2B8A</color>
+    <color name="md_theme_dark_onTertiaryContainer">#EADDFF</color>
+
+    <color name="md_theme_dark_error">#CF6679</color>
+    <color name="md_theme_dark_errorContainer">#B00020</color>
+    <color name="md_theme_dark_onError">#000000</color>
+    <color name="md_theme_dark_onErrorContainer">#FFDAD6</color>
+
+    <color name="md_theme_dark_background">#121212</color>
+    <color name="md_theme_dark_onBackground">#E1E1E1</color>
+    <color name="md_theme_dark_surface">#1E1E1E</color>
+    <color name="md_theme_dark_onSurface">#E1E1E1</color>
+    <color name="md_theme_dark_surfaceVariant">#2C2C2C</color>
+    <color name="md_theme_light_onSurfaceVariant">#E1E1E1</color>
+    <color name="md_theme_dark_onSurfaceVariant">#CACACA</color>
+    <color name="md_theme_dark_outline">#8E8E8E</color>
+
+    <color name="white">#FFFFFFFF</color>
+    <color name="green_dark">#2E7D32</color>
+    <color name="orange_dark">#E65100</color>
+    <color name="red_dark">#C62828</color>
+
+    <color name="filter_active_bg">#BB86FC</color>
+    <color name="filter_active_text">#121212</color>
+    <color name="filter_inactive_bg">#121212</color>
+    <color name="filter_inactive_text">#BB86FC</color>
+    <color name="filter_inactive_border">#BB86FC</color>
+</resources>

@@ -6,15 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.salesstysetgps.models.SyncDataEntity
 
 @Database(
-    entities = [StopEntity::class, RoutePointEntity::class, RouteEntity::class, RouteStopRelation::class],
+    entities = [StopEntity::class, RoutePointEntity::class, RouteEntity::class, RouteStopRelation::class, SyncDataEntity::class],
     version = 1, // Increment version from 3 to 4
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun stopDao(): StopDao
     abstract fun routePointDao(): RouteDao
+    abstract fun syncDao(): SyncDao
 
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
@@ -47,6 +49,7 @@ abstract class AppDatabase : RoomDatabase() {
                 "tracking-db"
             )
 //                .addMigrations(MIGRATION_3_4) // Use proper migration
+                .fallbackToDestructiveMigration()
                 .build()
                 .also { INSTANCE = it }
         }

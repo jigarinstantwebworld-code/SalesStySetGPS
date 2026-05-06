@@ -14,7 +14,7 @@
         android:textStyle="bold"
         android:paddingBottom="8dp" />
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="200dp"
         app:cardCornerRadius="8dp"
@@ -48,7 +48,7 @@
                 android:visibility="gone" />
 
         </FrameLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <TextView
         android:id="@+id/tvRouteStats"

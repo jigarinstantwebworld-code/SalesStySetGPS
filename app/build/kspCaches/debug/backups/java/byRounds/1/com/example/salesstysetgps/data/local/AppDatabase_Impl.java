@@ -30,6 +30,8 @@ public final class AppDatabase_Impl extends AppDatabase {
 
   private volatile RouteDao _routeDao;
 
+  private volatile SyncDao _syncDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
@@ -40,8 +42,9 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("CREATE TABLE IF NOT EXISTS `route_points` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `routeId` INTEGER NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `timestamp` INTEGER NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `routes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `startTimeMillis` INTEGER NOT NULL, `endTimeMillis` INTEGER, `durationSeconds` INTEGER NOT NULL, `stopCount` INTEGER NOT NULL, `distanceMeters` REAL, `screenshotPath` TEXT)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `route_stop_relations` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `routeId` INTEGER NOT NULL, `stopId` INTEGER NOT NULL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `sync_data` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `apiName` TEXT NOT NULL, `lastSyncedTime` INTEGER NOT NULL, `status` INTEGER NOT NULL, `errorMessage` TEXT)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '79262b78033c8903c2ac0b0fba9c702b')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b13744a56ec7c938395bc9c292f10d59')");
       }
 
       @Override
@@ -50,6 +53,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("DROP TABLE IF EXISTS `route_points`");
         db.execSQL("DROP TABLE IF EXISTS `routes`");
         db.execSQL("DROP TABLE IF EXISTS `route_stop_relations`");
+        db.execSQL("DROP TABLE IF EXISTS `sync_data`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -162,9 +166,24 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoRouteStopRelations + "\n"
                   + " Found:\n" + _existingRouteStopRelations);
         }
+        final HashMap<String, TableInfo.Column> _columnsSyncData = new HashMap<String, TableInfo.Column>(5);
+        _columnsSyncData.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsSyncData.put("apiName", new TableInfo.Column("apiName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsSyncData.put("lastSyncedTime", new TableInfo.Column("lastSyncedTime", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsSyncData.put("status", new TableInfo.Column("status", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsSyncData.put("errorMessage", new TableInfo.Column("errorMessage", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysSyncData = new HashSet<TableInfo.ForeignKey>(0);
+        final HashSet<TableInfo.Index> _indicesSyncData = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoSyncData = new TableInfo("sync_data", _columnsSyncData, _foreignKeysSyncData, _indicesSyncData);
+        final TableInfo _existingSyncData = TableInfo.read(db, "sync_data");
+        if (!_infoSyncData.equals(_existingSyncData)) {
+          return new RoomOpenHelper.ValidationResult(false, "sync_data(com.example.salesstysetgps.models.SyncDataEntity).\n"
+                  + " Expected:\n" + _infoSyncData + "\n"
+                  + " Found:\n" + _existingSyncData);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "79262b78033c8903c2ac0b0fba9c702b", "7e143232d425f6bd0598f419667def6e");
+    }, "b13744a56ec7c938395bc9c292f10d59", "2742d0007c70eb545e27cd98ce928823");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -175,7 +194,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "stops","route_points","routes","route_stop_relations");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "stops","route_points","routes","route_stop_relations","sync_data");
   }
 
   @Override
@@ -188,6 +207,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       _db.execSQL("DELETE FROM `route_points`");
       _db.execSQL("DELETE FROM `routes`");
       _db.execSQL("DELETE FROM `route_stop_relations`");
+      _db.execSQL("DELETE FROM `sync_data`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -204,6 +224,7 @@ public final class AppDatabase_Impl extends AppDatabase {
     final HashMap<Class<?>, List<Class<?>>> _typeConvertersMap = new HashMap<Class<?>, List<Class<?>>>();
     _typeConvertersMap.put(StopDao.class, StopDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(RouteDao.class, RouteDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(SyncDao.class, SyncDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -246,6 +267,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _routeDao = new RouteDao_Impl(this);
         }
         return _routeDao;
+      }
+    }
+  }
+
+  @Override
+  public SyncDao syncDao() {
+    if (_syncDao != null) {
+      return _syncDao;
+    } else {
+      synchronized(this) {
+        if(_syncDao == null) {
+          _syncDao = new SyncDao_Impl(this);
+        }
+        return _syncDao;
       }
     }
   }

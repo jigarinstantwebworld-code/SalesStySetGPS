@@ -5,13 +5,15 @@
     android:orientation="vertical"
     android:padding="12dp"
     android:layout_margin="6dp"
-    android:background="?attr/selectableItemBackground">
+    android:background="?attr/colorSurface"
+    >
 
     <TextView
         android:id="@+id/tv_place_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Place Name"
+        android:textColor="?attr/colorOnSurface"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
         android:textStyle="bold" />
 
@@ -20,6 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Time spent: 0 min"
+        android:textColor="?attr/colorOnSurface"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
         android:layout_marginTop="4dp" />
 
@@ -28,6 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Coordinates"
+        android:textColor="?attr/colorOnSurface"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
         android:layout_marginTop="2dp" />
 

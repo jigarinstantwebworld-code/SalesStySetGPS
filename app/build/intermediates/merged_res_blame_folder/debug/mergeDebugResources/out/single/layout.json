@@ -1,82 +1,150 @@
 [
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\fragment_upcoming_schedules.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\fragment_upcoming_schedules.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_sync_record.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_sync_record.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\fragment_today_schedules.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\fragment_today_schedules.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/activity_places.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_places.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\activity_main2.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\activity_main2.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/activity_lead_detail.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_lead_detail.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\map_info_window.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\map_info_window.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_lead_detail_image.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead_detail_image.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\item_place.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\item_place.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/nav_header.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/nav_header.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\activity_main.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\activity_main.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/fragment_today_schedules.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/fragment_today_schedules.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/dialog_date_filter_bottom_sheet.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/dialog_date_filter_bottom_sheet.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/activity_login.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_event.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_event.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_stop_in_route.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_stop_in_route.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/activity_sync_test.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_sync_test.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_lead.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/activity_create_lead.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_create_lead.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/fragment_schedule_calendar.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/fragment_schedule_calendar.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_place.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_place.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_loading.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_loading.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/activity_attendance.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_attendance.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/fragment_upcoming_schedules.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/fragment_upcoming_schedules.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_lead_detail_section.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead_detail_section.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/activity_visit_detail.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_visit_detail.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/dialog_filter_bottom_sheet.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/dialog_filter_bottom_sheet.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/dialog_places.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/dialog_places.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_route_snapshot.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_route_snapshot.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_lead_detail_field.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead_detail_field.xml"
+    },
+    {
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_route_with_stops.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_route_with_stops.xml"
     },
     {
         "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/activity_main2.xml",
         "source": "com.example.salesstysetgps.app-main-54:/layout/activity_main2.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\item_route_snapshot.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\item_route_snapshot.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_lead_detail_add_note.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead_detail_add_note.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\nav_header.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\nav_header.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/dialog_add_note.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/dialog_add_note.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\dialog_stop_form.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\dialog_stop_form.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/activity_api.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_api.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\activity_lead.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\activity_lead.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/map_info_window.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/map_info_window.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\item_route_with_stops.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\item_route_with_stops.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_lead_checkbox.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead_checkbox.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\item_place_card.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\item_place_card.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/activity_lead.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_lead.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\item_event.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\item_event.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/activity_main.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_main.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\dialog_places.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\dialog_places.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_lead_detail_note.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead_detail_note.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\item_stop_in_route.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\item_stop_in_route.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_place_card.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_place_card.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\item_lead.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\item_lead.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/item_post.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/item_post.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\fragment_schedule_calendar.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\fragment_schedule_calendar.xml"
-    },
-    {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\activity_places.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\activity_places.xml"
-    },
-    {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-mergeDebugResources-51:\\layout\\activity_visit_detail.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.example.salesstysetgps.app-main-54:\\layout\\activity_visit_detail.xml"
+        "merged": "com.example.salesstysetgps.app-mergeDebugResources-51:/layout/dialog_stop_form.xml",
+        "source": "com.example.salesstysetgps.app-main-54:/layout/dialog_stop_form.xml"
     }
 ]

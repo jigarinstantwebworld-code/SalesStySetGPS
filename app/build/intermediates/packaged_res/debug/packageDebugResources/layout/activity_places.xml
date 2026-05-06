@@ -16,7 +16,11 @@
             android:id="@+id/toolbarPlaces"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:navigationIconTint="@android:color/white"
+            app:titleTextColor="@android:color/white"
             app:title="@string/places_title"
+            app:navigationIcon="@drawable/ic_back_white"
+            android:background="?attr/colorPrimary"
             tools:title="Places" />
 
         <LinearLayout
@@ -106,8 +110,23 @@
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:titleTextColor="@android:color/white"
+        app:navigationIcon="@drawable/ic_back_white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
     <FrameLayout
         android:layout_width="match_parent"
+        android:background="?attr/colorSurface"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -116,6 +135,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="12dp"
+            tools:listitem="@layout/item_place"
             tools:visibility="gone"
             android:clipToPadding="false" />
 
@@ -125,8 +145,8 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:padding="24dp"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorOnSurface"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             android:alpha="0.7"
             android:textSize="16sp"
             android:visibility="gone"

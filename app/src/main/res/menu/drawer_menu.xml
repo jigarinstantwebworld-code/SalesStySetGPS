@@ -26,6 +26,27 @@
             android:id="@+id/nav_lead"
             android:icon="@android:drawable/ic_media_rew"
             android:title="Lead" />
+
+        <item
+            android:id="@+id/nav_api"
+            android:visible="false"
+            android:icon="@android:drawable/ic_media_rew"
+            android:title="API" />
+
+        <item
+            android:id="@+id/nav_attendance"
+            android:icon="@android:drawable/ic_media_rew"
+            android:title="Attendance" />
+
+        <item
+            android:id="@+id/nav_sync"
+            android:icon="@android:drawable/ic_media_rew"
+            android:title="Sync" />
+
+        <item
+            android:id="@+id/nav_log_out"
+            android:icon="@drawable/ic_logout"
+            android:title="LogOut" />
     </group>
 
 </menu>

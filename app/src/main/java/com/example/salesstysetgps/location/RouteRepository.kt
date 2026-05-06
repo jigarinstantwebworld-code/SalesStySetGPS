@@ -107,10 +107,44 @@ class RouteRepository(context: Context) {
 
         // Log raw entities
         stopEntities.forEach { entity ->
-            Log.d("LETTER_FLOW", "  DB Entity - ID: ${entity.id}, Letter: '${entity.letter}'")
+            Log.d("LETTER_FLOW", "  DB Entity - ID: ${entity.id}, Letter: '${entity.letter}', Name: '${entity.name}'")
         }
 
-        val result = stopEntities.map { e ->
+        // ✅ LAYER 1: Deduplicate by ID (in case same stop is linked multiple times)
+        val uniqueById = stopEntities.distinctBy { it.id }
+
+        if (stopEntities.size != uniqueById.size) {
+            Log.w("LETTER_FLOW", "⚠️ Removed ${stopEntities.size - uniqueById.size} duplicate stops by ID")
+        }
+
+        // ✅ LAYER 2: Deduplicate by time + location (in case exact duplicate stops exist)
+        val uniqueByTimeAndLocation = uniqueById.distinctBy { entity ->
+            val timeSlot = entity.startWallTimeMillis / (1000 * 60 * 5) // 5-minute time slot
+            val lat = String.format("%.3f", entity.lat)
+            val lng = String.format("%.3f", entity.lng)
+            "$timeSlot-$lat-$lng"
+        }
+
+        if (uniqueById.size != uniqueByTimeAndLocation.size) {
+            Log.w("LETTER_FLOW", "⚠️ Removed ${uniqueById.size - uniqueByTimeAndLocation.size} duplicate stops by time/location")
+        }
+
+        // ✅ LAYER 3: Filter out invalid stops
+        val validStops = uniqueByTimeAndLocation.filter { entity ->
+            entity.startWallTimeMillis > 0 &&
+                    entity.lat != 0.0 &&
+                    entity.lng != 0.0 &&
+                    (entity.durationElapsedMinutes >= 0 || entity.endWallTimeMillis == null)
+        }
+
+        if (uniqueByTimeAndLocation.size != validStops.size) {
+            Log.w("LETTER_FLOW", "⚠️ Filtered out ${uniqueByTimeAndLocation.size - validStops.size} invalid stops")
+        }
+
+        // ✅ LAYER 4: Sort by time
+        val sortedStops = validStops.sortedBy { it.startWallTimeMillis }
+
+        val result = sortedStops.map { e ->
             StopPoint(
                 id = e.id,
                 center = LatLng(e.lat, e.lng),
@@ -126,9 +160,11 @@ class RouteRepository(context: Context) {
             )
         }
 
-        // Log converted StopPoints
-        result.forEach { stop ->
-            Log.d("LETTER_FLOW", "  Converted StopPoint - ID: ${stop.id}, Letter: '${stop.letter}'")
+        Log.d("LETTER_FLOW", "✅ Final result: ${result.size} stops (original: ${stopEntities.size})")
+
+        // Log final stops with their letters
+        result.forEachIndexed { index, stop ->
+            Log.d("LETTER_FLOW", "  Final Stop $index - ID: ${stop.id}, Letter: '${stop.letter}', Name: '${stop.name}'")
         }
 
         return result
@@ -167,6 +203,30 @@ class RouteRepository(context: Context) {
 
     suspend fun getRoutesInTimeRange(startMillis: Long, endMillis: Long): List<RouteEntity> {
         return dao.getRoutesInTimeRange(startMillis, endMillis)
+    }
+
+    suspend fun getOngoingRoute(): RouteEntity? {
+        return dao.getOngoingRoute()
+    }
+
+    suspend fun getAllRoutes(): List<RouteEntity> {
+        return dao.getAllRoutes()
+    }
+
+
+
+    suspend fun createOrGetOngoingRoute(): RouteEntity {
+        val ongoingRoute = getOngoingRoute()
+        if (ongoingRoute != null) {
+            return ongoingRoute
+        }
+        val routeId = createRoute(
+            RouteEntity(
+                startTimeMillis = System.currentTimeMillis(),
+                stopCount = 0
+            )
+        )
+        return dao.getRouteById(routeId) ?: throw Exception("Failed to create route")
     }
 
 

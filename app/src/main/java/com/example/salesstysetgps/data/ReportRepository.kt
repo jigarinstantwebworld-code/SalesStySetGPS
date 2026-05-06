@@ -4,12 +4,14 @@ import android.content.Context
 import android.util.Log
 import com.example.salesstysetgps.data.local.RoutePointEntity
 import com.example.salesstysetgps.location.RouteRepository
+import com.example.salesstysetgps.repository.SyncRepository
 import com.example.salesstysetgps.ui.DailyReportData
 import com.example.salesstysetgps.ui.PlacesActivity
 import com.example.salesstysetgps.ui.RouteSegment
 import com.example.salesstysetgps.ui.RouteWithDetails
 import com.example.salesstysetgps.ui.RouteWithStops
 import com.example.salesstysetgps.ui.StopWithDetails
+import com.example.salesstysetgps.ui.SyncRecordDisplay
 import com.google.android.gms.maps.model.LatLng
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -24,6 +26,7 @@ class ReportRepository(private val context: Context) {
 
     private val routeRepo = RouteRepository(context)
     private val stopRepo = StopRepository(context)
+    private val syncRepo = SyncRepository(context)  // ✅ Add this
 
     /**
      * Get report data for a specific date
@@ -32,7 +35,6 @@ class ReportRepository(private val context: Context) {
         val startOfDay = startOfDayMillis(dateMillis)
         val endOfDay = endOfDayMillis(dateMillis)
 
-        // Get all routes that started on this day
         val routes = routeRepo.getRoutesInTimeRange(startOfDay, endOfDay)
 
         val routesWithDetails = mutableListOf<RouteWithDetails>()
@@ -40,106 +42,125 @@ class ReportRepository(private val context: Context) {
         var totalDuration = 0L
         var totalDistance = 0.0
 
-        for (route in routes) {
-            // Get stops for this route
-            val stops = routeRepo.getStopsForRoute(route.id).sortedBy { it.startTimeMillis }
-            val routePoints = routeRepo.getRoutePoints(route.id)
+        val latestSyncRecord  = syncRepo.getLatestSuccessfulSyncRecord()
+        val dateFormat = SimpleDateFormat("hh:mm a, dd MMM yyyy", Locale.getDefault())
 
-            // Calculate route distance
+        val syncHistory = if (latestSyncRecord != null) {
+            listOf(
+                SyncRecordDisplay(
+                    apiName = latestSyncRecord.apiName,
+                    lastSyncedTime = dateFormat.format(Date(latestSyncRecord.lastSyncedTime)),
+                    status = latestSyncRecord.status
+                )
+            )
+        } else {
+            emptyList()
+        }
+
+        for (route in routes) {
+            // ✅ Get stops - already deduplicated by your DAO
+            val stopsFromDb = routeRepo.getStopsForRoute(route.id)
+
+            // ✅ Second layer: Deduplicate by ID (just in case)
+            val stops = stopsFromDb.distinctBy { it.id }.sortedBy { it.startTimeMillis }
+
+            // ✅ Third layer: Log if duplicates found
+            if (stopsFromDb.size != stops.size) {
+                Log.w("REPORT_DEBUG", "Route ${route.id}: Removed ${stopsFromDb.size - stops.size} duplicates")
+            }
+            val letterGroups = stops.groupBy { it.letter }
+            letterGroups.filter { it.value.size > 1 }.forEach { (letter, duplicates) ->
+                Log.w("REPORT_DEBUG", "⚠️ Same letter '$letter' appears ${duplicates.size} times in route ${route.id}")
+                duplicates.forEach { stop ->
+                    Log.w("REPORT_DEBUG", "   Stop ID: ${stop.id}, Time: ${stop.startTimeMillis}, Location: ${stop.center}")
+                }
+            }
+
+            val routePoints = routeRepo.getRoutePoints(route.id)
             val routeDistance = calculateRouteDistance(routePoints)
             totalDistance += routeDistance
 
-            // Calculate stops with details (distances between stops)
+            // ✅ Create stops with details (NO segments mixed in)
             val stopsWithDetails = mutableListOf<StopWithDetails>()
-            val segments = mutableListOf<RouteSegment>()
 
             stops.forEachIndexed { index, stop ->
                 val letter = stop.letter ?: ('A'.plus(index)).toString()
 
-                // Calculate distance from previous stop
-                val distanceFromPrev = if (index > 0) {
-                    calculateDistanceBetweenStops(stops[index - 1], stop)
+                // Calculate travel from previous stop
+                val (timeFromPrev, distanceFromPrev) = if (index > 0) {
+                    val prevStop = stops[index - 1]
+                    val travelTime = if (prevStop.endTimeMillis != null && stop.startTimeMillis != null) {
+                        val minutes = (stop.startTimeMillis - prevStop.endTimeMillis!!) / 60000
+                        if (minutes < 0) 0 else minutes  // ✅ Never negative
+                    } else {
+                        0
+                    }
+                    val travelDistance = calculateDistanceBetweenStops(prevStop, stop)
+                    Pair(travelTime, travelDistance)
                 } else {
-                    null
-                }
-
-                // Calculate travel time from previous stop (time between stops)
-                val timeFromPrev = if (index > 0 && stops[index - 1].endTimeMillis != null) {
-                    (stop.startTimeMillis - stops[index - 1].endTimeMillis!!) / 60000 // in minutes
-                } else {
-                    null
+                    Pair(null, null)
                 }
 
                 stopsWithDetails.add(
                     StopWithDetails(
                         stop = stop,
                         letter = letter,
-                        distanceFromPrev = distanceFromPrev,
-                        timeFromPrev = timeFromPrev
+                        timeFromPrev = timeFromPrev,
+                        distanceFromPrev = distanceFromPrev
                     )
                 )
+
+                totalStops++
+                totalDuration += stop.timeSpentMinutes
             }
 
-            // Calculate journey segments between stops
+            // ✅ Create segments SEPARATELY (for journey display, not as stops)
+            val segments = mutableListOf<RouteSegment>()
             for (i in 0 until stops.size - 1) {
                 val fromStop = stops[i]
                 val toStop = stops[i + 1]
 
-                // Get route points between these stops (based on timestamps)
-                val segmentPoints = if (fromStop.endTimeMillis != null && toStop.startTimeMillis != null) {
-                    routePoints.filter { point ->
-                        point.timestamp in fromStop.endTimeMillis!!..toStop.startTimeMillis
-                    }
-                } else {
-                    emptyList()
-                }
-
-                val segmentDistance = calculateRouteDistance(segmentPoints)
-                val segmentDuration = if (fromStop.endTimeMillis != null && toStop.startTimeMillis != null) {
-                    (toStop.startTimeMillis - fromStop.endTimeMillis!!) / 60000 // in minutes
+                val travelTime = if (fromStop.endTimeMillis != null && toStop.startTimeMillis != null) {
+                    (toStop.startTimeMillis - fromStop.endTimeMillis!!) / 60000
                 } else {
                     0
                 }
+
+                val travelDistance = calculateDistanceBetweenStops(fromStop, toStop)
 
                 segments.add(
                     RouteSegment(
                         fromStop = "${stopsWithDetails[i].letter}. ${fromStop.name ?: "Unnamed"}",
                         toStop = "${stopsWithDetails[i + 1].letter}. ${toStop.name ?: "Unnamed"}",
-                        distance = segmentDistance,
-                        duration = segmentDuration,
-                        startTime = fromStop.endTimeMillis ?: 0,
-                        endTime = toStop.startTimeMillis ?: 0
+                        distance = travelDistance,
+                        duration = if (travelTime < 0) 0 else travelTime,
+                        startTime = fromStop.endTimeMillis ?: fromStop.startTimeMillis,
+                        endTime = toStop.startTimeMillis ?: toStop.startTimeMillis
                     )
                 )
             }
 
-            // Update totals
-            totalStops += stops.size
-            route.durationSeconds?.let { totalDuration += it / 60 }
-
-            // Add route with details
             routesWithDetails.add(
                 RouteWithDetails(
                     route = route,
-                    stops = stopsWithDetails,
+                    stops = stopsWithDetails,  // ✅ Only stops here
                     routeDistance = routeDistance,
-                    segments = segments,
-                    routePoints = routePoints // Add route points
+                    segments = segments,  // ✅ Travel segments separate
+                    routePoints = routePoints
                 )
             )
 
-            Log.d("REPORT_DEBUG", "Route ${route.id}: ${stops.size} stops, ${String.format("%.2f", routeDistance)} km")
+            Log.d("REPORT_DEBUG", "Route ${route.id}: ${stops.size} stops, ${segments.size} segments")
         }
 
-        val dateFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
-
         return DailyReportData(
-            date = dateFormat.format(Date(dateMillis)),
+            date = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(Date(dateMillis)),
             routes = routesWithDetails.sortedBy { it.route.startTimeMillis },
             totalRoutes = routes.size,
             totalStops = totalStops,
             totalDuration = totalDuration,
-            totalDistance = totalDistance
+            totalDistance = totalDistance,
+            syncHistory = syncHistory  // ✅ Add sync history
         )
     }
 

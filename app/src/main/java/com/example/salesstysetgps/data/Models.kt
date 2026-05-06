@@ -1,5 +1,6 @@
 package com.example.salesstysetgps.data
 
+import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,8 +38,19 @@ class TrackingSessionState {
         _stopPoints.value = emptyList()
     }
 
+    // In TrackingSessionState.addLocation()
     fun addLocation(point: LocationPoint) {
-        _routePoints.value = _routePoints.value + point
+        Log.d("SessionState", "Adding location: ${point.latLng.latitude}, ${point.latLng.longitude}")
+        val currentList = _routePoints.value.toMutableList()
+        currentList.add(point)
+        _routePoints.value = currentList
+
+        // Log the size after addition
+        Log.d("SessionState", "Total points now: ${_routePoints.value.size}")
+
+        // Verify the point was added
+        val lastPoint = _routePoints.value.lastOrNull()
+        Log.d("SessionState", "Last point: ${lastPoint?.latLng}")
     }
 
     // In TrackingSessionState class

@@ -48,6 +48,9 @@ public final class ActivityPlacesBinding implements ViewBinding {
   public final RecyclerView recyclerPlaces;
 
   @NonNull
+  public final MaterialToolbar toolbar;
+
+  @NonNull
   public final MaterialToolbar toolbarPlaces;
 
   @NonNull
@@ -59,8 +62,9 @@ public final class ActivityPlacesBinding implements ViewBinding {
   private ActivityPlacesBinding(@NonNull CoordinatorLayout rootView, @NonNull Chip chipCustom,
       @NonNull ChipGroup chipGroupFilters, @NonNull Chip chipLast3Days, @NonNull Chip chipLastMonth,
       @NonNull Chip chipLastWeek, @NonNull Chip chipToday, @NonNull Chip chipYesterday,
-      @NonNull RecyclerView recyclerPlaces, @NonNull MaterialToolbar toolbarPlaces,
-      @NonNull TextView tvEmpty, @NonNull TextView tvFilterSummary) {
+      @NonNull RecyclerView recyclerPlaces, @NonNull MaterialToolbar toolbar,
+      @NonNull MaterialToolbar toolbarPlaces, @NonNull TextView tvEmpty,
+      @NonNull TextView tvFilterSummary) {
     this.rootView = rootView;
     this.chipCustom = chipCustom;
     this.chipGroupFilters = chipGroupFilters;
@@ -70,6 +74,7 @@ public final class ActivityPlacesBinding implements ViewBinding {
     this.chipToday = chipToday;
     this.chipYesterday = chipYesterday;
     this.recyclerPlaces = recyclerPlaces;
+    this.toolbar = toolbar;
     this.toolbarPlaces = toolbarPlaces;
     this.tvEmpty = tvEmpty;
     this.tvFilterSummary = tvFilterSummary;
@@ -150,6 +155,12 @@ public final class ActivityPlacesBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.toolbar;
+      MaterialToolbar toolbar = ViewBindings.findChildViewById(rootView, id);
+      if (toolbar == null) {
+        break missingId;
+      }
+
       id = R.id.toolbarPlaces;
       MaterialToolbar toolbarPlaces = ViewBindings.findChildViewById(rootView, id);
       if (toolbarPlaces == null) {
@@ -170,7 +181,7 @@ public final class ActivityPlacesBinding implements ViewBinding {
 
       return new ActivityPlacesBinding((CoordinatorLayout) rootView, chipCustom, chipGroupFilters,
           chipLast3Days, chipLastMonth, chipLastWeek, chipToday, chipYesterday, recyclerPlaces,
-          toolbarPlaces, tvEmpty, tvFilterSummary);
+          toolbar, toolbarPlaces, tvEmpty, tvFilterSummary);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

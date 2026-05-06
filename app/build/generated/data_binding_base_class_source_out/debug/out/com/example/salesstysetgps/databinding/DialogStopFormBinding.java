@@ -4,30 +4,107 @@ package com.example.salesstysetgps.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.example.salesstysetgps.R;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.radiobutton.MaterialRadioButton;
+import com.google.android.material.textfield.TextInputEditText;
 import java.lang.NullPointerException;
 import java.lang.Override;
 import java.lang.String;
 
 public final class DialogStopFormBinding implements ViewBinding {
   @NonNull
-  private final LinearLayout rootView;
+  private final ScrollView rootView;
 
   @NonNull
-  public final EditText etAddress;
+  public final MaterialButton btnCaptureSellerImage;
 
   @NonNull
-  public final EditText etName;
+  public final TextInputEditText etAddress;
 
   @NonNull
-  public final EditText etPhone;
+  public final TextInputEditText etArea;
+
+  @NonNull
+  public final TextInputEditText etContactPerson;
+
+  @NonNull
+  public final TextInputEditText etCurrentLocation;
+
+  @NonNull
+  public final TextInputEditText etDate;
+
+  @NonNull
+  public final TextInputEditText etEmailId;
+
+  @NonNull
+  public final TextInputEditText etExecutiveName;
+
+  @NonNull
+  public final TextInputEditText etLeads;
+
+  @NonNull
+  public final TextInputEditText etName;
+
+  @NonNull
+  public final TextInputEditText etNotes;
+
+  @NonNull
+  public final TextInputEditText etOnboardingClientName;
+
+  @NonNull
+  public final TextInputEditText etPaidAmount;
+
+  @NonNull
+  public final TextInputEditText etPhone;
+
+  @NonNull
+  public final TextInputEditText etRemark;
+
+  @NonNull
+  public final TextInputEditText etSellerAddress;
+
+  @NonNull
+  public final TextInputEditText etVisitingCardImage;
+
+  @NonNull
+  public final ImageView ivImagePreview;
+
+  @NonNull
+  public final ImageView ivSellerImagePreview;
+
+  @NonNull
+  public final MaterialRadioButton rbA1;
+
+  @NonNull
+  public final MaterialRadioButton rbA2;
+
+  @NonNull
+  public final MaterialRadioButton rbA3;
+
+  @NonNull
+  public final MaterialRadioButton rbA4;
+
+  @NonNull
+  public final RadioButton rbNo;
+
+  @NonNull
+  public final RadioButton rbYes;
+
+  @NonNull
+  public final RadioGroup rgDemo;
+
+  @NonNull
+  public final RadioGroup rgSellingType;
 
   @NonNull
   public final TextView tvDuration;
@@ -35,20 +112,56 @@ public final class DialogStopFormBinding implements ViewBinding {
   @NonNull
   public final TextView tvLocation;
 
-  private DialogStopFormBinding(@NonNull LinearLayout rootView, @NonNull EditText etAddress,
-      @NonNull EditText etName, @NonNull EditText etPhone, @NonNull TextView tvDuration,
+  private DialogStopFormBinding(@NonNull ScrollView rootView,
+      @NonNull MaterialButton btnCaptureSellerImage, @NonNull TextInputEditText etAddress,
+      @NonNull TextInputEditText etArea, @NonNull TextInputEditText etContactPerson,
+      @NonNull TextInputEditText etCurrentLocation, @NonNull TextInputEditText etDate,
+      @NonNull TextInputEditText etEmailId, @NonNull TextInputEditText etExecutiveName,
+      @NonNull TextInputEditText etLeads, @NonNull TextInputEditText etName,
+      @NonNull TextInputEditText etNotes, @NonNull TextInputEditText etOnboardingClientName,
+      @NonNull TextInputEditText etPaidAmount, @NonNull TextInputEditText etPhone,
+      @NonNull TextInputEditText etRemark, @NonNull TextInputEditText etSellerAddress,
+      @NonNull TextInputEditText etVisitingCardImage, @NonNull ImageView ivImagePreview,
+      @NonNull ImageView ivSellerImagePreview, @NonNull MaterialRadioButton rbA1,
+      @NonNull MaterialRadioButton rbA2, @NonNull MaterialRadioButton rbA3,
+      @NonNull MaterialRadioButton rbA4, @NonNull RadioButton rbNo, @NonNull RadioButton rbYes,
+      @NonNull RadioGroup rgDemo, @NonNull RadioGroup rgSellingType, @NonNull TextView tvDuration,
       @NonNull TextView tvLocation) {
     this.rootView = rootView;
+    this.btnCaptureSellerImage = btnCaptureSellerImage;
     this.etAddress = etAddress;
+    this.etArea = etArea;
+    this.etContactPerson = etContactPerson;
+    this.etCurrentLocation = etCurrentLocation;
+    this.etDate = etDate;
+    this.etEmailId = etEmailId;
+    this.etExecutiveName = etExecutiveName;
+    this.etLeads = etLeads;
     this.etName = etName;
+    this.etNotes = etNotes;
+    this.etOnboardingClientName = etOnboardingClientName;
+    this.etPaidAmount = etPaidAmount;
     this.etPhone = etPhone;
+    this.etRemark = etRemark;
+    this.etSellerAddress = etSellerAddress;
+    this.etVisitingCardImage = etVisitingCardImage;
+    this.ivImagePreview = ivImagePreview;
+    this.ivSellerImagePreview = ivSellerImagePreview;
+    this.rbA1 = rbA1;
+    this.rbA2 = rbA2;
+    this.rbA3 = rbA3;
+    this.rbA4 = rbA4;
+    this.rbNo = rbNo;
+    this.rbYes = rbYes;
+    this.rgDemo = rgDemo;
+    this.rgSellingType = rgSellingType;
     this.tvDuration = tvDuration;
     this.tvLocation = tvLocation;
   }
 
   @Override
   @NonNull
-  public LinearLayout getRoot() {
+  public ScrollView getRoot() {
     return rootView;
   }
 
@@ -73,21 +186,165 @@ public final class DialogStopFormBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnCaptureSellerImage;
+      MaterialButton btnCaptureSellerImage = ViewBindings.findChildViewById(rootView, id);
+      if (btnCaptureSellerImage == null) {
+        break missingId;
+      }
+
       id = R.id.etAddress;
-      EditText etAddress = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText etAddress = ViewBindings.findChildViewById(rootView, id);
       if (etAddress == null) {
         break missingId;
       }
 
+      id = R.id.etArea;
+      TextInputEditText etArea = ViewBindings.findChildViewById(rootView, id);
+      if (etArea == null) {
+        break missingId;
+      }
+
+      id = R.id.etContactPerson;
+      TextInputEditText etContactPerson = ViewBindings.findChildViewById(rootView, id);
+      if (etContactPerson == null) {
+        break missingId;
+      }
+
+      id = R.id.etCurrentLocation;
+      TextInputEditText etCurrentLocation = ViewBindings.findChildViewById(rootView, id);
+      if (etCurrentLocation == null) {
+        break missingId;
+      }
+
+      id = R.id.etDate;
+      TextInputEditText etDate = ViewBindings.findChildViewById(rootView, id);
+      if (etDate == null) {
+        break missingId;
+      }
+
+      id = R.id.etEmailId;
+      TextInputEditText etEmailId = ViewBindings.findChildViewById(rootView, id);
+      if (etEmailId == null) {
+        break missingId;
+      }
+
+      id = R.id.etExecutiveName;
+      TextInputEditText etExecutiveName = ViewBindings.findChildViewById(rootView, id);
+      if (etExecutiveName == null) {
+        break missingId;
+      }
+
+      id = R.id.etLeads;
+      TextInputEditText etLeads = ViewBindings.findChildViewById(rootView, id);
+      if (etLeads == null) {
+        break missingId;
+      }
+
       id = R.id.etName;
-      EditText etName = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText etName = ViewBindings.findChildViewById(rootView, id);
       if (etName == null) {
         break missingId;
       }
 
+      id = R.id.etNotes;
+      TextInputEditText etNotes = ViewBindings.findChildViewById(rootView, id);
+      if (etNotes == null) {
+        break missingId;
+      }
+
+      id = R.id.etOnboardingClientName;
+      TextInputEditText etOnboardingClientName = ViewBindings.findChildViewById(rootView, id);
+      if (etOnboardingClientName == null) {
+        break missingId;
+      }
+
+      id = R.id.etPaidAmount;
+      TextInputEditText etPaidAmount = ViewBindings.findChildViewById(rootView, id);
+      if (etPaidAmount == null) {
+        break missingId;
+      }
+
       id = R.id.etPhone;
-      EditText etPhone = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText etPhone = ViewBindings.findChildViewById(rootView, id);
       if (etPhone == null) {
+        break missingId;
+      }
+
+      id = R.id.etRemark;
+      TextInputEditText etRemark = ViewBindings.findChildViewById(rootView, id);
+      if (etRemark == null) {
+        break missingId;
+      }
+
+      id = R.id.etSellerAddress;
+      TextInputEditText etSellerAddress = ViewBindings.findChildViewById(rootView, id);
+      if (etSellerAddress == null) {
+        break missingId;
+      }
+
+      id = R.id.etVisitingCardImage;
+      TextInputEditText etVisitingCardImage = ViewBindings.findChildViewById(rootView, id);
+      if (etVisitingCardImage == null) {
+        break missingId;
+      }
+
+      id = R.id.ivImagePreview;
+      ImageView ivImagePreview = ViewBindings.findChildViewById(rootView, id);
+      if (ivImagePreview == null) {
+        break missingId;
+      }
+
+      id = R.id.ivSellerImagePreview;
+      ImageView ivSellerImagePreview = ViewBindings.findChildViewById(rootView, id);
+      if (ivSellerImagePreview == null) {
+        break missingId;
+      }
+
+      id = R.id.rbA1;
+      MaterialRadioButton rbA1 = ViewBindings.findChildViewById(rootView, id);
+      if (rbA1 == null) {
+        break missingId;
+      }
+
+      id = R.id.rbA2;
+      MaterialRadioButton rbA2 = ViewBindings.findChildViewById(rootView, id);
+      if (rbA2 == null) {
+        break missingId;
+      }
+
+      id = R.id.rbA3;
+      MaterialRadioButton rbA3 = ViewBindings.findChildViewById(rootView, id);
+      if (rbA3 == null) {
+        break missingId;
+      }
+
+      id = R.id.rbA4;
+      MaterialRadioButton rbA4 = ViewBindings.findChildViewById(rootView, id);
+      if (rbA4 == null) {
+        break missingId;
+      }
+
+      id = R.id.rbNo;
+      RadioButton rbNo = ViewBindings.findChildViewById(rootView, id);
+      if (rbNo == null) {
+        break missingId;
+      }
+
+      id = R.id.rbYes;
+      RadioButton rbYes = ViewBindings.findChildViewById(rootView, id);
+      if (rbYes == null) {
+        break missingId;
+      }
+
+      id = R.id.rgDemo;
+      RadioGroup rgDemo = ViewBindings.findChildViewById(rootView, id);
+      if (rgDemo == null) {
+        break missingId;
+      }
+
+      id = R.id.rgSellingType;
+      RadioGroup rgSellingType = ViewBindings.findChildViewById(rootView, id);
+      if (rgSellingType == null) {
         break missingId;
       }
 
@@ -103,8 +360,11 @@ public final class DialogStopFormBinding implements ViewBinding {
         break missingId;
       }
 
-      return new DialogStopFormBinding((LinearLayout) rootView, etAddress, etName, etPhone,
-          tvDuration, tvLocation);
+      return new DialogStopFormBinding((ScrollView) rootView, btnCaptureSellerImage, etAddress,
+          etArea, etContactPerson, etCurrentLocation, etDate, etEmailId, etExecutiveName, etLeads,
+          etName, etNotes, etOnboardingClientName, etPaidAmount, etPhone, etRemark, etSellerAddress,
+          etVisitingCardImage, ivImagePreview, ivSellerImagePreview, rbA1, rbA2, rbA3, rbA4, rbNo,
+          rbYes, rgDemo, rgSellingType, tvDuration, tvLocation);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

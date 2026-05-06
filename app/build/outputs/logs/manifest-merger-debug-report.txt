@@ -1,20 +1,20 @@
 -- Merging decision tree log ---
 provider#androidx.core.content.FileProvider
-INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:80:9-88:20
+INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:99:9-107:20
 	android:grantUriPermissions
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:84:13-47
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:103:13-47
 	android:authorities
 		INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:82:13-64
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:101:13-64
 	android:exported
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:83:13-37
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:102:13-37
 	android:name
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:81:13-62
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:100:13-62
 manifest
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:2:1-91:12
-INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:2:1-91:12
-INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:2:1-91:12
-INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:2:1-91:12
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:2:1-110:12
+INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:2:1-110:12
+INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:2:1-110:12
+INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:2:1-110:12
 MERGED from [androidx.databinding:viewbinding:8.5.2] C:\Users\DM Intern\.gradle\caches\8.9\transforms\58e0963eb7c257741b442cfa84894866\transformed\jetified-viewbinding-8.5.2\AndroidManifest.xml:2:1-7:12
 MERGED from [com.karumi:dexter:6.2.3] C:\Users\DM Intern\.gradle\caches\8.9\transforms\bf55396397177d8fa14e985825caa3d0\transformed\jetified-dexter-6.2.3\AndroidManifest.xml:17:1-32:12
 MERGED from [com.google.android.material:material:1.11.0] C:\Users\DM Intern\.gradle\caches\8.9\transforms\23f048b45b4321d6094abe09803478dd\transformed\material-1.11.0\AndroidManifest.xml:17:1-24:12
@@ -172,8 +172,8 @@ ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\
 	android:name
 		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:24:9-47
 application
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:27:5-89:19
-INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:27:5-89:19
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:27:5-108:19
+INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:27:5-108:19
 MERGED from [com.karumi:dexter:6.2.3] C:\Users\DM Intern\.gradle\caches\8.9\transforms\bf55396397177d8fa14e985825caa3d0\transformed\jetified-dexter-6.2.3\AndroidManifest.xml:26:5-30:19
 MERGED from [com.karumi:dexter:6.2.3] C:\Users\DM Intern\.gradle\caches\8.9\transforms\bf55396397177d8fa14e985825caa3d0\transformed\jetified-dexter-6.2.3\AndroidManifest.xml:26:5-30:19
 MERGED from [com.google.android.material:material:1.11.0] C:\Users\DM Intern\.gradle\caches\8.9\transforms\23f048b45b4321d6094abe09803478dd\transformed\material-1.11.0\AndroidManifest.xml:22:5-20
@@ -230,78 +230,116 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\DM
 		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:29:9-35
 	android:theme
 		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:34:9-52
+	android:usesCleartextTraffic
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:35:9-44
 	android:name
 		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:28:9-39
-activity#com.example.salesstysetgps.ui.LeadActivity
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:35:9-37:40
+activity#com.example.salesstysetgps.LeadDetailActivity
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:36:9-38:40
 	android:exported
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:37:13-37
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:38:13-37
 	android:name
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:36:13-44
-activity#com.example.salesstysetgps.VisitDetailActivity
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:38:9-40:40
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:37:13-47
+activity#com.example.salesstysetgps.ui.LoginActivity
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:39:9-47:20
 	android:exported
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:40:13-37
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:41:13-36
 	android:name
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:39:13-48
-activity#com.example.salesstysetgps.MainActivity2
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:41:9-43:48
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:40:13-45
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:42:13-46:29
+action#android.intent.action.MAIN
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:43:17-69
+	android:name
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:43:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:45:17-77
+	android:name
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:45:27-74
+activity#com.example.salesstysetgps.ui.CreateLeadActivity
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:48:9-50:40
 	android:exported
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:43:13-36
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:50:13-37
 	android:name
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:42:13-42
-meta-data#com.google.android.geo.API_KEY
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:45:9-47:55
-	android:value
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:47:13-52
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:49:13-50
+activity#com.example.salesstysetgps.ui.ActivityAttendance
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:51:9-53:40
+	android:exported
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:53:13-37
 	android:name
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:46:13-58
-meta-data#com.google.android.gms.version
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:48:9-50:69
-MERGED from [com.google.maps.android:android-maps-utils:3.8.2] C:\Users\DM Intern\.gradle\caches\8.9\transforms\44f45842018faf8abb0cd987b94da0ae\transformed\jetified-android-maps-utils-3.8.2\AndroidManifest.xml:8:9-10:69
-MERGED from [com.google.maps.android:android-maps-utils:3.8.2] C:\Users\DM Intern\.gradle\caches\8.9\transforms\44f45842018faf8abb0cd987b94da0ae\transformed\jetified-android-maps-utils-3.8.2\AndroidManifest.xml:8:9-10:69
-MERGED from [com.google.android.gms:play-services-basement:18.3.0] C:\Users\DM Intern\.gradle\caches\8.9\transforms\5580733e6332ed50ae4386b75b511140\transformed\jetified-play-services-basement-18.3.0\AndroidManifest.xml:21:9-23:69
-MERGED from [com.google.android.gms:play-services-basement:18.3.0] C:\Users\DM Intern\.gradle\caches\8.9\transforms\5580733e6332ed50ae4386b75b511140\transformed\jetified-play-services-basement-18.3.0\AndroidManifest.xml:21:9-23:69
-	android:value
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:50:13-66
-	android:name
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:49:13-58
-service#com.example.salesstysetgps.location.LocationForegroundService
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:54:9-57:56
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:52:13-50
+activity#com.example.salesstysetgps.ui.SyncTestActivity
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:54:9-56:40
 	android:exported
 		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:56:13-37
+	android:name
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:55:13-48
+activity#com.example.salesstysetgps.ui.ApiActivity
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:57:9-59:40
+	android:exported
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:59:13-37
+	android:name
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:58:13-43
+activity#com.example.salesstysetgps.ui.LeadActivity
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:60:9-62:40
+	android:exported
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:62:13-37
+	android:name
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:61:13-44
+activity#com.example.salesstysetgps.VisitDetailActivity
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:63:9-65:40
+	android:exported
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:65:13-37
+	android:name
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:64:13-48
+activity#com.example.salesstysetgps.MainActivity2
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:66:9-68:39
+	android:exported
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:68:13-36
+	android:name
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:67:13-42
+meta-data#com.google.android.geo.API_KEY
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:70:9-72:55
+	android:value
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:72:13-52
+	android:name
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:71:13-58
+meta-data#com.google.android.gms.version
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:73:9-75:69
+MERGED from [com.google.maps.android:android-maps-utils:3.8.2] C:\Users\DM Intern\.gradle\caches\8.9\transforms\44f45842018faf8abb0cd987b94da0ae\transformed\jetified-android-maps-utils-3.8.2\AndroidManifest.xml:8:9-10:69
+MERGED from [com.google.maps.android:android-maps-utils:3.8.2] C:\Users\DM Intern\.gradle\caches\8.9\transforms\44f45842018faf8abb0cd987b94da0ae\transformed\jetified-android-maps-utils-3.8.2\AndroidManifest.xml:8:9-10:69
+MERGED from [com.google.android.gms:play-services-basement:18.3.0] C:\Users\DM Intern\.gradle\caches\8.9\transforms\5580733e6332ed50ae4386b75b511140\transformed\jetified-play-services-basement-18.3.0\AndroidManifest.xml:21:9-23:69
+MERGED from [com.google.android.gms:play-services-basement:18.3.0] C:\Users\DM Intern\.gradle\caches\8.9\transforms\5580733e6332ed50ae4386b75b511140\transformed\jetified-play-services-basement-18.3.0\AndroidManifest.xml:21:9-23:69
+	android:value
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:75:13-66
+	android:name
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:74:13-58
+service#com.example.salesstysetgps.location.LocationForegroundService
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:79:9-82:56
+	android:exported
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:81:13-37
 	android:foregroundServiceType
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:57:13-53
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:82:13-53
 	android:name
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:55:13-63
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:80:13-63
 activity#com.example.salesstysetgps.ui.MainActivity
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:67:9-75:20
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:92:9-94:48
 	android:exported
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:69:13-36
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:94:13-36
 	android:name
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:68:13-44
-intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:70:13-74:29
-action#android.intent.action.MAIN
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:71:17-69
-	android:name
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:71:25-66
-category#android.intent.category.LAUNCHER
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:73:17-77
-	android:name
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:73:27-74
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:93:13-44
 activity#com.example.salesstysetgps.ui.PlacesActivity
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:76:9-78:40
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:95:9-97:40
 	android:exported
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:78:13-37
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:97:13-37
 	android:name
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:77:13-46
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:96:13-46
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:85:13-87:54
+ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:104:13-106:54
 	android:resource
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:87:17-51
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:106:17-51
 	android:name
-		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:86:17-67
+		ADDED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:105:17-67
 uses-sdk
 INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml

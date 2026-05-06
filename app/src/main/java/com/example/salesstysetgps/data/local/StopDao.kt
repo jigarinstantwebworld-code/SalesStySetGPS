@@ -1,6 +1,7 @@
 package com.example.salesstysetgps.data.local
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -25,7 +26,7 @@ interface StopDao {
     @Query("""
     SELECT * FROM stops 
     WHERE startWallTimeMillis >= :routeStartTime 
-    AND (endWallTimeMillis <= :routeEndTime OR endWallTimeMillis IS NULL)
+    AND (endWallTimeMillis <= :routeEndTime AND endWallTimeMillis IS NOT NULL)
     ORDER BY startWallTimeMillis ASC
 """)
     suspend fun getStopsInTimeRange(routeStartTime: Long, routeEndTime: Long): List<StopEntity>
@@ -33,6 +34,31 @@ interface StopDao {
 
     @Query("SELECT * FROM stops WHERE id = :stopId")
     suspend fun getStopById(stopId: Long): StopEntity?
+
+
+
+    @Query("""
+    SELECT * FROM stops 
+    WHERE endWallTimeMillis BETWEEN :fromTime AND :toTime
+    AND endWallTimeMillis IS NOT NULL
+    AND endWallTimeMillis > 0
+    ORDER BY endWallTimeMillis ASC
+""")
+    suspend fun getStopsInTimeRanges(fromTime: Long, toTime: Long): List<StopEntity>
+
+
+    @Query("SELECT * FROM stops ORDER BY startWallTimeMillis DESC")
+    suspend fun getAllStops(): List<StopEntity>
+
+
+    @Query("""
+    SELECT * FROM stops 
+    WHERE endWallTimeMillis IS NULL
+""")
+    suspend fun getOngoingStops(): List<StopEntity>
+
+    @Delete
+    suspend fun deleteStop(stop: StopEntity)
 }
 
 

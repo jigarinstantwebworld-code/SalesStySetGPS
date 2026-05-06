@@ -3,46 +3,67 @@ package com.example.salesstysetgps.ui
 import android.app.Application
 import android.content.Intent
 import android.graphics.Bitmap
+import android.location.Geocoder
 import android.location.Location
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkManager
 import com.example.salesstysetgps.data.LocationPoint
 import com.example.salesstysetgps.data.StopPoint
-import com.example.salesstysetgps.data.TrackingSessionState
 import com.example.salesstysetgps.data.StopRepository
+import com.example.salesstysetgps.data.TrackingSessionState
+import com.example.salesstysetgps.data.local.RouteEntity
 import com.example.salesstysetgps.location.LocationForegroundService
 import com.example.salesstysetgps.location.LocationRepository
+import com.example.salesstysetgps.location.RouteRepository
+import com.example.salesstysetgps.models.AttendanceResponse
+import com.example.salesstysetgps.models.EndTripResponse
+import com.example.salesstysetgps.models.LeadModel
+import com.example.salesstysetgps.models.LeadSelection
+import com.example.salesstysetgps.models.Resource
+import com.example.salesstysetgps.models.StartTripResponse
+import com.example.salesstysetgps.models.toLeadModel
+import com.example.salesstysetgps.repository.TripRepository
 import com.example.salesstysetgps.util.GeoUtils
+import com.example.salesstysetgps.util.PreferenceManager
+import com.example.salesstysetgps.workers.SyncManager
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.Dispatchers
-import java.util.Locale
-import android.location.Geocoder
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import com.example.salesstysetgps.data.local.RouteEntity
-import com.example.salesstysetgps.location.RouteRepository
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.maps.android.BuildConfig
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
+import java.util.Locale
+import java.util.TimeZone
+import kotlin.coroutines.resume
 
-class TrackingViewModel(app: Application) : AndroidViewModel(app) {
+class TrackingViewModel(
+    app: Application, private val tripRepository: TripRepository,
+    private val preferenceManager: PreferenceManager
+) : AndroidViewModel(app) {
 
     enum class MovementState {
         MOVING,
@@ -59,6 +80,32 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _routes = MutableStateFlow<List<RouteEntity>>(emptyList())
     val routes: StateFlow<List<RouteEntity>> = _routes.asStateFlow()
+
+    private val _tripStartState = MutableStateFlow<Resource<StartTripResponse>?>(null)
+    val tripStartState: StateFlow<Resource<StartTripResponse>?> = _tripStartState.asStateFlow()
+
+
+    private val _tripEndState = MutableStateFlow<Resource<EndTripResponse>?>(null)
+    val tripEndState: StateFlow<Resource<EndTripResponse>?> = _tripEndState.asStateFlow()
+
+
+    private val _loginState = MutableStateFlow<Resource<AttendanceResponse>?>(null)
+    val loginState: StateFlow<Resource<AttendanceResponse>?> = _loginState.asStateFlow()
+
+    private val _breakInState = MutableStateFlow<Resource<AttendanceResponse>?>(null)
+    val breakInState: StateFlow<Resource<AttendanceResponse>?> = _breakInState.asStateFlow()
+
+    private val _breakOutState = MutableStateFlow<Resource<AttendanceResponse>?>(null)
+    val breakOutState: StateFlow<Resource<AttendanceResponse>?> = _breakOutState.asStateFlow()
+
+    private val _logoutState = MutableStateFlow<Resource<AttendanceResponse>?>(null)
+    val logoutState: StateFlow<Resource<AttendanceResponse>?> = _logoutState.asStateFlow()
+
+    private val _todaysLeads = MutableStateFlow<List<LeadModel>>(emptyList())
+    val todaysLeads: StateFlow<List<LeadModel>> = _todaysLeads.asStateFlow()
+
+    private val _isLoadingLeads = MutableStateFlow(false)
+    val isLoadingLeads: StateFlow<Boolean> = _isLoadingLeads.asStateFlow()
 
     private val _startLocation = MutableStateFlow<LatLng?>(null)
     val startLocation: StateFlow<LatLng?> = _startLocation.asStateFlow()
@@ -78,43 +125,44 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
     private val trafficRadiusMeters = 50f
 
 
-
     private val repository = LocationRepository(app.applicationContext)
-        private val stopRepo = StopRepository(app.applicationContext)
-        private val sessionState = TrackingSessionState()
+    private val stopRepo = StopRepository(app.applicationContext)
+    private val sessionState = TrackingSessionState()
 
-        private val routeRepo = RouteRepository(app.applicationContext)
+    private val routeRepo = RouteRepository(app.applicationContext)
 
-        private val _isTracking = MutableStateFlow(false)
-        val isTracking: StateFlow<Boolean> = _isTracking.asStateFlow()
+    private val _isTracking = MutableStateFlow(false)
+    val isTracking: StateFlow<Boolean> = _isTracking.asStateFlow()
 
-        val routePoints = sessionState.routePoints
-        val stopPoints = sessionState.stopPoints
+    val routePoints = sessionState.routePoints
+    val stopPoints = sessionState.stopPoints
 
-        private var collectionJob: Job? = null
-        private val movingSpeedThresholdKmh = 15f  // ignore stop detection above 12 km/h  (6 for testing)
+    private var collectionJob: Job? = null
+    private val movingSpeedThresholdKmh =
+        15f  // ignore stop detection above 12 km/h  (6 for testing)
 
 
-        // Stop detection state
-        private var stopCenter: LatLng? = null
-        private var stopStartTime: Long? = null // wall time for display only
-        private var stopStartElapsed: Long? = null // monotonic clock for duration
-        private val stopRadiusMeters = 30f // 40 to testing 25 is set for production
-        private val stopThresholdMinutes = 1L // threshold (minutes) 1 for test
-        private var isCurrentlyStopped = false
-        private var currentStopId: Long? = null
-        private var thresholdToastShown = false
+    // Stop detection state
+    private var stopCenter: LatLng? = null
+    private var stopStartTime: Long? = null // wall time for display only
+    private var stopStartElapsed: Long? = null // monotonic clock for duration
+    private val stopRadiusMeters = 30f // 40 to testing 25 is set for production
+    private val stopThresholdMinutes = 1L // threshold (minutes) 1 for test
+    private var isCurrentlyStopped = false
+    private var currentStopId: Long? = null
+    private var thresholdToastShown = false
 
-        private val minAccuracyMeters = 100f // 10 for testing 30 for production
-        // check last 5 Speed Movement
-        private val speedWindowSize = 5 // 3 for testing 5 for product
-        private val requiredMovingConfirmations = 3 // 2 for testing 3 for production
+    private val minAccuracyMeters = 100f // 10 for testing 30 for production
 
-        private val speedHistory = ArrayDeque<Float>()
-        private var consecutiveMovingReadings = 0
+    // check last 5 Speed Movement
+    private val speedWindowSize = 5 // 3 for testing 5 for product
+    private val requiredMovingConfirmations = 3 // 2 for testing 3 for production
 
-        // Session timer (wall clock)
-        private var sessionStartTimeMillis: Long? = null
+    private val speedHistory = ArrayDeque<Float>()
+    private var consecutiveMovingReadings = 0
+
+    // Session timer (wall clock)
+    private var sessionStartTimeMillis: Long? = null
 
 
     private val maxJumpMeters = 120f          // ignore unrealistic GPS jumps
@@ -135,6 +183,331 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
                 _routes.value = routeList
             }
         }
+    }
+
+    fun startTripWithApi(
+        salesExecutiveId: String,
+        latitude: Double,
+        longitude: Double,
+        onSuccess: (tripId: Int) -> Unit = {},
+        onError: (errorMessage: String, onGoingTripId: Int?) -> Unit = { _, _ -> }
+    ) {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+        val currentTime = dateFormat.format(Date())
+        val status = "ONGOING"
+
+        viewModelScope.launch {
+            tripRepository.startTrip(salesExecutiveId, currentTime, status, latitude, longitude)
+                .catch { exception ->
+                    val errorMsg = exception.message ?: "Unknown error"
+                    _tripStartState.value = Resource.Error(errorMsg)
+                    onError(errorMsg,null)
+                }
+                .collect { resource ->
+                    _tripStartState.value = resource
+
+                    when (resource) {
+                        is Resource.Success -> {
+                            if (resource.data?.success == 1) {
+                                resource.data.data?.let { tripData ->
+                                    // Save trip ID to preferences
+                                    preferenceManager.saveTripId(tripData.tripId.toString())
+                                    preferenceManager.setTripActive(true)
+
+                                    // Call success callback
+                                    onSuccess(tripData.tripId)
+                                }
+                            } else {
+                                val errorMsg = resource.data?.message ?: "Failed to start trip"
+                                onError(errorMsg,null)
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            onError(resource.message ?: "An error occurred", resource.onGoingTripId)
+                        }
+
+                        else -> { /* Loading state */
+                        }
+                    }
+                }
+        }
+    }
+
+
+    fun loginWithApi(
+        latitude: Double,
+        longitude: Double,
+        createdBy: String = "system",
+        onSuccess: (message:String) -> Unit = {},
+        onError: (errorMessage: String) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            tripRepository.manageAttendance("LOGIN", latitude, longitude, createdBy)
+                .catch { exception ->
+                    val errorMsg = exception.message ?: "Unknown error"
+                    _loginState.value = Resource.Error(errorMsg)
+                    onError(errorMsg)
+                }
+                .collect { resource ->
+                    _loginState.value = resource
+
+                    when (resource) {
+                        is Resource.Success -> {
+                            if (resource.data?.success == 1) {
+                                // Save login info if needed
+                                val msg = resource.data?.message ?: "Login Successfully...."
+                                onSuccess(msg)
+                            } else {
+                                val errorMsg = resource.data?.message ?: "Failed to login"
+                                onError(errorMsg)
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            onError(resource.message ?: "An error occurred")
+                        }
+
+                        else -> {
+                            /* Loading state */
+                        }
+                    }
+                }
+        }
+    }
+
+    fun breakInWithApi(
+        latitude: Double,
+        longitude: Double,
+        onSuccess: (message:String) -> Unit = {},
+        onError: (errorMessage: String) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            tripRepository.manageAttendance("BREAK_IN", latitude, longitude)
+                .catch { exception ->
+                    val errorMsg = exception.message ?: "Unknown error"
+                    _breakInState.value = Resource.Error(errorMsg)
+                    onError(errorMsg)
+                }
+                .collect { resource ->
+                    _breakInState.value = resource
+
+                    when (resource) {
+                        is Resource.Success -> {
+                            if (resource.data?.success == 1) {
+                                val msg = resource.data?.message ?: "Break In Successfullyy...."
+                                onSuccess(msg)
+                            } else {
+                                val errorMsg = resource.data?.message ?: "Failed to start break"
+                                onError(errorMsg)
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            onError(resource.message ?: "An error occurred")
+                        }
+
+                        else -> { /* Loading state */ }
+                    }
+                }
+        }
+    }
+
+    fun breakOutWithApi(
+        latitude: Double,
+        longitude: Double,
+        onSuccess: (message:String) -> Unit = {},
+        onError: (errorMessage: String) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            tripRepository.manageAttendance("BREAK_OUT", latitude, longitude)
+                .catch { exception ->
+                    val errorMsg = exception.message ?: "Unknown error"
+                    _breakOutState.value = Resource.Error(errorMsg)
+                    onError(errorMsg)
+                }
+                .collect { resource ->
+                    _breakOutState.value = resource
+
+                    when (resource) {
+                        is Resource.Success -> {
+                            if (resource.data?.success == 1) {
+                                val msg = resource.data?.message ?: "Break out successfully..."
+                                onSuccess(msg)
+                            } else {
+                                val errorMsg = resource.data?.message ?: "Failed to end break"
+                                onError(errorMsg)
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            onError(resource.message ?: "An error occurred")
+                        }
+
+                        else -> { /* Loading state */ }
+                    }
+                }
+        }
+    }
+
+    fun logoutWithApi(
+        latitude: Double,
+        longitude: Double,
+        onSuccess: (message: String) -> Unit = {},
+        onError: (errorMessage: String) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            tripRepository.manageAttendance("LOGOUT", latitude, longitude)
+                .catch { exception ->
+                    val errorMsg = exception.message ?: "Unknown error"
+                    _logoutState.value = Resource.Error(errorMsg)
+                    onError(errorMsg)
+                }
+                .collect { resource ->
+                    _logoutState.value = resource
+
+                    when (resource) {
+                        is Resource.Success -> {
+                            if (resource.data?.success == 1) {
+                                val apiMessage = resource.data.message ?: "Logout successful"
+                                onSuccess(apiMessage)
+                            } else {
+                                val errorMsg = resource.data?.message ?: "Failed to logout"
+                                onError(errorMsg)
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            onError(resource.message ?: "An error occurred")
+                        }
+
+                        else -> { /* Loading state */ }
+                    }
+                }
+        }
+    }
+
+
+    fun endTripWithApi(
+        tripId: Int,
+        salesExecutiveId: String,
+        latitude: Double,
+        longitude: Double,
+        onSuccess: (message: String) -> Unit = {},
+        onError: (errorMessage: String) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            tripRepository.endTrip(salesExecutiveId,tripId, latitude, longitude)
+                .catch { exception ->
+                    val errorMsg = exception.message ?: "Unknown error"
+                    _tripEndState.value = Resource.Error(errorMsg)
+                    onError(errorMsg)
+                }
+                .collect { resource ->
+                    _tripEndState.value = resource
+
+                    when (resource) {
+                        is Resource.Success -> {
+                            if (resource.data?.success == 1) {
+                                _isTracking.value = false
+                                val apiMessage = resource.data.message ?: "Login successful"
+                                onSuccess(apiMessage)
+                            } else {
+                                val errorMsg = resource.data?.message ?: "Failed to end trip"
+                                onError(errorMsg)
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            onError(resource.message ?: "An error occurred")
+                        }
+
+                        else -> {
+                            /* Loading state */
+                        }
+                    }
+                }
+        }
+    }
+
+    fun fetchTodayLeads(page: String, limit:String,onComplete: (List<LeadSelection>) -> Unit = {}) {
+        viewModelScope.launch {
+            _isLoadingLeads.value = true
+
+            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                .format(Date())
+            val result = tripRepository.fetchTodaysLeads(page,limit,currentDate)
+
+            when (result) {
+                is Resource.Success -> {
+                    val leads = result.data?.data?.leads?.map {
+                        LeadSelection(
+                            lead = it.toLeadModel(),
+                            isSelected = false
+                        )
+                    } ?: emptyList()
+                    _todaysLeads.value = leads.map { it.lead }
+                    onComplete(leads)
+                }
+                is Resource.Error -> {
+//                    _errorMessage.value = result.message ?: "Failed to load leads"
+                    onComplete(emptyList())
+                }
+                else -> {}
+            }
+
+            _isLoadingLeads.value = false
+        }
+    }
+
+    fun continueExistingTrip(existingRouteId: Long) {
+        if (_isTracking.value) return
+
+        viewModelScope.launch {
+            // Use the existing route instead of creating a new one
+            currentRouteId = existingRouteId
+            currentRouteStartTime = System.currentTimeMillis()
+            sessionStartTimeMillis = System.currentTimeMillis()
+
+            _isTracking.value = true
+
+            if (!hasActiveSession) {
+                isFirstLocationOfSession = true
+                hasActiveSession = true
+                Log.d("StartMarker", "🆕 Continuing existing trip - will capture start point")
+            }
+
+            startService()
+
+            collectionJob?.cancel()
+            collectionJob = viewModelScope.launch {
+                repository.locationUpdates().collect { location ->
+                    Log.d("LocationFlow", "Received location in flow: $location")
+
+                    if (isFirstLocationOfSession) {
+                        val startLatLng = LatLng(location.latitude, location.longitude)
+                        _startLocation.value = startLatLng
+                        isFirstLocationOfSession = false
+                        Log.d("StartMarker", "📍 Continuing trip start location: $startLatLng")
+                    }
+
+                    val speedKmh = location.speed * 3.6f
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            getApplication(),
+                            "📍 Speed: ${speedKmh.toInt()} km/h",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    handleLocation(location)
+                }
+            }
+        }
+    }
+
+    fun clearTripStartState() {
+        _tripStartState.value = null
     }
 
 
@@ -191,11 +564,17 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun getCurrentTripId(): Int? {
+        return preferenceManager.getTripId()?.toIntOrNull()
+    }
+
+    // In TrackingViewModel.kt - modify existing method
     fun getStopsWithSequence(): List<Pair<String, StopPoint>> {
         return getCompletedStops()
             .sortedWith(compareBy({ it.startTimeMillis }, { it.id }))
             .mapIndexed { index, stop ->
-                val letter = ('A' + index).toString()
+                // ✅ Use stored letter if available, otherwise calculate
+                val letter = stop.letter ?: ('A' + index).toString()
                 letter to stop
             }
     }
@@ -214,43 +593,149 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
     }
 
 
-    fun stopTracking(googleMap: GoogleMap? = null) {
-        if (!_isTracking.value) return
+//    fun stopTracking(googleMap: GoogleMap? = null): Deferred<String?> {
+//        return viewModelScope.async {
+//            if (!_isTracking.value) return@async null
+//
+//            val endTime = System.currentTimeMillis()
+//
+//            // Finalize any open stop
+//            val center = stopCenter
+//            val startWall = stopStartTime
+//            val startElapsedLocal = stopStartElapsed
+//            val id = currentStopId
+//
+//            if (center != null && startWall != null && isCurrentlyStopped && id != null && startElapsedLocal != null) {
+//                val nowWall = endTime
+//                val nowElapsed = SystemClock.elapsedRealtime()
+//                val minutes = ((nowElapsed - startElapsedLocal) / 60000)
+//
+//                val existingStop = sessionState.stopPoints.value.firstOrNull { it.id == id }
+//                val stop = StopPoint(
+//                    id = id,
+//                    center = center,
+//                    startTimeMillis = startWall,
+//                    endTimeMillis = nowWall,
+//                    timeSpentMinutes = minutes,
+//                    // ✅ Preserve the letter from existing stop
+//                    letter = existingStop?.letter,
+//                    // ✅ Preserve other fields too
+//                    name = existingStop?.name,
+//                    locationLabel = existingStop?.locationLabel,
+//                    address = existingStop?.address,
+//                    phone = existingStop?.phone,
+//                    imageUri = existingStop?.imageUri
+//                )
+//                resolveLocationNameAsync(stop)
+//                sessionState.addOrUpdateStop(stop)
+//                stopRepo.upsertStop(stop, startElapsedLocal, nowElapsed)
+//            }
+//            _startLocation.value = null
+//
+//
+//            // Get all stops created during this route
+//            val routeStartTime = currentRouteStartTime ?: sessionStartTimeMillis ?: 0
+//            val stopsInRoute = stopRepo.getStopsInTimeRange(routeStartTime, endTime)
+//
+//            // Take map screenshot if GoogleMap is available
+//            var screenshotPath: String? = null
+//            if (googleMap != null) {
+//                screenshotPath = takeMapScreenshot(googleMap, currentRouteId ?: 0)
+//            }
+//
+//            // Update the route with end time, stop count, and screenshot path
+//            currentRouteId?.let { routeId ->
+//                routeRepo.finalizeRoute(
+//                    routeId = routeId,
+//                    endTime = endTime,
+//                    stopCount = stopsInRoute.size,
+//                    screenshotPath = screenshotPath
+//                )
+//            }
+//
+//            // Stop tracking
+//            _isTracking.value = false
+//            collectionJob?.cancel()
+//            collectionJob = null
+//            stopService()
+//
+//            // Reset state for next route
+//            resetStopState()
+////            resetSession()
+//            sessionState.reset()
+//            sessionStartTimeMillis = null
+//            currentRouteId = null
+//            currentRouteStartTime = null
+//
+//            return@async screenshotPath
+//        }
+//    }
 
-        viewModelScope.launch {
+    fun stopTracking(googleMap: GoogleMap? = null): Deferred<String?> {
+        return viewModelScope.async {
+            if (!_isTracking.value) return@async null
+
             val endTime = System.currentTimeMillis()
+            val nowElapsed = SystemClock.elapsedRealtime()
 
-            // Finalize any open stop
+            // =====================================================
+            // ✅ STEP 1: FINALIZE ALL OPEN STOPS (DB SOURCE OF TRUTH)
+            // =====================================================
+            val ongoingStops = stopRepo.getOngoingStops()
+
+            ongoingStops.forEach { stopEntity ->
+
+                val minutes = ((nowElapsed - (stopEntity.startElapsedRealtimeMillis ?: nowElapsed)) / 60000)
+
+                // 🔁 Convert Entity → Point
+                val stopPoint = StopPoint(
+                    id = stopEntity.id,
+                    center = LatLng(stopEntity.lat, stopEntity.lng),
+                    startTimeMillis = stopEntity.startWallTimeMillis,
+                    endTimeMillis = endTime,
+                    timeSpentMinutes = minutes,
+                    letter = stopEntity.letter,
+                    name = stopEntity.name,
+                    locationLabel = stopEntity.locationLabel,
+                    address = stopEntity.address,
+                    phone = stopEntity.phone,
+                    imageUri = stopEntity.imageUri
+                )
+
+                // ✅ Update UI if exists
+                val existingStop = sessionState.stopPoints.value
+                    .firstOrNull { it.id == stopPoint.id }
+
+                if (existingStop != null) {
+                    val updated = existingStop.copy(
+                        endTimeMillis = endTime,
+                        timeSpentMinutes = minutes
+                    )
+                    sessionState.addOrUpdateStop(updated)
+                }
+
+                // ✅ Save to DB
+                stopRepo.upsertStop(
+                    stopPoint,
+                    stopEntity.startElapsedRealtimeMillis,
+                    nowElapsed
+                )
+
+                Log.d("StopDebug", "✅ FORCE FINALIZED STOP: ${stopPoint.id}")
+            }
+
+            // =====================================================
+            // ❌ REMOVE THIS BLOCK (IMPORTANT)
+            // Memory-based finalization is no longer needed
+            // =====================================================
+            /*
             val center = stopCenter
             val startWall = stopStartTime
             val startElapsedLocal = stopStartElapsed
             val id = currentStopId
+            ...
+            */
 
-            if (center != null && startWall != null && isCurrentlyStopped && id != null && startElapsedLocal != null) {
-                val nowWall = endTime
-                val nowElapsed = SystemClock.elapsedRealtime()
-                val minutes = ((nowElapsed - startElapsedLocal) / 60000)
-
-                val existingStop = sessionState.stopPoints.value.firstOrNull { it.id == id }
-                val stop = StopPoint(
-                    id = id,
-                    center = center,
-                    startTimeMillis = startWall,
-                    endTimeMillis = nowWall,
-                    timeSpentMinutes = minutes,
-                    // ✅ Preserve the letter from existing stop
-                    letter = existingStop?.letter,
-                    // ✅ Preserve other fields too
-                    name = existingStop?.name,
-                    locationLabel = existingStop?.locationLabel,
-                    address = existingStop?.address,
-                    phone = existingStop?.phone,
-                    imageUri = existingStop?.imageUri
-                )
-                resolveLocationNameAsync(stop)
-                sessionState.addOrUpdateStop(stop)
-                stopRepo.upsertStop(stop, startElapsedLocal, nowElapsed)
-            }
             _startLocation.value = null
 
 
@@ -261,10 +746,7 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
             // Take map screenshot if GoogleMap is available
             var screenshotPath: String? = null
             if (googleMap != null) {
-//                screenshotPath = takeMapScreenshot(googleMap, currentRouteId ?: 0)
-                viewModelScope.launch(Dispatchers.Main) {
-                    takeMapScreenshot(googleMap, currentRouteId ?: 0)
-                }
+                screenshotPath = takeMapScreenshot(googleMap, currentRouteId ?: 0)
             }
 
             // Update the route with end time, stop count, and screenshot path
@@ -285,16 +767,12 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
 
             // Reset state for next route
             resetStopState()
+            sessionState.reset()
             sessionStartTimeMillis = null
             currentRouteId = null
             currentRouteStartTime = null
 
-            val message = if (screenshotPath != null) {
-                "Route completed with ${stopsInRoute.size} stops (screenshot saved)"
-            } else {
-                "Route completed with ${stopsInRoute.size} stops"
-            }
-            Toast.makeText(getApplication(), message, Toast.LENGTH_LONG).show()
+            return@async screenshotPath
         }
     }
 
@@ -503,112 +981,105 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
     }*/
 
 
-    private fun takeMapScreenshot(googleMap: GoogleMap, routeId: Long): String? {
-        var screenshotPath: String? = null
-        val latch = CountDownLatch(1)
+    // In TrackingViewModel - Change parameter type from Int to Long
+    private suspend fun takeMapScreenshot(googleMap: GoogleMap, routeId: Long): String? {
+        return suspendCancellableCoroutine { continuation ->
+            var screenshotPath: String? = null
+            val routePoints = sessionState.routePoints.value
+            val stopPoints = sessionState.stopPoints.value
+            val startLocationValue = _startLocation.value
 
-        val routePoints = sessionState.routePoints.value
-        val stopPoints = sessionState.stopPoints.value
+            // Store current camera position
+            val currentPosition = googleMap.cameraPosition
 
-        // Store current camera position on main thread
-        val currentPosition = googleMap.cameraPosition
-
-        fun captureAndSave() {
-            googleMap.snapshot { bitmap ->
-                if (bitmap != null) {
-                    viewModelScope.launch(Dispatchers.IO) {
-                        try {
-                            val dir = File(getApplication<Application>().filesDir, "route_screenshots")
-                            if (!dir.exists()) dir.mkdirs()
-
-                            val file = File(dir, "route_$routeId.png")
-                            if (file.exists()) file.delete()
-
-                            val scaledBitmap = Bitmap.createScaledBitmap(
-                                bitmap,
-                                bitmap.width * 2,
-                                bitmap.height * 2,
-                                true
-                            )
-
-                            FileOutputStream(file).use { out ->
-                                scaledBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-                            }
-
-                            screenshotPath = file.absolutePath
-                            routeRepo.updateRouteScreenshot(routeId, screenshotPath!!)
-                            Log.d("SCREENSHOT", "✅ Saved: $screenshotPath")
-                            scaledBitmap.recycle()
-
-                        } catch (e: Exception) {
-                            Log.e("SCREENSHOT", "❌ Save error", e)
-                        } finally {
-                            // Restore camera position on main thread
-                            withContext(Dispatchers.Main) {
-                                googleMap.animateCamera(
-                                    CameraUpdateFactory.newCameraPosition(currentPosition),
-                                    300,
-                                    null
+            fun captureAndSave() {
+                googleMap.snapshot { bitmap ->
+                    if (bitmap != null) {
+                        viewModelScope.launch(Dispatchers.IO) {
+                            try {
+                                val dir = File(
+                                    getApplication<Application>().filesDir,
+                                    "route_screenshots"
                                 )
-                                latch.countDown()
+                                if (!dir.exists()) dir.mkdirs()
+
+                                val file = File(dir, "route_$routeId.png")
+                                if (file.exists()) file.delete()
+
+                                val scaledBitmap = Bitmap.createScaledBitmap(
+                                    bitmap,
+                                    bitmap.width * 2,
+                                    bitmap.height * 2,
+                                    true
+                                )
+
+                                FileOutputStream(file).use { out ->
+                                    scaledBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                                }
+
+                                screenshotPath = file.absolutePath
+                                routeRepo.updateRouteScreenshot(routeId, screenshotPath!!)
+                                Log.d("SCREENSHOT", "✅ Saved: $screenshotPath")
+                                scaledBitmap.recycle()
+
+                            } catch (e: Exception) {
+                                Log.e("SCREENSHOT", "❌ Save error", e)
+                            } finally {
+                                // Restore camera position on main thread
+                                withContext(Dispatchers.Main) {
+                                    googleMap.animateCamera(
+                                        CameraUpdateFactory.newCameraPosition(currentPosition),
+                                        300,
+                                        null
+                                    )
+                                    continuation.resume(screenshotPath)
+                                }
                             }
                         }
+                    } else {
+                        Log.e("SCREENSHOT", "❌ Bitmap null")
+                        continuation.resume(null)
                     }
-                } else {
-                    Log.e("SCREENSHOT", "❌ Bitmap null")
-                    latch.countDown()
                 }
             }
-        }
 
-        // All GoogleMap operations must be on main thread
-        if (routePoints.isNotEmpty() || stopPoints.isNotEmpty()) {
-            try {
-                val allPoints = mutableListOf<LatLng>()
-                routePoints.forEach { allPoints.add(it.latLng) }
-                stopPoints.forEach { allPoints.add(it.center) }
-                startLocation.value?.let { allPoints.add(it) }
+            // Execute on main thread - use Handler instead of withContext
+            Handler(Looper.getMainLooper()).post {
+                try {
+                    val allPoints = mutableListOf<LatLng>()
+                    routePoints.forEach { allPoints.add(it.latLng) }
+                    stopPoints.forEach { allPoints.add(it.center) }
+                    startLocationValue?.let { allPoints.add(it) }
 
-                if (allPoints.isEmpty()) {
-                    captureAndSave()
-                } else {
-                    val builder = LatLngBounds.Builder()
-                    allPoints.forEach { builder.include(it) }
-                    val bounds = builder.build()
+                    if (allPoints.isEmpty()) {
+                        captureAndSave()
+                    } else {
+                        val builder = LatLngBounds.Builder()
+                        allPoints.forEach { builder.include(it) }
+                        val bounds = builder.build()
+                        val padding = 200
 
-                    val padding = 200
+                        googleMap.animateCamera(
+                            CameraUpdateFactory.newLatLngBounds(bounds, padding),
+                            object : GoogleMap.CancelableCallback {
+                                override fun onFinish() {
+                                    Handler(Looper.getMainLooper()).postDelayed({
+                                        captureAndSave()
+                                    }, 800)
+                                }
 
-                    // Animate camera on main thread
-                    googleMap.animateCamera(
-                        CameraUpdateFactory.newLatLngBounds(bounds, padding),
-                        object : GoogleMap.CancelableCallback {
-                            override fun onFinish() {
-                                Handler(Looper.getMainLooper()).postDelayed({
+                                override fun onCancel() {
                                     captureAndSave()
-                                }, 800)
+                                }
                             }
-
-                            override fun onCancel() {
-                                captureAndSave()
-                            }
-                        }
-                    )
+                        )
+                    }
+                } catch (e: Exception) {
+                    Log.e("SCREENSHOT", "❌ Bounds error", e)
+                    captureAndSave()
                 }
-            } catch (e: Exception) {
-                Log.e("SCREENSHOT", "❌ Bounds error", e)
-                captureAndSave()
             }
-        } else {
-            captureAndSave()
         }
-
-        try {
-            latch.await(5, TimeUnit.SECONDS)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
-
-        return screenshotPath
     }
 
     fun resetSession() {
@@ -631,20 +1102,90 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
         Log.d("StartMarker", "🔄 Session reset - ready for new start marker")
     }
 
-        private fun startService() {
-            val ctx = getApplication<Application>()
-            val intent = Intent(ctx, LocationForegroundService::class.java)
-            ctx.startForegroundService(intent)
+    private fun startService() {
+        val ctx = getApplication<Application>()
+        val intent = Intent(ctx, LocationForegroundService::class.java)
+        ctx.startForegroundService(intent)
+    }
+
+    private fun stopService() {
+        val ctx = getApplication<Application>()
+        val intent = Intent(ctx, LocationForegroundService::class.java)
+        ctx.stopService(intent)
+    }
+
+
+
+    fun restoreTrackingStateFromDatabase() {
+        viewModelScope.launch {
+            try {
+                // Check if there's an ongoing route in database
+                val ongoingRoute = routeRepo.getOngoingRoute()
+
+                if (ongoingRoute != null && ongoingRoute.endTimeMillis == null) {
+                    Log.d("StateRestore", "✅ Found ongoing route: ${ongoingRoute.id}")
+
+                    // There's an ongoing route, restore tracking state
+                    currentRouteId = ongoingRoute.id
+                    currentRouteStartTime = ongoingRoute.startTimeMillis
+                    sessionStartTimeMillis = ongoingRoute.startTimeMillis
+
+                    // 🔥 CRITICAL FIX: Load and restore route points
+                    val routePoints = routeRepo.getRoutePoints(ongoingRoute.id)
+                    Log.d("StateRestore", "Loading ${routePoints.size} route points")
+
+                    // Clear existing points first
+                    sessionState.reset()
+
+                    // Add each point to session state
+                    routePoints.forEach { point ->
+                        val locationPoint = LocationPoint(
+                            latLng = LatLng(point.latitude, point.longitude),
+                            timestampMillis = point.timestamp
+                        )
+                        sessionState.addLocation(locationPoint)
+                    }
+                    Log.d("StateRestore", "✅ Restored ${routePoints.size} route points to session state")
+
+                    // 🔥 CRITICAL FIX: Load and restore stops
+                    val stops = routeRepo.getStopsForRoute(ongoingRoute.id)
+                    Log.d("StateRestore", "Loading ${stops.size} stops")
+
+                    stops.forEach { stop ->
+                        sessionState.addOrUpdateStop(stop)
+                    }
+                    Log.d("StateRestore", "✅ Restored ${stops.size} stops to session state")
+
+                    // Restore start location from route points if available
+                    if (routePoints.isNotEmpty()) {
+                        val startPoint = routePoints.first()
+                        _startLocation.value = LatLng(startPoint.latitude, startPoint.longitude)
+                        Log.d("StateRestore", "✅ Restored start location")
+                    }
+
+                    _isTracking.value = true
+                    hasActiveSession = true
+
+                    Log.d("StateRestore", "✅ Tracking state restored - Route: ${ongoingRoute.id}, Points: ${routePoints.size}, Stops: ${stops.size}")
+                } else {
+                    Log.d("StateRestore", "No ongoing route found in database")
+                    _isTracking.value = false
+                    sessionStartTimeMillis = null
+                    currentRouteId = null
+                    currentRouteStartTime = null
+                }
+            } catch (e: Exception) {
+                Log.e("StateRestore", "Error restoring tracking state", e)
+            }
         }
-
-        private fun stopService() {
-            val ctx = getApplication<Application>()
-            val intent = Intent(ctx, LocationForegroundService::class.java)
-            ctx.stopService(intent)
-        }
+    }
 
 
-    private fun handleLocation(location: Location) {
+
+
+
+
+    private suspend fun handleLocation(location: Location) {
         val nowWall = System.currentTimeMillis()
         val nowElapsed = SystemClock.elapsedRealtime()
         val latLng = LatLng(location.latitude, location.longitude)
@@ -705,7 +1246,25 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
                 // Use the original start time when user first stopped
                 val stopStartTime = stopStartTime ?: nowWall
 
-                val existingStopsCount = sessionState.stopPoints.value.size
+//                val existingStopsCount = sessionState.stopPoints.value.size
+//                val letter = ('A'.plus(existingStopsCount)).toString()
+//
+//                val stop = StopPoint(
+//                    id = currentStopId!!,
+//                    center = stopCenter!!,
+//                    startTimeMillis = stopStartTime,
+//                    endTimeMillis = null,  // Ongoing stop
+//                    timeSpentMinutes = 0,
+//                    letter = letter
+//                )
+
+                // NEW CODE - Get stops count for current route only
+                val currentRouteStops = if (currentRouteId != null) {
+                    routeRepo.getStopsForRoute(currentRouteId!!)
+                } else {
+                    emptyList()
+                }
+                val existingStopsCount = currentRouteStops.size
                 val letter = ('A'.plus(existingStopsCount)).toString()
 
                 val stop = StopPoint(
@@ -778,7 +1337,8 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
                     val seconds = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 1000) % 60
 
                     // Finalize the stop
-                    val existingStop = sessionState.stopPoints.value.firstOrNull { it.id == currentStopId }
+                    val existingStop =
+                        sessionState.stopPoints.value.firstOrNull { it.id == currentStopId }
                     if (existingStop != null) {
                         val finalizedStop = existingStop.copy(
                             endTimeMillis = nowWall,
@@ -788,15 +1348,23 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
                         sessionState.addStopAndForceUpdate(finalizedStop)
                         // ✅ ADD THIS - Update in database with end time!
                         viewModelScope.launch {
-                            stopRepo.upsertStop(finalizedStop, stopStartElapsed ?: nowElapsed, nowElapsed)
-                            Log.d("StopDebug", "💾 TEST STOP FINALIZED IN DB: ID=${finalizedStop.id}")
+                            stopRepo.upsertStop(
+                                finalizedStop,
+                                stopStartElapsed ?: nowElapsed,
+                                nowElapsed
+                            )
+                            Log.d(
+                                "StopDebug",
+                                "💾 TEST STOP FINALIZED IN DB: ID=${finalizedStop.id}"
+                            )
                         }
 
                         Log.d("StopDebug", "✅ Stop FINALIZED: ${minutes}m ${seconds}s")
                         showUserToast("✅ Stop finished: ${minutes}m ${seconds}s")
 
                         // Show updated stop count
-                        val completedStops = sessionState.stopPoints.value.filter { it.endTimeMillis != null }.size
+                        val completedStops =
+                            sessionState.stopPoints.value.filter { it.endTimeMillis != null }.size
                         showUserToast("📊 Completed stops: $completedStops")
                     }
                 }
@@ -815,10 +1383,14 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
             // =====================================================
             if (elapsedSeconds % 30 == 0L && elapsedSeconds > 0) {
                 val totalStops = sessionState.stopPoints.value.size
-                val completedStops = sessionState.stopPoints.value.filter { it.endTimeMillis != null }.size
+                val completedStops =
+                    sessionState.stopPoints.value.filter { it.endTimeMillis != null }.size
                 val ongoingStops = totalStops - completedStops
 
-                Log.d("StopDebug", "📊 Stats - Total: $totalStops, Completed: $completedStops, Ongoing: $ongoingStops")
+                Log.d(
+                    "StopDebug",
+                    "📊 Stats - Total: $totalStops, Completed: $completedStops, Ongoing: $ongoingStops"
+                )
 
                 // Show the current order
                 val stops = sessionState.stopPoints.value.sortedBy { it.startTimeMillis }
@@ -960,7 +1532,13 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
 
                         currentStopId = System.currentTimeMillis()
                         Log.d("StopDebug", "🆔 New currentStopId set to: $currentStopId")
-                        val existingStopsCount = sessionState.stopPoints.value.size
+//                        val existingStopsCount = sessionState.stopPoints.value.size
+                        val currentRouteStops = if (currentRouteId != null) {
+                            routeRepo.getStopsForRoute(currentRouteId!!)
+                        } else {
+                            emptyList()
+                        }
+                        val existingStopsCount = currentRouteStops.size
                         val letter = ('A'.plus(existingStopsCount)).toString()
 
 
@@ -1317,7 +1895,6 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
     }
 
 
-
     private fun resetStopState() {
         // CRITICAL: Reset isCurrentlyStopped to false
         isCurrentlyStopped = false
@@ -1421,145 +1998,278 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
         ).show()
     }
 
-        private fun finalizeStopIfNeeded(nowWall: Long, nowElapsed: Long) {
+    private fun finalizeStopIfNeeded(nowWall: Long, nowElapsed: Long) {
 
-            if (isCurrentlyStopped && currentStopId != null) {
+        if (isCurrentlyStopped && currentStopId != null) {
 
-                val minutes =
-                    ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 60000)
+            val minutes =
+                ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 60000)
 
-                val stop = StopPoint(
-                    id = currentStopId!!,
-                    center = stopCenter!!,
-                    startTimeMillis = stopStartTime ?: nowWall,
-                    endTimeMillis = nowWall,
-                    timeSpentMinutes = minutes
-                )
+            val stop = StopPoint(
+                id = currentStopId!!,
+                center = stopCenter!!,
+                startTimeMillis = stopStartTime ?: nowWall,
+                endTimeMillis = nowWall,
+                timeSpentMinutes = minutes
+            )
 
-                sessionState.addOrUpdateStop(stop)
+            sessionState.addOrUpdateStop(stop)
 
-                val startElapsedLocal = stopStartElapsed ?: nowElapsed
-                resolveLocationNameAsync(stop)
-                viewModelScope.launch {
-                    stopRepo.upsertStop(stop, startElapsedLocal, nowElapsed)
-                }
-
-
-            }
-        }
-
-        private fun resetStopState(
-            latLng: LatLng,
-            nowWall: Long,
-            nowElapsed: Long
-        ) {
-            stopCenter = latLng
-            stopStartTime = nowWall
-            stopStartElapsed = nowElapsed
-            isCurrentlyStopped = false
-            currentStopId = null
-            thresholdToastShown = false
-        }
-
-        /**
-         * Resolve a human-readable location name (\"latLng name\") for a stop using reverse geocoding.
-         * This fills the stop's address field so the UI / PDF can show a name instead of raw lat,lng.
-         */
-        private fun resolveLocationNameAsync(stop: StopPoint) {
-            viewModelScope.launch(Dispatchers.IO) {
-                try {
-                    // If we already have a location label for this stop in memory, don't override it
-                    val current = sessionState.stopPoints.value.firstOrNull { it.id == stop.id }
-                    if (current != null && !current.locationLabel.isNullOrBlank()) {
-                        return@launch
-                    }
-
-                    val ctx = getApplication<Application>()
-                    val geocoder = Geocoder(ctx, Locale.getDefault())
-                    val results = geocoder.getFromLocation(stop.center.latitude, stop.center.longitude, 1)
-                    val addressLine = results?.firstOrNull()?.getAddressLine(0)
-
-                    if (!addressLine.isNullOrBlank()) {
-                        val base = current ?: stop
-                        val updated = base.copy(locationLabel = addressLine)
-                        // Update in-memory session state
-                        sessionState.addOrUpdateStop(updated)
-                        // Persist back to DB (reuse the simple upsert pattern used elsewhere)
-                        stopRepo.upsertStop(updated, 0, updated.endTimeMillis?.let { 0L })
-                    }
-                } catch (_: Exception) {
-                    // Ignore geocoder failures; we'll just show raw lat,lng
-                }
-            }
-        }
-
-        fun setStopName(stopId: Long, name: String) {
-            sessionState.updateStopName(stopId, name)
-            viewModelScope.launch { stopRepo.updateStopName(stopId, name) }
-        }
-
-        fun getCurrentStopTime(): Long {
-            return sessionState.getCurrentStopTime()
-        }
-
-        fun getCompletedStops(): List<StopPoint> {
-            return sessionState.stopPoints.value.filter { it.endTimeMillis != null }
-        }
-
-        // Merge by name (only for named stops). Unnamed stops remain individual entries. 10:00 AM → Shop A (15 min)
-        //2:00 PM → Shop A (20 min)
-        //
-        //Two stops stored separately.It merges:
-        //
-        //Shop A → Total 35 min
-        fun getCompletedStopsMergedByName(): List<StopPoint> {
-            val completed = getCompletedStops()
-            val named = completed.filter { !it.name.isNullOrBlank() }
-                .groupBy { it.name!!.trim() }
-                .map { (name, list) ->
-                    val totalMinutes = list.sumOf { it.timeSpentMinutes }
-                    val first = list.minByOrNull { it.startTimeMillis }!!
-                    val last = list.maxByOrNull { it.endTimeMillis ?: it.startTimeMillis }!!
-                    // Preserve location label, address, phone, and imageUri from the first stop (or find one that has them)
-                    val stopWithDetails = list.firstOrNull {
-                        !it.locationLabel.isNullOrBlank() || !it.address.isNullOrBlank() || !it.phone.isNullOrBlank() || !it.imageUri.isNullOrBlank()
-                    } ?: first
-                    StopPoint(
-                        id = first.id,
-                        center = first.center,
-                        startTimeMillis = first.startTimeMillis,
-                        endTimeMillis = last.endTimeMillis,
-                        name = name,
-                        locationLabel = stopWithDetails.locationLabel,
-                        address = stopWithDetails.address,
-                        phone = stopWithDetails.phone,
-                        imageUri = stopWithDetails.imageUri,
-                        timeSpentMinutes = totalMinutes
-                    )
-                }
-            val unnamed = completed.filter { it.name.isNullOrBlank() }
-            return named + unnamed
-        }
-
-        fun getSessionElapsedSeconds(): Long {
-            val start = sessionStartTimeMillis
-            return if (_isTracking.value && start != null) {
-                (System.currentTimeMillis() - start) / 1000
-            } else 0
-        }
-
-        fun updateStopDetails(id: Long, name: String, address: String?, phone: String?, imageUri: String?) {
-            // Update in-memory
-            val existing = stopPoints.value.firstOrNull { it.id == id } ?: return
-            val updated = existing.copy(name = name, address = address, phone = phone, imageUri = imageUri)
-            sessionState.addOrUpdateStop(updated)
-            // Persist
+            val startElapsedLocal = stopStartElapsed ?: nowElapsed
+            resolveLocationNameAsync(stop)
             viewModelScope.launch {
-                // Upsert with same duration and times
-                stopRepo.upsertStop(updated, 0, updated.endTimeMillis?.let { 0L })
+                stopRepo.upsertStop(stop, startElapsedLocal, nowElapsed)
             }
-        }}
 
+
+        }
+    }
+
+    private fun resetStopState(
+        latLng: LatLng,
+        nowWall: Long,
+        nowElapsed: Long
+    ) {
+        stopCenter = latLng
+        stopStartTime = nowWall
+        stopStartElapsed = nowElapsed
+        isCurrentlyStopped = false
+        currentStopId = null
+        thresholdToastShown = false
+    }
+
+    /**
+     * Resolve a human-readable location name (\"latLng name\") for a stop using reverse geocoding.
+     * This fills the stop's address field so the UI / PDF can show a name instead of raw lat,lng.
+     */
+    private fun resolveLocationNameAsync(stop: StopPoint) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // If we already have a location label for this stop in memory, don't override it
+                val current = sessionState.stopPoints.value.firstOrNull { it.id == stop.id }
+                if (current != null && !current.locationLabel.isNullOrBlank()) {
+                    return@launch
+                }
+
+                val ctx = getApplication<Application>()
+                val geocoder = Geocoder(ctx, Locale.getDefault())
+                val results =
+                    geocoder.getFromLocation(stop.center.latitude, stop.center.longitude, 1)
+                val addressLine = results?.firstOrNull()?.getAddressLine(0)
+
+                if (!addressLine.isNullOrBlank()) {
+                    val base = current ?: stop
+                    val updated = base.copy(locationLabel = addressLine)
+                    // Update in-memory session state
+                    sessionState.addOrUpdateStop(updated)
+                    // Persist back to DB (reuse the simple upsert pattern used elsewhere)
+                    stopRepo.upsertStop(updated, 0, updated.endTimeMillis?.let { 0L })
+                }
+            } catch (_: Exception) {
+                // Ignore geocoder failures; we'll just show raw lat,lng
+            }
+        }
+    }
+
+    fun clearLoginState() {
+        _loginState.value = null
+    }
+
+    fun clearBreakInState() {
+        _breakInState.value = null
+    }
+
+    fun clearBreakOutState() {
+        _breakOutState.value = null
+    }
+
+    fun clearLogoutState() {
+        _logoutState.value = null
+    }
+
+    fun setStopName(stopId: Long, name: String) {
+        sessionState.updateStopName(stopId, name)
+        viewModelScope.launch { stopRepo.updateStopName(stopId, name) }
+    }
+
+    fun getCurrentStopTime(): Long {
+        return sessionState.getCurrentStopTime()
+    }
+
+    fun getCompletedStops(): List<StopPoint> {
+        return sessionState.stopPoints.value.filter { it.endTimeMillis != null }
+    }
+
+    // Merge by name (only for named stops). Unnamed stops remain individual entries. 10:00 AM → Shop A (15 min)
+    //2:00 PM → Shop A (20 min)
+    //
+    //Two stops stored separately.It merges:
+    //
+    //Shop A → Total 35 min
+    fun getCompletedStopsMergedByName(): List<StopPoint> {
+        val completed = getCompletedStops()
+        val named = completed.filter { !it.name.isNullOrBlank() }
+            .groupBy { it.name!!.trim() }
+            .map { (name, list) ->
+                val totalMinutes = list.sumOf { it.timeSpentMinutes }
+                val first = list.minByOrNull { it.startTimeMillis }!!
+                val last = list.maxByOrNull { it.endTimeMillis ?: it.startTimeMillis }!!
+                // Preserve location label, address, phone, and imageUri from the first stop (or find one that has them)
+                val stopWithDetails = list.firstOrNull {
+                    !it.locationLabel.isNullOrBlank() || !it.address.isNullOrBlank() || !it.phone.isNullOrBlank() || !it.imageUri.isNullOrBlank()
+                } ?: first
+                StopPoint(
+                    id = first.id,
+                    center = first.center,
+                    startTimeMillis = first.startTimeMillis,
+                    endTimeMillis = last.endTimeMillis,
+                    name = name,
+                    locationLabel = stopWithDetails.locationLabel,
+                    address = stopWithDetails.address,
+                    phone = stopWithDetails.phone,
+                    imageUri = stopWithDetails.imageUri,
+                    timeSpentMinutes = totalMinutes
+                )
+            }
+        val unnamed = completed.filter { it.name.isNullOrBlank() }
+        return named + unnamed
+    }
+
+//    fun getSessionElapsedSeconds(): Long {
+//        val start = sessionStartTimeMillis
+//        return if (_isTracking.value && start != null) {
+//            (System.currentTimeMillis() - start) / 1000
+//        } else 0
+//    }
+
+    fun updateStopDetails(
+        id: Long,
+        name: String,
+        address: String?,
+        phone: String?,
+        imageUri: String?
+    ) {
+        // Update in-memory
+        val existing = stopPoints.value.firstOrNull { it.id == id } ?: return
+        val updated =
+            existing.copy(name = name, address = address, phone = phone, imageUri = imageUri)
+        sessionState.addOrUpdateStop(updated)
+        // Persist
+        viewModelScope.launch {
+            // Upsert with same duration and times
+            stopRepo.upsertStop(updated, 0, updated.endTimeMillis?.let { 0L })
+        }
+    }
+
+    // In TripViewModel.kt
+    fun cancelOngoingRequests() {
+        viewModelScope.coroutineContext.cancelChildren()
+    }
+
+    // In TrackingViewModel.kt
+
+    // Direct methods to bypass any flow issues
+    private var originalStartTimeMillis: Long? = null
+
+    fun setOriginalStartTime(startTime: Long) {
+        originalStartTimeMillis = startTime
+        sessionStartTimeMillis = startTime  // ← Set session start time to original
+        Log.d("ViewModel", "✅ Original start time set to: $startTime")
+    }
+
+    fun continueExistingTripWithOriginalTime(existingRouteId: Long, originalStartTime: Long) {
+        if (_isTracking.value) return
+
+        viewModelScope.launch {
+            // Use the existing route instead of creating a new one
+            currentRouteId = existingRouteId
+            currentRouteStartTime = originalStartTime  // ← Use original time
+            sessionStartTimeMillis = originalStartTime  // ← Use original time
+
+            _isTracking.value = true
+
+            if (!hasActiveSession) {
+                isFirstLocationOfSession = true
+                hasActiveSession = true
+                Log.d("StartMarker", "🆕 Continuing existing trip - will capture start point")
+            }
+
+            startService()
+
+            collectionJob?.cancel()
+            collectionJob = viewModelScope.launch {
+                repository.locationUpdates().collect { location ->
+                    Log.d("LocationFlow", "Received location in flow: $location")
+
+                    if (isFirstLocationOfSession) {
+                        val startLatLng = LatLng(location.latitude, location.longitude)
+                        _startLocation.value = startLatLng
+                        isFirstLocationOfSession = false
+                        Log.d("StartMarker", "📍 Continuing trip start location: $startLatLng")
+                    }
+
+                    val speedKmh = location.speed * 3.6f
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            getApplication(),
+                            "📍 Speed: ${speedKmh.toInt()} km/h",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    handleLocation(location)
+                }
+            }
+        }
+    }
+
+    // Update getSessionElapsedSeconds to use originalStartTimeMillis
+    fun getSessionElapsedSeconds(): Long {
+        val start = sessionStartTimeMillis ?: originalStartTimeMillis
+        return if (_isTracking.value && start != null) {
+            (System.currentTimeMillis() - start) / 1000
+        } else 0
+    }
+
+    // Direct methods to bypass any flow issues
+    fun addLocationPointDirectly(point: LocationPoint) {
+        sessionState.addLocation(point)
+        Log.d("ViewModel", "Directly added location point. Total: ${sessionState.routePoints.value.size}")
+    }
+
+    fun addStopPointDirectly(stop: StopPoint) {
+        sessionState.addOrUpdateStop(stop)
+        Log.d("ViewModel", "Directly added stop: ${stop.id}")
+    }
+
+    fun stopTrackingForRestore() {
+        // Cancel collection job
+        collectionJob?.cancel()
+        collectionJob = null
+
+        // Stop service
+        stopService()
+
+        // Reset flags but keep route ID
+        _isTracking.value = false
+        hasActiveSession = false
+        isFirstLocationOfSession = true
+
+        Log.d("ViewModel", "Stopped tracking for restore")
+    }
+
+    fun setCurrentRouteId(routeId: Long) {
+        currentRouteId = routeId
+        Log.d("ViewModel", "✅ CurrentRouteId set to: $routeId")
+    }
+
+    fun setTrackingState(tracking: Boolean) {
+        _isTracking.value = tracking
+        Log.d("ViewModel", "✅ Tracking state set to: $tracking")
+    }
+
+    fun getCurrentRouteId(): Long? = currentRouteId
+
+}
 
 
 //        suspend fun getRouteBetween(startMillis: Long, endMillis: Long): List<LocationPoint> {
@@ -1567,4 +2277,17 @@ class TrackingViewModel(app: Application) : AndroidViewModel(app) {
 //        }
 
 
+class TrackingViewModelFactory(
+    private val application: Application,
+    private val tripRepository: TripRepository,
+    private val preferenceManager: PreferenceManager
+) : ViewModelProvider.Factory {
 
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(TrackingViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return TrackingViewModel(application, tripRepository, preferenceManager) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}

@@ -10,7 +10,14 @@ data class DailyReportData(
     val totalRoutes: Int,
     val totalStops: Int,
     val totalDuration: Long,
-    val totalDistance: Double
+    val totalDistance: Double,
+    val syncHistory: List<SyncRecordDisplay> = emptyList()  // ✅ Add this
+)
+
+data class SyncRecordDisplay(
+    val apiName: String,
+    val lastSyncedTime: String,
+    val status: Int
 )
 
 data class RouteWithDetails(

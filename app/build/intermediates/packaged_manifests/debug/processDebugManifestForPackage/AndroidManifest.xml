@@ -57,7 +57,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:testOnly="true"
-        android:theme="@style/Theme.SalesStySetGPS" >
+        android:theme="@style/Theme.SalesStySetGPS"
+        android:usesCleartextTraffic="true" >
+        <activity
+            android:name="com.example.salesstysetgps.LeadDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.salesstysetgps.ui.LoginActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.salesstysetgps.ui.CreateLeadActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.salesstysetgps.ui.ActivityAttendance"
+            android:exported="false" />
+        <activity
+            android:name="com.example.salesstysetgps.ui.SyncTestActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.salesstysetgps.ui.ApiActivity"
+            android:exported="false" />
         <activity
             android:name="com.example.salesstysetgps.ui.LeadActivity"
             android:exported="false" />
@@ -92,13 +117,7 @@
         <!-- tools:node="remove" /> -->
         <activity
             android:name="com.example.salesstysetgps.ui.MainActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true" />
         <activity
             android:name="com.example.salesstysetgps.ui.PlacesActivity"
             android:exported="false" />

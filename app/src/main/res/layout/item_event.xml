@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -20,8 +20,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textStyle="bold"
-            tools:text="Dazzalia"
-            android:textColor="@android:color/black" />
+            tools:text="Dazzalia" />
 
         <TextView
             android:id="@+id/textDateTime"
@@ -30,7 +29,7 @@
             android:layout_marginTop="4dp"
             android:textSize="14sp"
             tools:text="6:30 PM 7:30 PM"
-            android:textColor="@android:color/darker_gray" />
+             />
 
         <TextView
             android:id="@+id/textLocation"
@@ -39,7 +38,7 @@
             android:layout_marginTop="4dp"
             android:textSize="14sp"
             tools:text="New Ranip ,Ahmedabad"
-            android:textColor="@android:color/darker_gray" />
+             />
 
         <TextView
             android:id="@+id/textPurpose"
@@ -48,8 +47,8 @@
             android:layout_marginTop="4dp"
             android:textSize="12sp"
             tools:text="Purpose"
-            android:textColor="@android:color/darker_gray" />
+             />
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

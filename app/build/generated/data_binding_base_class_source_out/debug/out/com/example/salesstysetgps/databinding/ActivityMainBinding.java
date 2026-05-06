@@ -5,17 +5,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.example.salesstysetgps.R;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.navigation.NavigationView;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -35,7 +35,7 @@ public final class ActivityMainBinding implements ViewBinding {
   public final Button btnStop;
 
   @NonNull
-  public final CardView controlsCard;
+  public final MaterialCardView controlsCard;
 
   @NonNull
   public final DrawerLayout drawerLayout;
@@ -44,7 +44,7 @@ public final class ActivityMainBinding implements ViewBinding {
   public final LinearLayout mainContent;
 
   @NonNull
-  public final RelativeLayout mapContainer;
+  public final FrameLayout mapContainer;
 
   @NonNull
   public final NavigationView navView;
@@ -59,10 +59,10 @@ public final class ActivityMainBinding implements ViewBinding {
   public final TextView tvTimer;
 
   private ActivityMainBinding(@NonNull DrawerLayout rootView, @NonNull Button btnReset,
-      @NonNull Button btnStart, @NonNull Button btnStop, @NonNull CardView controlsCard,
+      @NonNull Button btnStart, @NonNull Button btnStop, @NonNull MaterialCardView controlsCard,
       @NonNull DrawerLayout drawerLayout, @NonNull LinearLayout mainContent,
-      @NonNull RelativeLayout mapContainer, @NonNull NavigationView navView,
-      @NonNull Toolbar toolbar, @NonNull TextView tvStatus, @NonNull TextView tvTimer) {
+      @NonNull FrameLayout mapContainer, @NonNull NavigationView navView, @NonNull Toolbar toolbar,
+      @NonNull TextView tvStatus, @NonNull TextView tvTimer) {
     this.rootView = rootView;
     this.btnReset = btnReset;
     this.btnStart = btnStart;
@@ -123,7 +123,7 @@ public final class ActivityMainBinding implements ViewBinding {
       }
 
       id = R.id.controlsCard;
-      CardView controlsCard = ViewBindings.findChildViewById(rootView, id);
+      MaterialCardView controlsCard = ViewBindings.findChildViewById(rootView, id);
       if (controlsCard == null) {
         break missingId;
       }
@@ -136,8 +136,8 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.mapContainer;
-      RelativeLayout mapContainer = ViewBindings.findChildViewById(rootView, id);
+      id = R.id.map_container;
+      FrameLayout mapContainer = ViewBindings.findChildViewById(rootView, id);
       if (mapContainer == null) {
         break missingId;
       }
