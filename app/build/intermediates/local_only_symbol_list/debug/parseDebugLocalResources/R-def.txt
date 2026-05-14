@@ -68,6 +68,7 @@ color snackbar_warning_bg
 color stop_color
 color teal_200
 color teal_700
+color transparent
 color white
 drawable badge_circle
 drawable bg_dialog_rounded

@@ -50,9 +50,10 @@
                 android:layout_marginBottom="16dp"
                 android:hint="Email">
 
+<!--                Tasolin528@bmoar.com-->
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etEmail"
-                    android:text="Tasolin528@bmoar.com"
+                    android:text=""
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
@@ -69,9 +70,10 @@
                 app:endIconMode="password_toggle"
                 android:hint="Password">
 
+<!--                Test@123-->
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
-                    android:text="Test@123"
+                    android:text=""
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"

@@ -1,4 +1,4 @@
-com.example.salesstysetgps
+com.styset.sales.app
 anim abc_fade_in
 anim abc_fade_out
 anim abc_grow_fade_in_from_bottom
@@ -2206,6 +2206,7 @@ color teal_200
 color teal_700
 color tooltip_background_dark
 color tooltip_background_light
+color transparent
 color white
 dimen abc_action_bar_content_inset_material
 dimen abc_action_bar_content_inset_with_nav

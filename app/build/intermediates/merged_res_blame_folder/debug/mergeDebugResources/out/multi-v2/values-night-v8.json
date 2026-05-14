@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.salesstysetgps.app-mergeDebugResources-50:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.styset.sales.app-mergeDebugResources-50:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
                     "source": "C:\\Users\\DM Intern\\AndroidStudioProjects\\SalesStySetGPS\\app\\src\\main\\res\\values-night\\colors.xml",

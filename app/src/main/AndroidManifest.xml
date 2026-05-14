@@ -48,21 +48,27 @@
         <activity
             android:name=".ui.CreateLeadActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.ActivityAttendance"
             android:exported="false" />
+
         <activity
             android:name=".ui.SyncTestActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.ApiActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.LeadActivity"
             android:exported="false" />
+
         <activity
             android:name=".VisitDetailActivity"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity2"
             android:exported="true" />

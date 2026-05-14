@@ -2205,7 +2205,8 @@ int color teal_200 0x7f05034e
 int color teal_700 0x7f05034f
 int color tooltip_background_dark 0x7f050350
 int color tooltip_background_light 0x7f050351
-int color white 0x7f050352
+int color transparent 0x7f050352
+int color white 0x7f050353
 int dimen abc_action_bar_content_inset_material 0x7f060000
 int dimen abc_action_bar_content_inset_with_nav 0x7f060001
 int dimen abc_action_bar_default_height_material 0x7f060002

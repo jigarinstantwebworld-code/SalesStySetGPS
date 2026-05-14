@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.salesstysetgps.app-mergeDebugResources-50:/values-ka/values-ka.xml",
+            "outputFile": "com.styset.sales.app-mergeDebugResources-50:/values-ka/values-ka.xml",
             "map": [
                 {
                     "source": "C:\\Users\\DM Intern\\.gradle\\caches\\8.9\\transforms\\bf7147f01338332629b5fcdc87bf7f7b\\transformed\\core-1.12.0\\res\\values-ka\\values-ka.xml",

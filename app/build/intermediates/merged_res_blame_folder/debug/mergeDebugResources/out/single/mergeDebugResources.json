@@ -1,342 +1,342 @@
 [
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_button_filter_inactive.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/button_filter_inactive.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_dialog_add_note.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/dialog_add_note.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_sort.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_sort.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_dialog_date_filter_bottom_sheet.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/dialog_date_filter_bottom_sheet.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/raw_ahmedabad_test_route.gpx.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/raw/ahmedabad_test_route.gpx"
+        "merged": "com.styset.sales.app-debug-52:/layout_dialog_filter_bottom_sheet.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/dialog_filter_bottom_sheet.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_calendar.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_calendar.xml"
+        "merged": "com.styset.sales.app-debug-52:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.styset.sales.app-main-54:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_lead_detail_field.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead_detail_field.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_sort.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_sort.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_fragment_today_schedules.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/fragment_today_schedules.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_activity_create_lead.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/activity_create_lead.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_arrow_down.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_arrow_down.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_fragment_today_schedules.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/fragment_today_schedules.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_bg_status_closed.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/bg_status_closed.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_loading.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_loading.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_arrow_drop_down.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_arrow_drop_down.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_camera.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_camera.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_badge_circle.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/badge_circle.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_start.png.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_start.png"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_activity_places.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_places.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_badge_circle.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/badge_circle.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_lead_detail_section.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead_detail_section.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_dialog_stop_form.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/dialog_stop_form.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_dialog_add_note.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/dialog_add_note.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_lead_detail_section.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_lead_detail_section.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_dialog_filter_bottom_sheet.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/dialog_filter_bottom_sheet.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_filter.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_filter.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_activity_visit_detail.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_visit_detail.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_activity_lead.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/activity_lead.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_loading.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_loading.xml"
+        "merged": "com.styset.sales.app-debug-52:/xml_file_paths.xml.flat",
+        "source": "com.styset.sales.app-main-54:/xml/file_paths.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_place.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_place.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_button_filter_inactive.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/button_filter_inactive.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_dialog_places.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/dialog_places.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_menu_white_24dp.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_menu_white_24dp.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_circle_shape.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/circle_shape.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_sync_record.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_sync_record.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_lead.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_start_arrow.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_start_arrow.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_map_info_window.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/map_info_window.xml"
+        "merged": "com.styset.sales.app-debug-52:/xml_network_security_config.xml.flat",
+        "source": "com.styset.sales.app-main-54:/xml/network_security_config.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_logout.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_logout.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_border_rounded.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/border_rounded.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_place_card.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_place_card.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_sort_active.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_sort_active.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_filter.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_filter.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_dialog_places.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/dialog_places.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_error.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_error.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_route_snapshot.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_route_snapshot.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_activity_main.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_main.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_lead.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_lead.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_activity_lead_detail.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_lead_detail.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_arrow_down.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_arrow_down.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_call.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_call.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_launcher_background.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_empty_leads.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_empty_leads.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_activity_api.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/activity_api.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_launcher_background.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_launcher_background.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_lead_detail_note.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_lead_detail_note.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_start.png.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_start.png"
+        "merged": "com.styset.sales.app-debug-52:/drawable_button_filter_active.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/button_filter_active.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_add_white.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_add_white.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_event.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_event.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_bg_status_pending.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/bg_status_pending.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_lead_detail_add_note.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_lead_detail_add_note.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_event.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_event.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_calendar.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_calendar.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_button_filter_active.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/button_filter_active.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_whatsapp.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_whatsapp.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_bg_info_window.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/bg_info_window.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_place.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_place.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_lead_checkbox.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead_checkbox.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_add_white.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_add_white.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_lead_detail_image.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead_detail_image.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_fragment_upcoming_schedules.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/fragment_upcoming_schedules.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_activity_login.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_login.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_bg_status_active.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/bg_status_active.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_sync_record.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_sync_record.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_activity_sync_test.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/activity_sync_test.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_activity_api.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_api.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_error.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_error.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_stop_in_route.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_stop_in_route.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_stop.png.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_stop.png"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_sort_active.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_sort_active.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_lead_detail_field.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_lead_detail_field.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_activity_create_lead.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_create_lead.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_bg_status_pending.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/bg_status_pending.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_dialog_date_filter_bottom_sheet.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/dialog_date_filter_bottom_sheet.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_email.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_email.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_launcher_foreground.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_activity_main.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/activity_main.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_post.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_post.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_activity_login.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/activity_login.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_email.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_email.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_map_info_window.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/map_info_window.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_whatsapp.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_whatsapp.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_circle_shape.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/circle_shape.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/xml_file_paths.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/xml/file_paths.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_post.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_post.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_nav_header.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/nav_header.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_lead_detail_image.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_lead_detail_image.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_filter_active.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_filter_active.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_start_flag.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_start_flag.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_start_arrow.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_start_arrow.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_fragment_schedule_calendar.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/fragment_schedule_calendar.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_activity_main2.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_main2.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_activity_main2.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/activity_main2.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_lead_detail_note.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead_detail_note.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_activity_visit_detail.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/activity_visit_detail.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_lead_detail_add_note.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_lead_detail_add_note.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_activity_lead_detail.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/activity_lead_detail.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_dialog_stop_form.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/dialog_stop_form.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_launcher_foreground.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_lock.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_lock.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_bg_dialog_rounded.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/bg_dialog_rounded.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_stop.png.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_stop.png"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_search.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_search.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_activity_lead.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_lead.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_notification_location.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_notification_location.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_route_with_stops.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_route_with_stops.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_nav_header.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/nav_header.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_start_flag.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_start_flag.xml"
+        "merged": "com.styset.sales.app-debug-52:/raw_ahmedabad_nehrunagar_vadaj_newranip.gpx.flat",
+        "source": "com.styset.sales.app-main-54:/raw/ahmedabad_nehrunagar_vadaj_newranip.gpx"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/menu_drawer_menu.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/menu/drawer_menu.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_place_card.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_place_card.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_item_route_snapshot.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/item_route_snapshot.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_stop_in_route.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_stop_in_route.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/raw_map_style_snapshot.json.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/raw/map_style_snapshot.json"
+        "merged": "com.styset.sales.app-debug-52:/layout_activity_attendance.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/activity_attendance.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_back_white.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_back_white.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_bg_info_window.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/bg_info_window.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/mipmap-anydpi-v26/ic_launcher_round.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_activity_places.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/activity_places.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_fragment_upcoming_schedules.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/fragment_upcoming_schedules.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_empty_leads.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_empty_leads.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/mipmap-anydpi-v26/ic_launcher.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_route_with_stops.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_route_with_stops.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_activity_sync_test.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_sync_test.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_circle_background.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/circle_background.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_finish_flag.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_finish_flag.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_bg_status_closed.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/bg_status_closed.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/raw_map_style_with_labels.json.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/raw/map_style_with_labels.json"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_finish_flag.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_finish_flag.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_bg_dialog_rounded.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/bg_dialog_rounded.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_call.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_call.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_notification_location.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_notification_location.xml"
+        "merged": "com.styset.sales.app-debug-52:/layout_item_lead_checkbox.xml.flat",
+        "source": "com.styset.sales.app-main-54:/layout/item_lead_checkbox.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_camera.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_camera.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_logout.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_logout.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_activity_attendance.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/activity_attendance.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_filter_active.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_filter_active.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_search.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_search.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_lock.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_lock.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/layout_fragment_schedule_calendar.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/layout/fragment_schedule_calendar.xml"
+        "merged": "com.styset.sales.app-debug-52:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.styset.sales.app-main-54:/mipmap-anydpi-v26/ic_launcher.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_ic_menu_white_24dp.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/ic_menu_white_24dp.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_status_badge.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/status_badge.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/xml_network_security_config.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/xml/network_security_config.xml"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_back_white.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_back_white.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_circle_background.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/circle_background.xml"
+        "merged": "com.styset.sales.app-debug-52:/raw_map_style_snapshot.json.flat",
+        "source": "com.styset.sales.app-main-54:/raw/map_style_snapshot.json"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_border_rounded.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/border_rounded.xml"
+        "merged": "com.styset.sales.app-debug-52:/menu_drawer_menu.xml.flat",
+        "source": "com.styset.sales.app-main-54:/menu/drawer_menu.xml"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_bg_status_active.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/bg_status_active.xml"
+        "merged": "com.styset.sales.app-debug-52:/raw_map_style_with_labels.json.flat",
+        "source": "com.styset.sales.app-main-54:/raw/map_style_with_labels.json"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/drawable_status_badge.xml.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/drawable/status_badge.xml"
+        "merged": "com.styset.sales.app-debug-52:/raw_ahmedabad_test_route.gpx.flat",
+        "source": "com.styset.sales.app-main-54:/raw/ahmedabad_test_route.gpx"
     },
     {
-        "merged": "com.example.salesstysetgps.app-debug-52:/raw_ahmedabad_nehrunagar_vadaj_newranip.gpx.flat",
-        "source": "com.example.salesstysetgps.app-main-54:/raw/ahmedabad_nehrunagar_vadaj_newranip.gpx"
+        "merged": "com.styset.sales.app-debug-52:/drawable_ic_arrow_drop_down.xml.flat",
+        "source": "com.styset.sales.app-main-54:/drawable/ic_arrow_drop_down.xml"
     }
 ]

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.salesstysetgps.app-mergeDebugResources-50:/values-en-rXC/values-en-rXC.xml",
+            "outputFile": "com.styset.sales.app-mergeDebugResources-50:/values-en-rXC/values-en-rXC.xml",
             "map": [
                 {
                     "source": "C:\\Users\\DM Intern\\.gradle\\caches\\8.9\\transforms\\3d5bd158331766addef10e7f59cdbf4a\\transformed\\appcompat-1.6.1\\res\\values-en-rXC\\values-en-rXC.xml",

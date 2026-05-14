@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.salesstysetgps.debug"
+    package="com.styset.sales.app.debug"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -41,13 +41,13 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <permission
-        android:name="com.example.salesstysetgps.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:name="com.styset.sales.app.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.example.salesstysetgps.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <uses-permission android:name="com.styset.sales.app.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 
     <application
-        android:name="com.example.salesstysetgps.SalesStySetApp"
+        android:name="com.styset.sales.app.SalesStySetApp"
         android:allowBackup="true"
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
@@ -60,10 +60,10 @@
         android:theme="@style/Theme.SalesStySetGPS"
         android:usesCleartextTraffic="true" >
         <activity
-            android:name="com.example.salesstysetgps.LeadDetailActivity"
+            android:name="com.styset.sales.app.LeadDetailActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.salesstysetgps.ui.LoginActivity"
+            android:name="com.styset.sales.app.ui.LoginActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -72,25 +72,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.salesstysetgps.ui.CreateLeadActivity"
+            android:name="com.styset.sales.app.ui.CreateLeadActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.salesstysetgps.ui.ActivityAttendance"
+            android:name="com.styset.sales.app.ui.ActivityAttendance"
             android:exported="false" />
         <activity
-            android:name="com.example.salesstysetgps.ui.SyncTestActivity"
+            android:name="com.styset.sales.app.ui.SyncTestActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.salesstysetgps.ui.ApiActivity"
+            android:name="com.styset.sales.app.ui.ApiActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.salesstysetgps.ui.LeadActivity"
+            android:name="com.styset.sales.app.ui.LeadActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.salesstysetgps.VisitDetailActivity"
+            android:name="com.styset.sales.app.VisitDetailActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.salesstysetgps.MainActivity2"
+            android:name="com.styset.sales.app.MainActivity2"
             android:exported="true" />
 
         <meta-data
@@ -103,7 +103,7 @@
         <!-- android:name="com.google.android.gms.auth.api.signin" -->
         <!-- android:value="@integer/google_play_services_version" /> -->
         <service
-            android:name="com.example.salesstysetgps.location.LocationForegroundService"
+            android:name="com.styset.sales.app.location.LocationForegroundService"
             android:exported="false"
             android:foregroundServiceType="location" /> <!-- Calendar Sync Service -->
         <!-- <service -->
@@ -116,15 +116,15 @@
         <!-- android:exported="false" -->
         <!-- tools:node="remove" /> -->
         <activity
-            android:name="com.example.salesstysetgps.ui.MainActivity"
+            android:name="com.styset.sales.app.ui.MainActivity"
             android:exported="true" />
         <activity
-            android:name="com.example.salesstysetgps.ui.PlacesActivity"
+            android:name="com.styset.sales.app.ui.PlacesActivity"
             android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.salesstysetgps.debug.fileprovider"
+            android:authorities="com.styset.sales.app.debug.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true" >
             <meta-data
@@ -161,7 +161,7 @@
 
         <provider
             android:name="androidx.startup.InitializationProvider"
-            android:authorities="com.example.salesstysetgps.debug.androidx-startup"
+            android:authorities="com.styset.sales.app.debug.androidx-startup"
             android:exported="false" >
             <meta-data
                 android:name="androidx.emoji2.text.EmojiCompatInitializer"

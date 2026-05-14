@@ -85,5 +85,6 @@
     <color name="filter_inactive_bg">#FFFFFF</color>
     <color name="filter_inactive_text">#1565C0</color>
     <color name="filter_inactive_border">#1565C0</color>
+    <color name="transparent">#00000000</color>
 </resources>
 

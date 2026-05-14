@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.salesstysetgps.app-mergeDebugResources-50:/values-en-rGB/values-en-rGB.xml",
+            "outputFile": "com.styset.sales.app-mergeDebugResources-50:/values-en-rGB/values-en-rGB.xml",
             "map": [
                 {
                     "source": "C:\\Users\\DM Intern\\.gradle\\caches\\8.9\\transforms\\23f048b45b4321d6094abe09803478dd\\transformed\\material-1.11.0\\res\\values-en-rGB\\values-en-rGB.xml",
