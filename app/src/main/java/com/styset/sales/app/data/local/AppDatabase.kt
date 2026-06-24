@@ -10,7 +10,7 @@ import com.styset.sales.app.models.SyncDataEntity
 
 @Database(
     entities = [StopEntity::class, RoutePointEntity::class, RouteEntity::class, RouteStopRelation::class, SyncDataEntity::class],
-    version = 1, // Increment version from 3 to 4
+    version = 6, // Increment version from 3 to 4
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

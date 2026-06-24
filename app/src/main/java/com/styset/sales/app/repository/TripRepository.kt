@@ -211,6 +211,46 @@ class TripRepository(
         }
     }
 
+    suspend fun forceLogoutAttendance(
+        attendanceId: Int,
+        latitude: Double,
+        longitude: Double
+    ): Flow<Resource<AttendanceResponse>> = flow {
+        emit(Resource.Loading())
+
+        try {
+            val salesExecutiveId = preferenceManager.getSalesExecutiveId()
+
+            if (salesExecutiveId == null) {
+                emit(Resource.Error("Sales Executive ID not found. Please login first."))
+                return@flow
+            }
+
+            val coordinates = "$latitude,$longitude"
+
+            // Create request with FORCE_LOGOUT action and attendanceId
+            val request = AttendanceRequest(
+                salesExecutiveId = salesExecutiveId,
+                action = "LOGOUT",  // Special action for force logout
+                coordinates = coordinates,
+                createdBy = null,
+            )
+
+            val response = withContext(Dispatchers.IO) {
+                apiService.manageAttendance(request)
+            }
+
+            if (response.success == 1) {
+                emit(Resource.Success(response))
+            } else {
+                emit(Resource.Error(response.message))
+            }
+
+        } catch (e: Exception) {
+            emit(Resource.Error("Error: ${e.message ?: "Unknown error"}"))
+        }
+    }
+
 
     suspend fun fetchTodaysLeads(page:String,limit: String,currentDate: String): Resource<LeadsResponse> {
         return try {

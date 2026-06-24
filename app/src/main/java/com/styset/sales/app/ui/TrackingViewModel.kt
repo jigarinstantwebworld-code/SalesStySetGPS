@@ -68,7 +68,7 @@ class TrackingViewModel(
 
     }
 
-    private val TEST_MODE = false
+    private val TEST_MODE = true
     private val TEST_STOP_SECONDS = 4
 
     private var currentRouteId: Long? = null
@@ -105,6 +105,10 @@ class TrackingViewModel(
 
     private val _startLocation = MutableStateFlow<LatLng?>(null)
     val startLocation: StateFlow<LatLng?> = _startLocation.asStateFlow()
+
+    private val _forceLogoutState = MutableStateFlow<Resource<AttendanceResponse>?>(null)
+    val forceLogoutState: StateFlow<Resource<AttendanceResponse>?> = _forceLogoutState.asStateFlow()
+
 
     private var isFirstLocationOfSession = true
 
@@ -179,6 +183,45 @@ class TrackingViewModel(
                 _routes.value = routeList
             }
         }
+    }
+
+    fun forceLogoutWithAttendanceId(
+        attendanceId: Int,
+        latitude: Double,
+        longitude: Double,
+        onSuccess: (message: String) -> Unit = {},
+        onError: (errorMessage: String) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            tripRepository.forceLogoutAttendance(attendanceId, latitude, longitude)
+                .catch { exception ->
+                    val errorMsg = exception.message ?: "Unknown error"
+                    _forceLogoutState.value = Resource.Error(errorMsg)
+                    onError(errorMsg)
+                }
+                .collect { resource ->
+                    _forceLogoutState.value = resource
+
+                    when (resource) {
+                        is Resource.Success -> {
+                            if (resource.data?.success == 1) {
+                                val msg = resource.data?.message ?: "Previous session closed successfully"
+                                onSuccess(msg)
+                            } else {
+                                val errorMsg = resource.data?.message ?: "Failed to close previous session"
+                                onError(errorMsg)
+                            }
+                        }
+                        is Resource.Error -> {
+                            onError(resource.message ?: "An error occurred")
+                        }
+                        else -> { /* Loading state */ }
+                    }
+                }
+        }
+    }
+    fun clearForceLogoutState() {
+        _forceLogoutState.value = null
     }
 
     fun startTripWithApi(
@@ -563,6 +606,9 @@ class TrackingViewModel(
     fun getCurrentTripId(): Int? {
         return preferenceManager.getTripId()?.toIntOrNull()
     }
+    fun getCurrentSalesExecutiveId(): Int? {
+        return preferenceManager.getSalesExecutiveId()
+    }
 
     // In TrackingViewModel.kt - modify existing method
     fun getStopsWithSequence(): List<Pair<String, StopPoint>> {
@@ -695,7 +741,9 @@ class TrackingViewModel(
                     locationLabel = stopEntity.locationLabel,
                     address = stopEntity.address,
                     phone = stopEntity.phone,
-                    imageUri = stopEntity.imageUri
+                    imageUri = stopEntity.imageUri,
+                    tripId = stopEntity.tripId,
+                    salesExecutiveId = stopEntity.salesExecutiveId!!
                 )
 
                 // ✅ Update UI if exists
@@ -720,17 +768,6 @@ class TrackingViewModel(
                 Log.d("StopDebug", "✅ FORCE FINALIZED STOP: ${stopPoint.id}")
             }
 
-            // =====================================================
-            // ❌ REMOVE THIS BLOCK (IMPORTANT)
-            // Memory-based finalization is no longer needed
-            // =====================================================
-            /*
-            val center = stopCenter
-            val startWall = stopStartTime
-            val startElapsedLocal = stopStartElapsed
-            val id = currentStopId
-            ...
-            */
 
             _startLocation.value = null
 
@@ -1269,7 +1306,9 @@ class TrackingViewModel(
                     startTimeMillis = stopStartTime,
                     endTimeMillis = null,  // Ongoing stop
                     timeSpentMinutes = 0,
-                    letter = letter
+                    letter = letter,
+                    tripId = getCurrentTripId().toString(),
+                    salesExecutiveId = getCurrentSalesExecutiveId().toString()
                 )
 
                 // ✅ Use the new force update method
@@ -1544,7 +1583,9 @@ class TrackingViewModel(
                             startTimeMillis = stopStartTime ?: nowWall,
                             endTimeMillis = null,
                             timeSpentMinutes = minutes,
-                            letter = letter
+                            letter = letter,
+                            tripId = getCurrentTripId().toString(),
+                            salesExecutiveId = getCurrentSalesExecutiveId().toString()
                         )
 
                         sessionState.addOrUpdateStop(stop)
@@ -1734,7 +1775,9 @@ class TrackingViewModel(
                                 center = center,
                                 startTimeMillis = stopStartTime ?: nowWall,
                                 endTimeMillis = null,
-                                timeSpentMinutes = minutes
+                                timeSpentMinutes = minutes,
+                                tripId = getCurrentTripId().toString(),
+                                salesExecutiveId = getCurrentSalesExecutiveId().toString()
                             )
                             sessionState.addOrUpdateStop(stop)
                             showUserToast("✅ Stop recovered - Location saved")
@@ -1836,7 +1879,9 @@ class TrackingViewModel(
                             center = center,
                             startTimeMillis = stopStartTime ?: nowWall,
                             endTimeMillis = null,
-                            timeSpentMinutes = minutes
+                            timeSpentMinutes = minutes,
+                            tripId = getCurrentTripId().toString(),
+                            salesExecutiveId = getCurrentSalesExecutiveId().toString()
                         )
                         sessionState.addOrUpdateStop(newStop)
                     }
@@ -1977,7 +2022,9 @@ class TrackingViewModel(
                 center = center,
                 startTimeMillis = stopStartTime ?: nowWall,
                 endTimeMillis = nowWall,
-                timeSpentMinutes = minutes
+                timeSpentMinutes = minutes,
+                tripId = getCurrentTripId().toString(),
+                salesExecutiveId = getCurrentSalesExecutiveId().toString()
             )
             sessionState.addOrUpdateStop(newStop)
         }
@@ -2006,7 +2053,9 @@ class TrackingViewModel(
                 center = stopCenter!!,
                 startTimeMillis = stopStartTime ?: nowWall,
                 endTimeMillis = nowWall,
-                timeSpentMinutes = minutes
+                timeSpentMinutes = minutes,
+                tripId = getCurrentTripId().toString(),
+                salesExecutiveId = getCurrentSalesExecutiveId().toString()
             )
 
             sessionState.addOrUpdateStop(stop)
@@ -2124,7 +2173,9 @@ class TrackingViewModel(
                     address = stopWithDetails.address,
                     phone = stopWithDetails.phone,
                     imageUri = stopWithDetails.imageUri,
-                    timeSpentMinutes = totalMinutes
+                    timeSpentMinutes = totalMinutes,
+                    tripId = getCurrentTripId().toString(),
+                    salesExecutiveId = getCurrentSalesExecutiveId().toString()
                 )
             }
         val unnamed = completed.filter { it.name.isNullOrBlank() }
@@ -2264,6 +2315,15 @@ class TrackingViewModel(
     }
 
     fun getCurrentRouteId(): Long? = currentRouteId
+
+    // In TrackingViewModel.kt
+    fun resetTrackingStateForAttendanceLogout() {
+        _isTracking.value = false
+//        _routePoints.value = emptyList()
+//        _stopPoints.value = emptyList()
+        _startLocation.value = null
+//        _sessionElapsedSeconds.value = 0
+    }
 
 }
 

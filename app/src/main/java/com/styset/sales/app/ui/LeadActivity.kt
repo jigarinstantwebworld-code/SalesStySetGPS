@@ -13,6 +13,7 @@ import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -293,38 +294,31 @@ class LeadActivity : BaseActivity<ActivityLeadBinding>() {
     }
 
     private fun setupToolbar() {
+
         setSupportActionBar(binding.toolbar)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Sell Leads"
 
-        // Handle Edge-to-Edge properly
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { _, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { view, insets ->
+            val topInset = insets.getInsets(
+                WindowInsetsCompat.Type.statusBars()
+            ).top
 
-            // Toolbar gets top padding
-            binding.toolbar.setPadding(
-                binding.toolbar.paddingLeft,
-                systemBars.top,
-                binding.toolbar.paddingRight,
-                binding.toolbar.paddingBottom
-            )
+            view.updatePadding(top = topInset)
 
-            // Search layout gets top padding from toolbar
-            binding.searchEditText.setPadding(
-                binding.searchEditText.paddingLeft,
-                systemBars.top,
-                binding.searchEditText.paddingRight,
-                binding.searchEditText.paddingBottom
-            )
+            // Increase toolbar height dynamically
+            view.layoutParams.height =
+                resources.getDimensionPixelSize(
+                    com.google.android.material.R.dimen.m3_appbar_size_compact
+                ) + topInset
 
-            // RecyclerView gets bottom padding
-            binding.recyclerViewLeads.setPadding(
-                binding.recyclerViewLeads.paddingLeft,
-                binding.recyclerViewLeads.paddingTop,
-                binding.recyclerViewLeads.paddingRight,
-                systemBars.bottom
-            )
+            insets
+        }
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.recyclerViewLeads) { view, insets ->
+            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+            view.updatePadding(bottom = bottomInset)
             insets
         }
     }
@@ -614,6 +608,8 @@ class LeadActivity : BaseActivity<ActivityLeadBinding>() {
 
     private fun handleLeadClick(lead: Lead) {
         val intent = Intent(this, LeadDetailActivity::class.java)
+        intent.putExtra("latitude", currentLatitude)
+        intent.putExtra("longitude", currentLongitude)
         intent.putExtra("lead_id", lead.id)
         startActivity(intent)
     }

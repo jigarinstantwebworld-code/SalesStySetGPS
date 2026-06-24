@@ -56,6 +56,7 @@ class LeadDetailViewModel(
         leadId: Int,
         notes: String,
         nextFollowUp: String? = null,
+        location: String,
         onSuccess: (Note) -> Unit = {},
         onError: (String) -> Unit = {}
     ) {
@@ -63,7 +64,7 @@ class LeadDetailViewModel(
             _isAddingNote.value = true
             _addNoteState.value = Resource.Loading()
 
-            val result = leadDetailRepository.addNote(leadId, notes, nextFollowUp)
+            val result = leadDetailRepository.addNote(leadId, notes, nextFollowUp,location)
 
             _addNoteState.value = result
             _isAddingNote.value = false

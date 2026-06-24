@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.styset.sales.app-mergeDebugResources-50:/values-lo/values-lo.xml",
+            "outputFile": "com.styset.sales.app-mergeDebugResources-51:/values-lo/values-lo.xml",
             "map": [
                 {
                     "source": "C:\\Users\\DM Intern\\.gradle\\caches\\8.9\\transforms\\dc4b780acf3daa1685c50ceedbaa69ff\\transformed\\jetified-play-services-base-18.3.0\\res\\values-lo\\values.xml",

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:ns1="http://schemas.android.com/tools">
+    <color name="background_gradient_end">#764ba2</color>
+    <color name="background_gradient_start">#1565C0</color>
     <color name="black">#FF000000</color>
+    <color name="danger">#EF4444</color>
     <color name="filter_active_bg">#1565C0</color>
     <color name="filter_active_text">#FFFFFF</color>
     <color name="filter_inactive_bg">#FFFFFF</color>
@@ -56,6 +59,7 @@
     <color name="md_theme_light_tertiaryContainer">#D6E4FF</color>
     <color name="orange_dark">#E65100</color>
     <color name="polyline_color">#1E88E5</color>
+    <color name="primary">#1565C0</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -66,6 +70,7 @@
     <color name="snackbar_text_color">#FFFFFF</color>
     <color name="snackbar_warning_bg">#FF9800</color>
     <color name="stop_color">#E53935</color>
+    <color name="success">#10B981</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="transparent">#00000000</color>

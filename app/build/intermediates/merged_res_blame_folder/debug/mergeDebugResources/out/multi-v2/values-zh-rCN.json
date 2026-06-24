@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.styset.sales.app-mergeDebugResources-50:/values-zh-rCN/values-zh-rCN.xml",
+            "outputFile": "com.styset.sales.app-mergeDebugResources-51:/values-zh-rCN/values-zh-rCN.xml",
             "map": [
                 {
                     "source": "C:\\Users\\DM Intern\\.gradle\\caches\\8.9\\transforms\\5580733e6332ed50ae4386b75b511140\\transformed\\jetified-play-services-basement-18.3.0\\res\\values-zh-rCN\\values.xml",

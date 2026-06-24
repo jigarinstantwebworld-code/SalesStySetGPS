@@ -1,11 +1,15 @@
 package com.styset.sales.app.ui
 
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.*
 import android.graphics.pdf.PdfDocument
+import android.net.Uri
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import com.styset.sales.app.util.PdfUtils
+import com.styset.sales.app.util.PdfUtils.generateQRCodeBitmap
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -38,10 +42,7 @@ class EnhancedPdfReportGenerator(private val context: Context) {
     private val COLOR_GRAY_DARK = Color.parseColor("#757575")
 
 
-
-
-
-    // this is fine working just comment for the sync history show bottom
+//    // all working good 27/05
 //    fun generateDailyReport(
 //        reportData: DailyReportData,
 //        onComplete: (File?) -> Unit
@@ -58,66 +59,100 @@ class EnhancedPdfReportGenerator(private val context: Context) {
 //            var canvas = page.canvas
 //            yPos = TOP_MARGIN
 //
-//            // Header and summary (once)
+//            // ========== HEADER AND SUMMARY (Top) ==========
 //            yPos = drawEnhancedHeader(canvas, reportData, yPos)
 //            yPos += 10
 //            yPos = drawSummaryCards(canvas, reportData, yPos)
 //            yPos += 20
 //
-//            // Sync history
-//            val newYPos = drawSyncHistory(canvas, reportData, yPos)
-//            if (newYPos <= yPos) {
-//                document.finishPage(page)
-//                currentPage++
-//                page = createNewPage(document, currentPage)
-//                canvas = page.canvas
-//                yPos = TOP_MARGIN
-//                yPos = drawSyncHistory(canvas, reportData, yPos)
-//            } else {
-//                yPos = newYPos
-//            }
-//            yPos += 10
-//
-//
-//            // Draw routes
+//            // ========== DRAW ALL ROUTES FIRST ==========
 //            for ((index, routeWithDetails) in reportData.routes.withIndex()) {
 //                Log.d("PDF_DEBUG", "========== Drawing Route ${index + 1} ==========")
-//                Log.d("PDF_DEBUG", "Stops: ${routeWithDetails.stops.size}, Segments: ${routeWithDetails.segments.size}")
+//                Log.d("PDF_DEBUG", "Stops count: ${routeWithDetails.stops.size}, Segments count: ${routeWithDetails.segments.size}")
 //
 //                var stopIndex = 0
 //                var segmentIndex = 0
-//                var pageCountForRoute = 1
+//                var headerDrawnOnCurrentPage = false
 //                var routeComplete = false
+//                var maxPagesPerRoute = 50
+//                var pageCountForRoute = 0
+//                var retryCount = 0
+//                val MAX_RETRIES = 3
 //
-//                while (!routeComplete) {
-//                    Log.d("PDF_DEBUG", "Drawing page $pageCountForRoute for route ${index + 1}, stopIndex=$stopIndex, segmentIndex=$segmentIndex")
+//                while (!routeComplete && pageCountForRoute < maxPagesPerRoute) {
+//                    pageCountForRoute++
 //
 //                    val result = drawEnhancedRoute(
 //                        canvas, routeWithDetails, index + 1, yPos,
-//                        stopIndex, segmentIndex
+//                        stopIndex, segmentIndex, headerDrawnOnCurrentPage
 //                    )
 //
-//                    yPos = result.first
+//                    val newYPos = result.first
 //                    val newStopIndex = result.second
 //                    val newSegmentIndex = result.third
+//                    val newHeaderDrawn = result.fourth
 //
-//                    if (newStopIndex == stopIndex && newSegmentIndex == segmentIndex) {
-//                        // Need new page
-//                        Log.d("PDF_DEBUG", "Need new page for route ${index + 1}")
+//                    // Check if progress was made
+//                    val stopProgress = newStopIndex > stopIndex
+//                    val segmentProgress = newSegmentIndex > segmentIndex
+//                    val madeProgress = stopProgress || segmentProgress
+//
+//                    if (madeProgress) {
+//                        // ✅ PROGRESS MADE - Continue on same page
+//                        yPos = newYPos
+//                        stopIndex = newStopIndex
+//                        segmentIndex = newSegmentIndex
+//                        headerDrawnOnCurrentPage = newHeaderDrawn
+//                        retryCount = 0
+//
+//                        // Check if route is complete
+//                        val allStopsDone = stopIndex >= routeWithDetails.stops.size
+//                        val allSegmentsDone = segmentIndex >= routeWithDetails.segments.size
+//
+//                        if (allStopsDone && allSegmentsDone) {
+//                            // Check if map was drawn (indices beyond bounds)
+//                            if (stopIndex > routeWithDetails.stops.size &&
+//                                segmentIndex > routeWithDetails.segments.size) {
+//                                routeComplete = true
+//                                Log.d("PDF_DEBUG", "Route ${index + 1} completed with map drawn")
+//                            } else if (stopIndex == routeWithDetails.stops.size &&
+//                                segmentIndex == routeWithDetails.segments.size) {
+//                                // All data drawn, map not yet attempted
+//                                // Continue loop to trigger map drawing
+//                                Log.d("PDF_DEBUG", "All stops and segments drawn, attempting map...")
+//                            } else {
+//                                routeComplete = true
+//                                Log.d("PDF_DEBUG", "Route ${index + 1} completed")
+//                            }
+//                        }
+//                    } else {
+//                        // ❌ NO PROGRESS - Need new page
+//                        retryCount++
+//
+//                        if (retryCount >= MAX_RETRIES) {
+//                            Log.e("PDF_DEBUG", "Route ${index + 1} stuck at stopIndex=$stopIndex, segmentIndex=$segmentIndex")
+//
+//                            // Force completion
+//                            if (stopIndex >= routeWithDetails.stops.size &&
+//                                segmentIndex >= routeWithDetails.segments.size) {
+//                                routeComplete = true
+//                                Log.w("PDF_DEBUG", "Route ${index + 1} completed without map")
+//                            } else {
+//                                routeComplete = true
+//                                Log.e("PDF_DEBUG", "Route ${index + 1} incomplete - forcing completion")
+//                            }
+//                            break
+//                        }
+//
+//                        // Create new page and retry
+//                        Log.d("PDF_DEBUG", "No progress, creating new page for route ${index + 1}")
 //                        document.finishPage(page)
 //                        currentPage++
-//                        pageCountForRoute++
 //                        page = createNewPage(document, currentPage)
 //                        canvas = page.canvas
 //                        yPos = TOP_MARGIN
-//                    } else {
-//                        stopIndex = newStopIndex
-//                        segmentIndex = newSegmentIndex
-//                        Log.d("PDF_DEBUG", "Progress: stopIndex=$stopIndex, segmentIndex=$segmentIndex")
-//
-//                        // Check if route is complete (map has been drawn)
-//                        routeComplete = (stopIndex > routeWithDetails.stops.size &&
-//                                segmentIndex > routeWithDetails.segments.size)
+//                        headerDrawnOnCurrentPage = false
+//                        // Keep stopIndex and segmentIndex the same
 //                    }
 //                }
 //
@@ -137,6 +172,32 @@ class EnhancedPdfReportGenerator(private val context: Context) {
 //                }
 //            }
 //
+//            // ========== DRAW SYNC HISTORY AT THE END ==========
+//            val syncHistoryHeight = calculateSyncHistoryHeight(reportData)
+//
+//            if (yPos + syncHistoryHeight > PAGE_HEIGHT - BOTTOM_MARGIN) {
+//                Log.d("PDF_DEBUG", "Need new page for sync history")
+//                document.finishPage(page)
+//                currentPage++
+//                page = createNewPage(document, currentPage)
+//                canvas = page.canvas
+//                yPos = TOP_MARGIN
+//            }
+//
+//            // Add separator line before sync history (if not at top of page)
+//            if (yPos > TOP_MARGIN + 20) {
+//                val separatorPaint = Paint().apply {
+//                    color = COLOR_GRAY_MEDIUM
+//                    strokeWidth = 1f
+//                }
+//                canvas.drawLine(LEFT_MARGIN.toFloat(), yPos.toFloat(),
+//                    (PAGE_WIDTH - RIGHT_MARGIN).toFloat(), yPos.toFloat(), separatorPaint)
+//                yPos += 15
+//            }
+//
+//            // Draw sync history at the end
+//            yPos = drawSyncHistoryAtBottom(canvas, reportData, yPos)
+//
 //            document.finishPage(page)
 //
 //            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -147,7 +208,7 @@ class EnhancedPdfReportGenerator(private val context: Context) {
 //            document.writeTo(FileOutputStream(file))
 //            document.close()
 //
-//            Log.d("PDF_DEBUG", "PDF generation SUCCESS!")
+//            Log.d("PDF_DEBUG", "PDF generation SUCCESS! Total pages: $currentPage")
 //            onComplete(file)
 //
 //        } catch (e: Exception) {
@@ -158,126 +219,374 @@ class EnhancedPdfReportGenerator(private val context: Context) {
 //    }
 
     fun generateDailyReport(
+        context: Context,
         reportData: DailyReportData,
-        onComplete: (File?) -> Unit
+        onComplete: (Uri?) -> Unit
     ) {
+
         try {
+
             Log.d("PDF_DEBUG", "========== START PDF GENERATION ==========")
             Log.d("PDF_DEBUG", "Routes count: ${reportData.routes.size}")
 
             val document = PdfDocument()
+
             var yPos = TOP_MARGIN
             var currentPage = 1
 
             var page = createNewPage(document, currentPage)
             var canvas = page.canvas
+
             yPos = TOP_MARGIN
 
-            // ========== HEADER AND SUMMARY (Top) ==========
+            // ================= HEADER =================
+
             yPos = drawEnhancedHeader(canvas, reportData, yPos)
             yPos += 10
+
             yPos = drawSummaryCards(canvas, reportData, yPos)
             yPos += 20
 
-            // ========== DRAW ALL ROUTES FIRST ==========
+            // ================= ROUTES =================
+
             for ((index, routeWithDetails) in reportData.routes.withIndex()) {
-                Log.d("PDF_DEBUG", "========== Drawing Route ${index + 1} ==========")
+
+                Log.d(
+                    "PDF_DEBUG",
+                    "========== Drawing Route ${index + 1} =========="
+                )
+
+                Log.d(
+                    "PDF_DEBUG",
+                    "Stops count: ${routeWithDetails.stops.size}, Segments count: ${routeWithDetails.segments.size}"
+                )
 
                 var stopIndex = 0
                 var segmentIndex = 0
-                var headerDrawn = false
-                var routeComplete = false
-                var pageCountForRoute = 1
 
-                while (!routeComplete && pageCountForRoute < 50) {
+                var headerDrawnOnCurrentPage = false
+                var routeComplete = false
+
+                val maxPagesPerRoute = 50
+
+                var pageCountForRoute = 0
+                var retryCount = 0
+
+                val MAX_RETRIES = 3
+
+                while (!routeComplete && pageCountForRoute < maxPagesPerRoute) {
+
+                    pageCountForRoute++
+
                     val result = drawEnhancedRoute(
-                        canvas, routeWithDetails, index + 1, yPos,
-                        stopIndex, segmentIndex, headerDrawn
+                        canvas,
+                        routeWithDetails,
+                        index + 1,
+                        yPos,
+                        stopIndex,
+                        segmentIndex,
+                        headerDrawnOnCurrentPage
                     )
 
-                    yPos = result.first
+                    val newYPos = result.first
                     val newStopIndex = result.second
                     val newSegmentIndex = result.third
-                    headerDrawn = result.fourth
+                    val newHeaderDrawn = result.fourth
 
-                    if (newStopIndex == stopIndex && newSegmentIndex == segmentIndex) {
-                        // Need new page
-                        Log.d("PDF_DEBUG", "Need new page for route ${index + 1}")
-                        document.finishPage(page)
-                        currentPage++
-                        pageCountForRoute++
-                        page = createNewPage(document, currentPage)
-                        canvas = page.canvas
-                        yPos = TOP_MARGIN
-                        headerDrawn = false
-                    } else {
+                    val stopProgress = newStopIndex > stopIndex
+                    val segmentProgress = newSegmentIndex > segmentIndex
+
+                    val madeProgress = stopProgress || segmentProgress
+
+                    if (madeProgress) {
+
+                        // ================= PROGRESS MADE =================
+
+                        yPos = newYPos
+
                         stopIndex = newStopIndex
                         segmentIndex = newSegmentIndex
-                        routeComplete = (stopIndex >= routeWithDetails.stops.size &&
-                                segmentIndex >= routeWithDetails.segments.size)
+
+                        headerDrawnOnCurrentPage = newHeaderDrawn
+
+                        retryCount = 0
+
+                        val allStopsDone =
+                            stopIndex >= routeWithDetails.stops.size
+
+                        val allSegmentsDone =
+                            segmentIndex >= routeWithDetails.segments.size
+
+                        if (allStopsDone && allSegmentsDone) {
+
+                            if (
+                                stopIndex > routeWithDetails.stops.size &&
+                                segmentIndex > routeWithDetails.segments.size
+                            ) {
+
+                                routeComplete = true
+
+                                Log.d(
+                                    "PDF_DEBUG",
+                                    "Route ${index + 1} completed with map drawn"
+                                )
+
+                            } else if (
+                                stopIndex == routeWithDetails.stops.size &&
+                                segmentIndex == routeWithDetails.segments.size
+                            ) {
+
+                                Log.d(
+                                    "PDF_DEBUG",
+                                    "All stops and segments drawn, attempting map..."
+                                )
+
+                            } else {
+
+                                routeComplete = true
+
+                                Log.d(
+                                    "PDF_DEBUG",
+                                    "Route ${index + 1} completed"
+                                )
+                            }
+                        }
+
+                    } else {
+
+                        // ================= NO PROGRESS =================
+
+                        retryCount++
+
+                        if (retryCount >= MAX_RETRIES) {
+
+                            Log.e(
+                                "PDF_DEBUG",
+                                "Route ${index + 1} stuck at stopIndex=$stopIndex, segmentIndex=$segmentIndex"
+                            )
+
+                            if (
+                                stopIndex >= routeWithDetails.stops.size &&
+                                segmentIndex >= routeWithDetails.segments.size
+                            ) {
+
+                                routeComplete = true
+
+                                Log.w(
+                                    "PDF_DEBUG",
+                                    "Route ${index + 1} completed without map"
+                                )
+
+                            } else {
+
+                                routeComplete = true
+
+                                Log.e(
+                                    "PDF_DEBUG",
+                                    "Route ${index + 1} incomplete - forcing completion"
+                                )
+                            }
+
+                            break
+                        }
+
+                        // ================= CREATE NEW PAGE =================
+
+                        Log.d(
+                            "PDF_DEBUG",
+                            "No progress, creating new page for route ${index + 1}"
+                        )
+
+                        document.finishPage(page)
+
+                        currentPage++
+
+                        page = createNewPage(document, currentPage)
+
+                        canvas = page.canvas
+
+                        yPos = TOP_MARGIN
+
+                        headerDrawnOnCurrentPage = false
                     }
                 }
 
-                Log.d("PDF_DEBUG", "Route ${index + 1} completed")
+                Log.d(
+                    "PDF_DEBUG",
+                    "Route ${index + 1} completed"
+                )
+
                 yPos += 15
 
-                // Force new page for next route if needed
+                // ================= NEXT PAGE =================
+
                 if (index < reportData.routes.size - 1) {
+
                     if (yPos + 150 > PAGE_HEIGHT - BOTTOM_MARGIN) {
-                        Log.d("PDF_DEBUG", "Creating new page for next route")
+
+                        Log.d(
+                            "PDF_DEBUG",
+                            "Creating new page for next route"
+                        )
+
                         document.finishPage(page)
+
                         currentPage++
+
                         page = createNewPage(document, currentPage)
+
                         canvas = page.canvas
+
                         yPos = TOP_MARGIN
                     }
                 }
             }
 
-            // ========== DRAW SYNC HISTORY AT THE END (ONLY ONCE) ==========
-            // Check if we need a new page for sync history
-            if (yPos + 100 > PAGE_HEIGHT - BOTTOM_MARGIN) {
+            // ================= SYNC HISTORY =================
+
+            val syncHistoryHeight =
+                calculateSyncHistoryHeight(reportData)
+
+            if (yPos + syncHistoryHeight > PAGE_HEIGHT - BOTTOM_MARGIN) {
+
+                Log.d(
+                    "PDF_DEBUG",
+                    "Need new page for sync history"
+                )
+
                 document.finishPage(page)
+
                 currentPage++
+
                 page = createNewPage(document, currentPage)
+
                 canvas = page.canvas
+
                 yPos = TOP_MARGIN
             }
 
-            // Add separator line before sync history
-            val separatorPaint = Paint().apply {
-                color = COLOR_GRAY_MEDIUM
-                strokeWidth = 1f
-            }
+            // ================= SEPARATOR =================
 
-            // Only add separator if we have space
-            if (yPos + 10 < PAGE_HEIGHT - BOTTOM_MARGIN) {
-                canvas.drawLine(LEFT_MARGIN.toFloat(), yPos.toFloat(),
-                    (PAGE_WIDTH - RIGHT_MARGIN).toFloat(), yPos.toFloat(), separatorPaint)
+            if (yPos > TOP_MARGIN + 20) {
+
+                val separatorPaint = Paint().apply {
+                    color = COLOR_GRAY_MEDIUM
+                    strokeWidth = 1f
+                }
+
+                canvas.drawLine(
+                    LEFT_MARGIN.toFloat(),
+                    yPos.toFloat(),
+                    (PAGE_WIDTH - RIGHT_MARGIN).toFloat(),
+                    yPos.toFloat(),
+                    separatorPaint
+                )
+
                 yPos += 15
             }
 
-            // Draw sync history at the end (ONCE)
-            yPos = drawSyncHistoryAtBottom(canvas, reportData, yPos)
+            // ================= DRAW SYNC HISTORY =================
+
+            yPos = drawSyncHistoryAtBottom(
+                canvas,
+                reportData,
+                yPos
+            )
+
+            // ================= FINISH LAST PAGE =================
 
             document.finishPage(page)
 
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val fileName = "Sales_Report_${reportData.date.replace(" ", "_")}.pdf"
-            val file = File(downloadsDir, fileName)
+            // ================= SAVE PDF USING MEDIASTORE =================
 
-            Log.d("PDF_DEBUG", "Saving to: ${file.absolutePath}")
-            document.writeTo(FileOutputStream(file))
-            document.close()
+            val fileName =
+                "Sales_Report_${reportData.date.replace(" ", "_")}.pdf"
 
-            Log.d("PDF_DEBUG", "PDF generation SUCCESS!")
-            onComplete(file)
+            val contentValues = ContentValues().apply {
+
+                put(
+                    MediaStore.MediaColumns.DISPLAY_NAME,
+                    fileName
+                )
+
+                put(
+                    MediaStore.MediaColumns.MIME_TYPE,
+                    "application/pdf"
+                )
+
+                put(
+                    MediaStore.MediaColumns.RELATIVE_PATH,
+                    Environment.DIRECTORY_DOWNLOADS
+                )
+            }
+
+
+            val resolver = context.contentResolver
+
+            val collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI
+
+            // Delete old file if exists
+            val selection = "${MediaStore.MediaColumns.DISPLAY_NAME}=?"
+
+            val selectionArgs = arrayOf(fileName)
+
+            resolver.delete(
+                collection,
+                selection,
+                selectionArgs
+            )
+            val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+
+            if (uri != null) {
+
+                resolver.openOutputStream(uri)?.use { outputStream ->
+
+                    document.writeTo(outputStream)
+
+                }
+
+                document.close()
+
+                Log.d(
+                    "PDF_DEBUG",
+                    "PDF generation SUCCESS! Total pages: $currentPage"
+                )
+
+                Log.d(
+                    "PDF_DEBUG",
+                    "PDF saved successfully"
+                )
+
+                onComplete(uri)
+
+            } else {
+
+                Log.e(
+                    "PDF_DEBUG",
+                    "Failed to create MediaStore URI"
+                )
+
+                document.close()
+
+                onComplete(null)
+            }
 
         } catch (e: Exception) {
-            Log.e("PDF_DEBUG", "PDF generation FAILED: ${e.message}", e)
+
+            Log.e(
+                "PDF_DEBUG",
+                "PDF generation FAILED: ${e.message}",
+                e
+            )
+
             e.printStackTrace()
+
             onComplete(null)
         }
+    }
+    private fun calculateSyncHistoryHeight(reportData: DailyReportData): Int {
+        if (reportData.syncHistory.isEmpty()) return 0
+        return 15 + 30 + (reportData.syncHistory.size * 20) + 15 + 10
     }
 
 
@@ -567,19 +876,19 @@ class EnhancedPdfReportGenerator(private val context: Context) {
         startY: Int,
         startStopIndex: Int = 0,
         startSegmentIndex: Int = 0,
-        headerAlreadyDrawn: Boolean = false  // ← New parameter
+        headerAlreadyDrawn: Boolean = false
 
     ): Quadruple<Int, Int, Int, Boolean> {
         var yPos = startY
         var currentStopIndex = startStopIndex
         var currentSegmentIndex = startSegmentIndex
-        var headerDrawn = headerAlreadyDrawn  // ← Track if header is drawn
+        var headerDrawn = headerAlreadyDrawn
 
         val route = routeWithDetails.route
         val stops = routeWithDetails.stops
         val segments = routeWithDetails.segments
 
-        // Column positions (must be accessible everywhere)
+        // Column positions
         val colLetter = LEFT_MARGIN + 15
         val colImage = LEFT_MARGIN + 45
         val colName = LEFT_MARGIN + 100
@@ -588,8 +897,7 @@ class EnhancedPdfReportGenerator(private val context: Context) {
         val colDistance = LEFT_MARGIN + 430
 
         // ========== ROUTE HEADER ==========
-        if (startStopIndex == 0 && startSegmentIndex == 0) {
-            Log.d("PDF_DEBUG", "Drawing header for route $routeNum")
+        if (!headerDrawn) {
             val headerHeight = 70
             if (yPos + headerHeight > PAGE_HEIGHT - BOTTOM_MARGIN) {
                 return Quadruple(yPos, currentStopIndex, currentSegmentIndex, headerDrawn)
@@ -610,7 +918,13 @@ class EnhancedPdfReportGenerator(private val context: Context) {
                 textSize = 11f
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             }
-            canvas.drawText("ROUTE $routeNum", LEFT_MARGIN + 15f, yPos + 20f, whiteTextPaint)
+
+            val routeTitle = if (startStopIndex > 0 || startSegmentIndex > 0) {
+                "ROUTE $routeNum (Continued)"
+            } else {
+                "ROUTE $routeNum"
+            }
+            canvas.drawText(routeTitle, LEFT_MARGIN + 15f, yPos + 20f, whiteTextPaint)
 
             val startTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(route.startTimeMillis))
             val endTime = route.endTimeMillis?.let {
@@ -626,11 +940,12 @@ class EnhancedPdfReportGenerator(private val context: Context) {
                 LEFT_MARGIN + 450f, yPos + 20f, whiteTextPaint)
 
             yPos += 70
+            headerDrawn = true
         }
 
         // ========== STOPS SECTION ==========
         if (stops.isNotEmpty() && currentStopIndex < stops.size) {
-            // Stops header (only on first call)
+            // Stops header (only when starting stops section on this page)
             if (currentStopIndex == 0) {
                 val stopsHeaderHeight = 40
                 if (yPos + stopsHeaderHeight > PAGE_HEIGHT - BOTTOM_MARGIN - 100) {
@@ -762,102 +1077,9 @@ class EnhancedPdfReportGenerator(private val context: Context) {
                 currentStopIndex++
             }
 
-            yPos += 30
-
-            // ========== JOURNEY SEGMENTS ==========
-            if (segments.isNotEmpty() && currentSegmentIndex < segments.size) {
-                if (currentSegmentIndex == 0) {
-                    if (yPos + 30 > PAGE_HEIGHT - BOTTOM_MARGIN) {
-                        return Quadruple(yPos, currentStopIndex, currentSegmentIndex, headerDrawn)
-                    }
-                    val subHeaderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                        color = Color.BLACK
-                        textSize = 14f
-                        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-                    }
-                    canvas.drawText("🔄 JOURNEY SEGMENTS", LEFT_MARGIN + 10f, yPos.toFloat(), subHeaderPaint)
-                    yPos += 20
-                }
-
-                val segmentHeight = 55
-                while (currentSegmentIndex < segments.size) {
-                    if (yPos + segmentHeight > PAGE_HEIGHT - BOTTOM_MARGIN) {
-                        return Quadruple(yPos, currentStopIndex, currentSegmentIndex, headerDrawn)
-                    }
-
-                    val segment = segments[currentSegmentIndex]
-                    val idx = currentSegmentIndex
-
-                    // Card background
-                    val cardBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                        color = if (idx % 2 == 0) Color.parseColor("#F8F9FA") else Color.WHITE
-                        style = Paint.Style.FILL
-                    }
-                    val cardLeft = LEFT_MARGIN + 5
-                    val cardRight = PAGE_WIDTH - RIGHT_MARGIN - 5
-                    val rectF = RectF(cardLeft.toFloat(), (yPos - 5).toFloat(), cardRight.toFloat(), (yPos + 45).toFloat())
-                    canvas.drawRoundRect(rectF, 8f, 8f, cardBgPaint)
-
-                    val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                        color = Color.parseColor("#E0E0E0")
-                        style = Paint.Style.STROKE
-                        strokeWidth = 1f
-                    }
-                    canvas.drawRoundRect(rectF, 8f, 8f, borderPaint)
-
-                    val fromLetter = segment.fromStop?.substringBefore(".") ?: "A"
-                    val toLetter = segment.toStop?.substringBefore(".") ?: "B"
-
-                    val fromCirclePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                        color = getColorForIndex(idx)
-                        style = Paint.Style.FILL
-                    }
-                    canvas.drawCircle(cardLeft + 20f, yPos + 8f, 10f, fromCirclePaint)
-
-                    val whiteText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                        color = Color.WHITE
-                        textSize = 9f
-                        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-                        textAlign = Paint.Align.CENTER
-                    }
-                    canvas.drawText(fromLetter, cardLeft + 20f, yPos + 11f, whiteText)
-
-                    val arrowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                        color = Color.parseColor("#6200EE")
-                        textSize = 14f
-                    }
-                    canvas.drawText("→", cardLeft + 25f, yPos + 10f, arrowPaint)
-
-                    canvas.drawCircle(cardLeft + 70f, yPos + 8f, 10f, fromCirclePaint)
-                    canvas.drawText(toLetter, cardLeft + 70f, yPos + 11f, whiteText)
-
-                    // Journey details box
-                    val detailsBoxRight = cardRight - 10
-                    val detailsBoxLeft = cardRight - 150
-                    val detailsBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                        color = Color.parseColor("#F0E6FF")
-                        style = Paint.Style.FILL
-                    }
-                    val detailsRect = RectF(detailsBoxLeft.toFloat(), yPos.toFloat(),
-                        detailsBoxRight.toFloat(), (yPos + 35).toFloat())
-                    canvas.drawRoundRect(detailsRect, 6f, 6f, detailsBgPaint)
-
-                    val distancePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                        color = Color.parseColor("#6200EE")
-                        textSize = 11f
-                        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-                    }
-                    canvas.drawText("📏 ${String.format("%.2f", segment.distance)} km",
-                        detailsBoxLeft + 10f, yPos + 15f, distancePaint)
-                    canvas.drawText("⏱ ${segment.duration} min",
-                        detailsBoxLeft + 10f, yPos + 30f, distancePaint)
-
-                    yPos += 55
-                    currentSegmentIndex++
-                }
-            }
+            // Add spacing after stops are done
+            yPos += 15
         } else if (stops.isEmpty()) {
-            // No stops – show a message
             val infoPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = Color.parseColor("#FF9800")
                 textSize = 12f
@@ -867,125 +1089,331 @@ class EnhancedPdfReportGenerator(private val context: Context) {
             yPos += 30
         }
 
-        // ========== MAP SECTION (only when all stops & segments are finished) ==========
-        // ========== MAP SECTION (always show for every route) ==========
-        if (currentStopIndex >= stops.size && currentSegmentIndex >= segments.size) {
-            val mapHeaderHeight = 30
-            val mapImageMaxHeight = 200
-            val qrSize = 50
-            val totalMapHeight = mapHeaderHeight + mapImageMaxHeight + 20
-
-            // Check space
-            if (yPos + totalMapHeight > PAGE_HEIGHT - BOTTOM_MARGIN) {
-                return Quadruple(yPos, currentStopIndex, currentSegmentIndex, headerDrawn)
-            }
-
-            // Draw map header
-            val subHeaderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = Color.BLACK
-                textSize = 14f
-                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            }
-            canvas.drawText("🗺️ ROUTE MAP", LEFT_MARGIN + 10f, yPos.toFloat(), subHeaderPaint)
-            yPos += 20
-
-            // ✅ ALWAYS try to draw screenshot - if fails, draw fallback
-            var mapDrawn = false
-
-            if (!route.screenshotPath.isNullOrEmpty()) {
-                try {
-                    val file = File(route.screenshotPath)
-                    if (file.exists() && file.length() > 0 && file.length() < 5_000_000) {
-                        val options = BitmapFactory.Options().apply { inSampleSize = 4 }
-                        val originalBitmap = BitmapFactory.decodeFile(route.screenshotPath, options)
-
-                        if (originalBitmap != null && !originalBitmap.isRecycled) {
-                            val maxHeight = 180
-                            val maxWidth = CONTENT_WIDTH - 80 - qrSize - 20
-                            var targetWidth = originalBitmap.width
-                            var targetHeight = originalBitmap.height
-
-                            if (targetHeight > maxHeight) {
-                                val scale = maxHeight.toFloat() / targetHeight
-                                targetWidth = (targetWidth * scale).toInt()
-                                targetHeight = maxHeight
-                            }
-                            if (targetWidth > maxWidth) {
-                                val scale = maxWidth.toFloat() / targetWidth
-                                targetHeight = (targetHeight * scale).toInt()
-                                targetWidth = maxWidth
-                            }
-
-                            val scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidth, targetHeight, true)
-                            originalBitmap.recycle()
-
-                            // QR code
-                            val mapsUrl = buildGoogleMapsUrlForRoute(routeWithDetails)
-                            var qrBitmap: Bitmap? = null
-                            var scaledQr: Bitmap? = null
-                            if (mapsUrl.isNotEmpty()) {
-                                qrBitmap = PdfUtils.generateQRCodeBitmap(mapsUrl)
-                                if (qrBitmap != null) {
-                                    scaledQr = Bitmap.createScaledBitmap(qrBitmap, qrSize, qrSize, true)
-                                    qrBitmap.recycle()
-                                }
-                            }
-
-                            val qrX = LEFT_MARGIN + 10
-                            if (scaledQr != null) {
-                                canvas.drawBitmap(scaledQr, qrX.toFloat(), yPos.toFloat(), null)
-                                val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                                    color = COLOR_GRAY_MEDIUM
-                                    style = Paint.Style.STROKE
-                                    strokeWidth = 1f
-                                }
-                                canvas.drawRect(
-                                    qrX.toFloat() - 1, yPos.toFloat() - 1,
-                                    (qrX + qrSize + 1).toFloat(), (yPos + qrSize + 1).toFloat(),
-                                    borderPaint
-                                )
-                                val scanPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                                    color = COLOR_GRAY_DARK
-                                    textSize = 7f
-                                    textAlign = Paint.Align.CENTER
-                                }
-                                canvas.drawText("SCAN", (qrX + qrSize / 2).toFloat(), (yPos + qrSize + 10).toFloat(), scanPaint)
-                            }
-
-                            val imageX = qrX + qrSize + 15
-                            canvas.drawBitmap(scaledBitmap, imageX.toFloat(), yPos.toFloat(), null)
-                            yPos += targetHeight + 15
-                            mapDrawn = true
-
-                            scaledBitmap.recycle()
-                            scaledQr?.recycle()
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.e("PDF_MAP", "Map error: ${e.message}")
+        // ========== JOURNEY SEGMENTS SECTION - MOVED OUTSIDE STOPS BLOCK ==========
+        if (segments.isNotEmpty() && currentSegmentIndex < segments.size) {
+            // Segments header (only when starting segments section on this page)
+            if (currentSegmentIndex == 0) {
+                if (yPos + 30 > PAGE_HEIGHT - BOTTOM_MARGIN) {
+                    return Quadruple(yPos, currentStopIndex, currentSegmentIndex, headerDrawn)
                 }
+                val subHeaderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = Color.BLACK
+                    textSize = 14f
+                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                }
+                canvas.drawText("🔄 JOURNEY SEGMENTS", LEFT_MARGIN + 10f, yPos.toFloat(), subHeaderPaint)
+                yPos += 20
             }
 
-            // ✅ FALLBACK: If no screenshot was drawn, generate a map preview using route data
-//            if (!mapDrawn) {
-//                drawRouteMapPreview(canvas, routeWithDetails, yPos, qrSize)
-//                yPos += 180
-//            }
+            val segmentHeight = 55
+            while (currentSegmentIndex < segments.size) {
+                if (yPos + segmentHeight > PAGE_HEIGHT - BOTTOM_MARGIN) {
+                    return Quadruple(yPos, currentStopIndex, currentSegmentIndex, headerDrawn)
+                }
 
-            // Separator line
-            val dashPaint = Paint().apply {
-                color = COLOR_GRAY_MEDIUM
-                strokeWidth = 1f
-                pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
+                val segment = segments[currentSegmentIndex]
+                val idx = currentSegmentIndex
+
+                // Card background
+                val cardBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = if (idx % 2 == 0) Color.parseColor("#F8F9FA") else Color.WHITE
+                    style = Paint.Style.FILL
+                }
+                val cardLeft = LEFT_MARGIN + 5
+                val cardRight = PAGE_WIDTH - RIGHT_MARGIN - 5
+                val rectF = RectF(cardLeft.toFloat(), (yPos - 5).toFloat(), cardRight.toFloat(), (yPos + 45).toFloat())
+                canvas.drawRoundRect(rectF, 8f, 8f, cardBgPaint)
+
+                val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = Color.parseColor("#E0E0E0")
+                    style = Paint.Style.STROKE
+                    strokeWidth = 1f
+                }
+                canvas.drawRoundRect(rectF, 8f, 8f, borderPaint)
+
+                val fromLetter = segment.fromStop?.substringBefore(".") ?: "A"
+                val toLetter = segment.toStop?.substringBefore(".") ?: "B"
+
+                val fromCirclePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = getColorForIndex(idx)
+                    style = Paint.Style.FILL
+                }
+                canvas.drawCircle(cardLeft + 20f, yPos + 8f, 10f, fromCirclePaint)
+
+                val whiteText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = Color.WHITE
+                    textSize = 9f
+                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                    textAlign = Paint.Align.CENTER
+                }
+                canvas.drawText(fromLetter, cardLeft + 20f, yPos + 11f, whiteText)
+
+                val arrowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = Color.parseColor("#6200EE")
+                    textSize = 14f
+                }
+                canvas.drawText("→", cardLeft + 25f, yPos + 10f, arrowPaint)
+
+                canvas.drawCircle(cardLeft + 70f, yPos + 8f, 10f, fromCirclePaint)
+                canvas.drawText(toLetter, cardLeft + 70f, yPos + 11f, whiteText)
+
+                // Journey details box
+                val detailsBoxRight = cardRight - 10
+                val detailsBoxLeft = cardRight - 150
+                val detailsBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = Color.parseColor("#F0E6FF")
+                    style = Paint.Style.FILL
+                }
+                val detailsRect = RectF(detailsBoxLeft.toFloat(), yPos.toFloat(),
+                    detailsBoxRight.toFloat(), (yPos + 35).toFloat())
+                canvas.drawRoundRect(detailsRect, 6f, 6f, detailsBgPaint)
+
+                val distancePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = Color.parseColor("#6200EE")
+                    textSize = 11f
+                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                }
+                canvas.drawText("📏 ${String.format("%.2f", segment.distance)} km",
+                    detailsBoxLeft + 10f, yPos + 15f, distancePaint)
+                canvas.drawText("⏱ ${segment.duration} min",
+                    detailsBoxLeft + 10f, yPos + 30f, distancePaint)
+
+                yPos += 55
+                currentSegmentIndex++
             }
-            yPos += 10
-            canvas.drawLine(LEFT_MARGIN.toFloat(), yPos.toFloat(),
-                (PAGE_WIDTH - RIGHT_MARGIN).toFloat(), yPos.toFloat(), dashPaint)
-            yPos += 10
 
-            // Signal completion
-            currentStopIndex = stops.size + 1
-            currentSegmentIndex = segments.size + 1
+            // Add spacing after segments are done
+            yPos += 15
+        }
+
+        // ========== MAP SECTION ==========
+        val allStopsDone = currentStopIndex >= stops.size
+        val allSegmentsDone = currentSegmentIndex >= segments.size
+
+        if (allStopsDone && allSegmentsDone) {
+            val mapAlreadyDrawn = currentStopIndex > stops.size && currentSegmentIndex > segments.size
+
+            if (!mapAlreadyDrawn) {
+                val mapHeaderHeight = 30
+                val mapImageMaxHeight = 200
+                val qrSize = 50
+                val totalMapHeight = mapHeaderHeight + mapImageMaxHeight + 20
+
+                // Check space
+                if (yPos + totalMapHeight > PAGE_HEIGHT - BOTTOM_MARGIN) {
+                    return Quadruple(yPos, currentStopIndex, currentSegmentIndex, headerDrawn)
+                }
+
+                // Draw map header
+                val subHeaderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = Color.BLACK
+                    textSize = 14f
+                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                }
+                canvas.drawText("🗺️ ROUTE MAP", LEFT_MARGIN + 10f, yPos.toFloat(), subHeaderPaint)
+                yPos += 20
+
+                // Try to draw map screenshot
+                var mapDrawn = false
+
+                if (!route.screenshotPath.isNullOrEmpty()) {
+
+                    try {
+
+                        val file = File(route.screenshotPath)
+
+                        if (file.exists() &&
+                            file.length() > 0 &&
+                            file.length() < 5_000_000
+                        ) {
+
+                            val options = BitmapFactory.Options().apply {
+                                inSampleSize = 2
+                            }
+
+                            val originalBitmap =
+                                BitmapFactory.decodeFile(route.screenshotPath, options)
+
+                            if (originalBitmap != null && !originalBitmap.isRecycled) {
+
+                                val qrSize = 180
+                                val maxHeight = 180
+                                val maxWidth = CONTENT_WIDTH - 80 - qrSize - 20
+
+                                var targetWidth = originalBitmap.width
+                                var targetHeight = originalBitmap.height
+
+                                if (targetHeight > maxHeight) {
+
+                                    val scale =
+                                        maxHeight.toFloat() / targetHeight
+
+                                    targetWidth =
+                                        (targetWidth * scale).toInt()
+
+                                    targetHeight = maxHeight
+                                }
+
+                                if (targetWidth > maxWidth) {
+
+                                    val scale =
+                                        maxWidth.toFloat() / targetWidth
+
+                                    targetHeight =
+                                        (targetHeight * scale).toInt()
+
+                                    targetWidth = maxWidth
+                                }
+
+                                val scaledBitmap = Bitmap.createScaledBitmap(
+                                    originalBitmap,
+                                    targetWidth,
+                                    targetHeight,
+                                    true
+                                )
+
+                                originalBitmap.recycle()
+
+                                // IMPORTANT:
+                                // Keep URL SHORT if possible
+                                val mapsUrl =
+                                    buildGoogleMapsUrlForRoute(routeWithDetails)
+
+                                val qrBitmap =
+                                    generateQRCodeBitmap(
+                                        mapsUrl,
+                                        qrSize
+                                    )
+
+                                val qrX = LEFT_MARGIN + 10
+
+                                // QR draw paint
+                                val qrPaint = Paint().apply {
+                                    isFilterBitmap = false
+                                    isAntiAlias = false
+                                    isDither = false
+                                }
+
+                                if (qrBitmap != null) {
+
+                                    canvas.drawBitmap(
+                                        qrBitmap,
+                                        qrX.toFloat(),
+                                        yPos.toFloat(),
+                                        qrPaint
+                                    )
+
+                                    // Border
+                                    val borderPaint = Paint().apply {
+                                        color = COLOR_GRAY_MEDIUM
+                                        style = Paint.Style.STROKE
+                                        strokeWidth = 1f
+                                    }
+
+                                    canvas.drawRect(
+                                        qrX.toFloat() - 1,
+                                        yPos.toFloat() - 1,
+                                        (qrX + qrSize + 1).toFloat(),
+                                        (yPos + qrSize + 1).toFloat(),
+                                        borderPaint
+                                    )
+
+                                    // Scan text
+                                    val scanPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                                        color = COLOR_GRAY_DARK
+                                        textSize = 12f
+                                        textAlign = Paint.Align.CENTER
+                                    }
+
+                                    canvas.drawText(
+                                        "SCAN",
+                                        (qrX + qrSize / 2).toFloat(),
+                                        (yPos + qrSize + 18).toFloat(),
+                                        scanPaint
+                                    )
+                                }
+
+                                // Draw Map Image
+                                val imageX = qrX + qrSize + 20
+
+                                canvas.drawBitmap(
+                                    scaledBitmap,
+                                    imageX.toFloat(),
+                                    yPos.toFloat(),
+                                    null
+                                )
+
+                                yPos += maxOf(targetHeight, qrSize) + 35
+
+                                mapDrawn = true
+
+                                scaledBitmap.recycle()
+                                qrBitmap?.recycle()
+
+                                Log.d(
+                                    "PDF_DEBUG",
+                                    "Map drawn successfully for route $routeNum"
+                                )
+                            }
+
+                        } else {
+
+                            Log.w(
+                                "PDF_DEBUG",
+                                "Screenshot file missing or invalid: ${route.screenshotPath}"
+                            )
+                        }
+
+                    } catch (e: Exception) {
+
+                        Log.e(
+                            "PDF_MAP",
+                            "Map error for route ${routeNum}: ${e.message}"
+                        )
+                    }
+                }
+
+                if (!mapDrawn) {
+                    // Draw placeholder
+                    val placeholderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                        color = COLOR_GRAY_LIGHT
+                        style = Paint.Style.FILL
+                    }
+                    canvas.drawRect(
+                        (LEFT_MARGIN + 60).toFloat(), yPos.toFloat(),
+                        (PAGE_WIDTH - RIGHT_MARGIN - 20).toFloat(), (yPos + 150).toFloat(),
+                        placeholderPaint
+                    )
+
+                    val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                        color = COLOR_GRAY_DARK
+                        textSize = 12f
+                        textAlign = Paint.Align.CENTER
+                    }
+                    canvas.drawText(
+                        "No map preview available",
+                        (PAGE_WIDTH / 2).toFloat(),
+                        yPos + 75f,
+                        textPaint
+                    )
+                    yPos += 170
+                }
+
+                // Separator line
+                val dashPaint = Paint().apply {
+                    color = COLOR_GRAY_MEDIUM
+                    strokeWidth = 1f
+                    pathEffect = DashPathEffect(floatArrayOf(5f, 5f), 0f)
+                }
+                yPos += 10
+                canvas.drawLine(LEFT_MARGIN.toFloat(), yPos.toFloat(),
+                    (PAGE_WIDTH - RIGHT_MARGIN).toFloat(), yPos.toFloat(), dashPaint)
+                yPos += 15
+
+                // Mark as complete by setting indices beyond array bounds
+                currentStopIndex = stops.size + 1
+                currentSegmentIndex = segments.size + 1
+            }
         }
 
         return Quadruple(yPos, currentStopIndex, currentSegmentIndex, headerDrawn)

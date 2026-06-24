@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/updateCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="8dp"
+    tools:visibility="visible"
+    app:cardBackgroundColor="@android:color/white"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_update"
+                app:tint="@color/md_theme_light_primary" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvUpdateTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="New Update Available"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:id="@+id/tvUpdateMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="A new version is available"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:layout_marginTop="4dp" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Progress Section -->
+        <LinearLayout
+            android:id="@+id/progressSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/updateProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:progressTint="@color/md_theme_light_primary"
+                android:progressBackgroundTint="#E0E0E0" />
+
+            <TextView
+                android:id="@+id/tvProgressPercent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Downloading: 0%"
+                android:textSize="12sp"
+                android:textColor="@android:color/darker_gray" />
+
+        </LinearLayout>
+
+        <!-- Error Section -->
+        <TextView
+            android:id="@+id/tvError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="12sp"
+            android:layout_marginTop="8dp"
+            android:visibility="gone" />
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp"
+            android:gravity="end">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelUpdate"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                android:textColor="@android:color/darker_gray" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUpdate"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Update"
+                android:backgroundTint="@color/md_theme_light_primary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRestart"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Restart  Install"
+                android:backgroundTint="@color/md_theme_light_primary"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

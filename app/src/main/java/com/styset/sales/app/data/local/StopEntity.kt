@@ -5,7 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "stops")
 data class StopEntity(
-    @PrimaryKey val id: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val mappingId: Long=0,
+    val tripId: String? = null,
+    val salesExecutiveId: String? = null   ,
     val name: String?,
     val locationLabel: String?,
     val address: String?,
@@ -18,6 +21,7 @@ data class StopEntity(
     val durationElapsedMinutes: Long,
     val startElapsedRealtimeMillis: Long,
     val endElapsedRealtimeMillis: Long?,
+    val lastSyncTime: Long = 0,
     val letter: String? = null  // Add this field
 )
 

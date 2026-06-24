@@ -26,12 +26,16 @@ class StopRepository(context: Context) {
                 address = e.address,
                 phone = e.phone,
                 imageUri = e.imageUri,
-                timeSpentMinutes = e.durationElapsedMinutes
+                timeSpentMinutes = e.durationElapsedMinutes,
+                tripId = e.tripId, salesExecutiveId = e.salesExecutiveId.toString(),
             )
         }
     }
 
     suspend fun upsertStop(stop: StopPoint, startElapsed: Long, endElapsed: Long?) {
+        // Check if stop already exists in database
+        val existingStop = dao.getStopById(stop.id)
+
         val e = StopEntity(
             letter = stop.letter,
             id = stop.id,
@@ -46,7 +50,10 @@ class StopRepository(context: Context) {
             endWallTimeMillis = stop.endTimeMillis,
             durationElapsedMinutes = stop.timeSpentMinutes,
             startElapsedRealtimeMillis = startElapsed,
-            endElapsedRealtimeMillis = endElapsed
+            endElapsedRealtimeMillis = endElapsed,
+            mappingId = existingStop?.mappingId ?: stop.mapping_id,
+            tripId = stop.tripId!!,
+            salesExecutiveId = stop.salesExecutiveId
         )
         dao.upsert(e)
     }
@@ -54,24 +61,9 @@ class StopRepository(context: Context) {
     suspend fun updateStopName(id: Long, name: String) { dao.updateName(id, name) }
 
 
-//    suspend fun getStopsInTimeRange(startTime: Long, endTime: Long): List<StopPoint> {
-//        val stopEntities = dao.getStopsInTimeRange(startTime, endTime)
-//        return stopEntities.map { e ->
-//            StopPoint(
-//                letter = e.letter,
-//                id = e.id,
-//                center = LatLng(e.lat, e.lng),
-//                startTimeMillis = e.startWallTimeMillis,
-//                endTimeMillis = e.endWallTimeMillis,
-//                name = e.name,
-//                locationLabel = e.locationLabel,
-//                address = e.address,
-//                phone = e.phone,
-//                imageUri = e.imageUri,
-//                timeSpentMinutes = e.durationElapsedMinutes
-//            )
-//        }
-//    }
+    suspend fun getAllStops(): List<StopEntity> {
+        return dao.getAllStops()
+    }
 
     suspend fun getStopsInTimeRange(startTime: Long, endTime: Long): List<StopPoint> {
         Log.d("LETTER_FLOW", "=== getStopsInTimeRange ===")
@@ -97,7 +89,9 @@ class StopRepository(context: Context) {
                 phone = e.phone,
                 imageUri = e.imageUri,
                 timeSpentMinutes = e.durationElapsedMinutes,
-                letter = e.letter
+                letter = e.letter,
+                tripId = e.tripId,
+                salesExecutiveId = e.salesExecutiveId.toString()
             )
         }
 
@@ -126,7 +120,9 @@ class StopRepository(context: Context) {
                         phone = e.phone,
                         imageUri = e.imageUri,
                         timeSpentMinutes = e.durationElapsedMinutes,
-                        letter = e.letter
+                        letter = e.letter,
+                        tripId = e.tripId,
+                        salesExecutiveId = e.salesExecutiveId.toString()
                     )
                 }
             } catch (e: Exception) {

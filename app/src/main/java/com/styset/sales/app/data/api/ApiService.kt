@@ -71,6 +71,8 @@ interface ApiService {
 
 
 
+
+
     @GET("put-presigned-url")
     suspend fun getPresignedUrlTnc(
         @Query("bucket_name") bucketName: String,
@@ -81,10 +83,10 @@ interface ApiService {
 
 
 
-    @POST("salesexecutive-places-add")
-    suspend fun syncStops(
-        @Body request: StopSyncRequest
-    ): SyncResponse
+//    @POST("salesexecutive-places-add")
+//    suspend fun syncStops(
+//        @Body request: StopSyncRequest
+//    ): SyncResponse
 
     @POST("admin-vendor-login")
     suspend fun login(

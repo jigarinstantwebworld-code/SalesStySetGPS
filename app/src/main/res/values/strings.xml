@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">SalesStySet GPS</string>
+<!--    <string name="google_maps_key">AIzaSyDsugAeJ9QFu7_j-ztetR7kKUWVQrRttBg</string>-->
+<!--    <string name="google_server_client_id">737546427534-p3i31q0mvofkhtcacnlv595jeu019til.apps.googleusercontent.com</string>-->
+
     <string name="google_maps_key">AIzaSyBlPxpesc1oWxHbPq0UCtXjqobMdFr1qRo</string>
     <string name="google_server_client_id">952861855187-2juogpib3iqpq8isp35vjgucc0vhl331.apps.googleusercontent.com</string>
-
     <string name="notification_channel_id">location_tracking_channel</string>
     <string name="notification_channel_name">Location Tracking</string>
     <string name="notification_channel_desc">Shows that location tracking is active.</string>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.styset.sales.app.debug"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="21"
+    android:versionName="1.0.21" >
 
     <uses-sdk
         android:minSdkVersion="24"
-        android:targetSdkVersion="34" />
+        android:targetSdkVersion="35" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -292,7 +292,12 @@
             <intent-filter>
                 <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
             </intent-filter>
-        </receiver>
+        </receiver> <!-- The activities will be merged into the manifest of the hosting app. -->
+        <activity
+            android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity"
+            android:exported="false"
+            android:stateNotNeeded="true"
+            android:theme="@style/Theme.PlayCore.Transparent" />
     </application>
 
 </manifest>

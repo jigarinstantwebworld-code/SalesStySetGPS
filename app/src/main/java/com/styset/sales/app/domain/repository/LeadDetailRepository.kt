@@ -108,7 +108,8 @@ class LeadDetailRepository(
     suspend fun addNote(
         saleLeadsId: Int,
         notes: String,
-        nextFollowUp: String? = null
+        nextFollowUp: String? = null,
+        locationAddress : String?=null
     ): Resource<Note> {
         return try {
             val salesExecutiveId = preferenceManager.getSalesExecutiveId()
@@ -121,7 +122,8 @@ class LeadDetailRepository(
                 sale_leads_id = saleLeadsId,
                 notes = notes,
                 next_follow_up = nextFollowUp,
-                sales_executive_id = salesExecutiveId
+                sales_executive_id = salesExecutiveId,
+                current_location=locationAddress
             )
 
             val response = withContext(Dispatchers.IO) {

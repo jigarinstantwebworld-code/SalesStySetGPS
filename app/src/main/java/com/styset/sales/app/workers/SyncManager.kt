@@ -10,6 +10,8 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.google.gson.GsonBuilder
+import com.google.gson.annotations.SerializedName
 import com.styset.sales.app.SyncWorker
 import com.styset.sales.app.models.Resource
 import com.styset.sales.app.repository.SyncRepository
@@ -183,19 +185,42 @@ data class SyncResult(
 
 data class StopSyncRequest(
     val places: List<StopRequestData>,
-    val salesExecutiveId: String,
-    val tripId: String
+//    val salesExecutiveId: String,
+//    val tripId: String
 )
 
+
 data class StopRequestData(
+    val id: Long? = null,
     val name: String,
-    val coordinates: String,  // Format: "latitude,longitude"
+    val coordinates: String,
     val startTime: Long,
-    val endTime: Long?,
-    val durationMinutes: Long,
+    @SerializedName("endTime")
+    val endTime: Long? = null,
+    val durationMinutes: Long?= null,
     val address: String?,
-    val phone: String?
-)
+    val phone: String?,
+    val mappingId: Long? = null,
+    val salesExecutiveId: String,  // ✅ Add this
+    val tripId: String              // ✅ Add this
+) {
+    // This toJson() will be used manually
+    fun toJson(): String {
+        val map = mutableMapOf<String, Any?>(
+            "id" to id,
+            "name" to name,
+            "coordinates" to coordinates,
+            "startTime" to startTime,
+            "endTime" to endTime,
+            "durationMinutes" to durationMinutes,
+            "address" to address,
+            "phone" to phone,
+            "mappingId" to mappingId
+        )
+        // Remove null values? No - we want to keep them
+        return GsonBuilder().serializeNulls().create().toJson(map)
+    }
+}
 
 data class SyncResponse(
     val success: Int,

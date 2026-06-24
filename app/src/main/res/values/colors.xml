@@ -86,5 +86,14 @@
     <color name="filter_inactive_text">#1565C0</color>
     <color name="filter_inactive_border">#1565C0</color>
     <color name="transparent">#00000000</color>
+
+
+    <color name="background_gradient_start">#1565C0</color>
+    <color name="background_gradient_end">#764ba2</color>
+    <color name="primary">#1565C0</color>
+<!--    <color name="break">#F59E0B</color>-->
+    <color name="danger">#EF4444</color>
+    <color name="success">#10B981</color>
+
 </resources>
 

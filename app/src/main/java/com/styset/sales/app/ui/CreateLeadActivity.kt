@@ -23,11 +23,15 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import com.styset.sales.app.R
 import com.styset.sales.app.data.api.ApiService
@@ -405,12 +409,41 @@ class CreateLeadActivity : BaseActivity<ActivityCreateLeadBinding>() {
     }
 
     private fun setupToolbar() {
+
         setSupportActionBar(binding.toolbar)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Create New Lead"
 
         binding.toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { view, insets ->
+
+            val statusBarHeight = insets.getInsets(
+                WindowInsetsCompat.Type.statusBars()
+            ).top
+
+            val toolbarHeight = resources.getDimensionPixelSize(
+                com.google.android.material.R.dimen.m3_appbar_size_compact
+            )
+
+            // Toolbar top padding for status bar
+            view.updatePadding(top = statusBarHeight)
+
+            // Increase toolbar total height
+            view.layoutParams.height = toolbarHeight + statusBarHeight
+            view.requestLayout()
+
+            // ScrollView padding
+            binding.root.findViewById<ScrollView>(R.id.scrollView)?.updatePadding(
+                bottom = insets.getInsets(
+                    WindowInsetsCompat.Type.navigationBars()
+                ).bottom
+            )
+
+            insets
         }
     }
 

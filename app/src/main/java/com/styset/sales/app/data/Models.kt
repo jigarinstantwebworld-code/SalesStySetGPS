@@ -23,7 +23,10 @@ data class StopPoint(
     val phone: String? = null,
     val imageUri: String? = null,
     val timeSpentMinutes: Long = 0,
-    val letter: String? = null
+    val letter: String? = null,
+    val mapping_id: Long = System.currentTimeMillis(),
+    val tripId: String?=null,
+    val salesExecutiveId: String
 )
 
 class TrackingSessionState {

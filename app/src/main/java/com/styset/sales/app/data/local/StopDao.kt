@@ -38,12 +38,20 @@ interface StopDao {
 
     @Query("""
     SELECT * FROM stops 
-    WHERE endWallTimeMillis BETWEEN :fromTime AND :toTime
-    AND endWallTimeMillis IS NOT NULL
-    AND endWallTimeMillis > 0
-    ORDER BY endWallTimeMillis ASC
+    WHERE (
+        (endWallTimeMillis IS NULL AND startWallTimeMillis <= :toTime)
+        OR 
+        (endWallTimeMillis IS NOT NULL AND endWallTimeMillis BETWEEN :fromTime AND :toTime)
+    )
+    ORDER BY startWallTimeMillis ASC
 """)
     suspend fun getStopsInTimeRanges(fromTime: Long, toTime: Long): List<StopEntity>
+
+    @Query("""        UPDATE stops 
+        SET lastSyncTime = :syncTime 
+        WHERE id = :stopId
+    """)
+    suspend fun updateStopSyncTime(stopId: Long, syncTime: Long)
 
 
     @Query("SELECT * FROM stops ORDER BY startWallTimeMillis DESC")

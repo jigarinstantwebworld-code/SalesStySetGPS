@@ -108,6 +108,9 @@
 
         </FrameLayout>
 
+        <include
+            android:id="@+id/updateCardContainer"
+            layout="@layout/layout_update_card" />
     </LinearLayout>
 
     <!-- Navigation Drawer -->

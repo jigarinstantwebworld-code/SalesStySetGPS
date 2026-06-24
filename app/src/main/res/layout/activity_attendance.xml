@@ -4,20 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainContent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_gradient_start">
+
+    <!-- Gradient Background -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_gradient_background" />
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:elevation="0dp"
+        android:background="@android:color/transparent">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@android:color/transparent"
             app:navigationIcon="@drawable/ic_back_white"
             app:title="Attendance"
-            app:titleTextColor="@android:color/white" />
+            app:titleTextColor="@android:color/white"
+            app:titleTextAppearance="@style/TextAppearance.AppCompat.Title" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -31,15 +41,37 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp"
-            app:layout_anchorGravity="bottom|center">
+            android:paddingTop="8dp"
+            android:paddingBottom="24dp">
+
+            <!-- Last Login Info Banner -->
+            <TextView
+                android:id="@+id/tvLastLoginInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_last_login"
+                android:drawablePadding="8dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="2"
+                android:padding="12dp"
+                android:text="Last Login: 10:30 AM on 06 Jun 2026"
+                android:textColor="#E0E0E0"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:drawableTint="#E0E0E0"
+                tools:visibility="visible" />
 
             <!-- Status Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="8dp">
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:cardPreventCornerOverlap="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -55,30 +87,32 @@
 
                         <View
                             android:id="@+id/statusIndicator"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
                             android:background="@drawable/circle_shape" />
 
                         <TextView
                             android:id="@+id/tvStatus"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
-                            android:text="Not Attendence Logged In"
-                            android:textSize="18sp"
+                            android:layout_weight="1"
+                            android:text="Not Attendance Logged In"
+                            android:textColor="#333333"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
-
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:layout_weight="1" />
 
                         <TextView
                             android:id="@+id/tvDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="#A8A0A0"
-                            android:textSize="14sp" />
+                            android:background="@drawable/bg_date"
+                            android:padding="4dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            tools:text="06 Jun"
+                            android:textColor="#666666"
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
@@ -91,32 +125,50 @@
                 android:id="@+id/cardWorkTimer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp">
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#4361EE"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp"
+                app:cardPreventCornerOverlap="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="💼 Work Duration"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Work Duration"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Current Session"
+                            android:textColor="#CCFFFFFF"
+                            android:textSize="11sp" />
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tvWorkTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
                         android:text="00:00:00"
-                        android:textColor="#1AE60B"
-                        android:textSize="20sp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="28sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -128,10 +180,12 @@
                 android:id="@+id/cardBreakTimer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="16dp"
                 android:visibility="gone"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
+                app:cardBackgroundColor="#F59E0B"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp"
+                app:cardPreventCornerOverlap="true"
                 tools:visibility="visible">
 
                 <LinearLayout
@@ -139,23 +193,39 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="☕ Break Duration"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Break Duration"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Current Break"
+                            android:textColor="#CCFFFFFF"
+                            android:textSize="11sp" />
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tvBreakTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
                         android:text="00:00"
-                        android:textColor="#FFA500"
-                        android:textSize="20sp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="28sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -166,15 +236,16 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
+                android:layout_marginBottom="20dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -183,27 +254,30 @@
                         android:gravity="center"
                         android:orientation="vertical">
 
-                        <TextView
+                        <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvBreakCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="#FFA500"
-                            android:textSize="24sp"
+                            android:textColor="#F59E0B"
+                            android:textSize="28sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
                             android:text="Breaks Taken"
+                            android:textColor="#666666"
                             android:textSize="12sp" />
 
                     </LinearLayout>
 
                     <View
                         android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:background="#D3D3D3" />
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:background="#E0E0E0" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -212,19 +286,21 @@
                         android:gravity="center"
                         android:orientation="vertical">
 
-                        <TextView
+                        <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvTotalBreakTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0 min"
-                            android:textColor="#FFA500"
-                            android:textSize="24sp"
+                            android:textColor="#F59E0B"
+                            android:textSize="28sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
                             android:text="Total Break Time"
+                            android:textColor="#666666"
                             android:textSize="12sp" />
 
                     </LinearLayout>
@@ -233,77 +309,136 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Action Buttons -->
+            <!-- Action Buttons Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="8dp">
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
-                    <Button
+                    <!-- Login Button -->
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnLogin"
+                        style="@style/Widget.Material3.Button"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:layout_marginBottom="12dp"
+                        android:backgroundTint="#4361EE"
                         android:text="Login"
-                        android:textSize="16sp" />
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp"
+                        app:icon="@drawable/ic_login"
+                        app:iconGravity="textStart"
+                        app:iconPadding="12dp"
+                        app:iconTint="@android:color/white" />
 
-                    <Button
+                    <!-- Break In Button -->
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnBreakIn"
+                        style="@style/Widget.Material3.Button"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:layout_marginBottom="12dp"
-                        android:text="Break In"
+                        android:backgroundTint="#F59E0B"
+                        android:text="Start Break"
+                        tools:visibility="visible"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
                         android:textSize="16sp"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_break"
+                        app:iconGravity="textStart"
+                        app:iconPadding="12dp"
+                        app:iconTint="@android:color/white" />
 
-                    <Button
+                    <!-- Break Out Button -->
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnBreakOut"
+                        style="@style/Widget.Material3.Button"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:layout_marginBottom="12dp"
-                        android:text="Break Out"
+                        android:backgroundTint="#10B981"
+                        android:text="End Break"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
                         android:textSize="16sp"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        app:icon="@drawable/ic_break_end"
+                        app:iconGravity="textStart"
+                        app:iconPadding="12dp"
+                        app:iconTint="@android:color/white" />
 
-                    <Button
+                    <!-- Logout Button -->
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnLogout"
+                        style="@style/Widget.Material3.Button"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:layout_marginBottom="12dp"
-                        android:text="Logout"
+                        android:backgroundTint="#EF4444"
+                        android:text="End Day"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
                         android:textSize="16sp"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_logout"
+                        app:iconGravity="textStart"
+                        app:iconPadding="12dp"
+                        app:iconTint="@android:color/white" />
 
+                    <!-- Secondary Action Buttons -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnRefreshLocation"
                             style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="48dp"
                             android:layout_marginEnd="8dp"
                             android:layout_weight="1"
-                            android:text="Refresh"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:text="Refresh Location"
+                            android:textAllCaps="false"
+                            android:textColor="#4361EE"
+                            android:textSize="14sp"
                             android:visibility="gone"
-                            android:textSize="14sp" />
+                            app:icon="@drawable/ic_refresh"
+                            app:iconGravity="textStart"
+                            app:iconPadding="8dp"
+                            app:iconTint="#4361EE"
+                            app:strokeColor="#4361EE" />
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnViewBreakHistory"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="0dp"
                             android:layout_height="48dp"
                             android:layout_weight="1"
-                            android:text="History"
-                            android:textSize="14sp" />
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:text="Break History"
+                            android:textAllCaps="false"
+                            android:textColor="#4361EE"
+                            android:textSize="14sp"
+                            app:icon="@drawable/ic_history"
+                            app:iconGravity="textStart"
+                            app:iconPadding="8dp"
+                            app:iconTint="#4361EE"
+                            app:strokeColor="#4361EE" />
 
                     </LinearLayout>
 
@@ -311,40 +446,46 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Progress Overlay -->
-
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 
+    <!-- Progress Overlay -->
     <FrameLayout
         android:id="@+id/progressOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#CC000000"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:background="@drawable/bg_progress_dialog"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="24dp">
 
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:indeterminate="true"
+                app:indicatorColor="#4361EE"
+                app:trackColor="#E0E0E0" />
 
             <TextView
                 android:id="@+id/tvProgressMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 android:text="Processing..."
-                android:textColor="@android:color/white" />
+                android:textColor="#333333"
+                android:textSize="14sp" />
 
         </LinearLayout>
 
     </FrameLayout>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

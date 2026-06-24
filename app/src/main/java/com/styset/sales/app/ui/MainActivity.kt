@@ -2,9 +2,12 @@ package com.styset.sales.app.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -36,6 +39,7 @@ import android.widget.LinearLayout
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -53,6 +57,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -109,6 +114,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -142,7 +148,11 @@ import kotlin.coroutines.resume
 
 class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
 
+    private lateinit var attendanceLauncher: ActivityResultLauncher<Intent>
+
     private lateinit var stopRepository: StopRepository
+    private lateinit var playUpdateManager: PlayUpdateManager
+    private lateinit var updateCard: MaterialCardView
     private lateinit var performanceRepo: PerformanceLocationRepository
 
     private var isFromPlaces = false
@@ -365,6 +375,28 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
         }
     }
 
+    private fun resetTripUIAfterAttendanceLogout() {
+        viewModel.resetTrackingStateForAttendanceLogout()
+        // Reset trip button states
+        updateButtons()
+
+        // Stop location updates if running
+        stopLocationUpdates()
+        stopGpsMonitoring()
+
+        binding.tvStatus.text = getString(R.string.tracking_status_stopped)
+        binding.tvTimer.visibility = View.GONE
+
+        // Clear map route if any
+        clearMapRoute()
+
+        // Reset trip session in ViewModel
+        viewModel.resetSession()
+
+        // Show toast to inform user
+        Toast.makeText(this, "Attendance logged out. Trip session reset.", Toast.LENGTH_SHORT).show()
+    }
+
     companion object {
         private const val LOCATION_REQUEST_CODE = 1001
     }
@@ -480,6 +512,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
         routeRepository = RouteRepository(this)
         syncManager = SyncManager(this)
 
+        attendanceLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                Log.d("MainActivity", "Attendance logout detected, resetting trip UI")
+                Log.e("TAG", "setupViews: -===========${viewModel.isTracking.value}" )
+                resetTripUIAfterAttendanceLogout()
+            }
+        }
+        setupInAppUpdates()
 
         // Restore saved state from intent
         intent?.let {
@@ -723,6 +763,79 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
         observeStartLocation()
     }
 
+    private fun loadAndDisplayAllStops() {
+        lifecycleScope.launch {
+            try {
+                // Get all stops from database using StopDao
+                val allStops = stopRepository.getAllStops() // You need to add this method to StopRepository
+
+                if (allStops.isNotEmpty()) {
+                    Log.d("STOPS", "📍 Loading ${allStops.size} stops from database")
+
+                    // Convert StopEntity to StopPoint for display
+                    val stopPoints = allStops.mapNotNull { stopEntity ->
+                        stopEntity.lat.let { lat ->
+                            stopEntity.lng.let { lng ->
+                                StopPoint(
+                                    id = stopEntity.id,
+                                    center = LatLng(lat, lng),
+                                    name = stopEntity.name,
+                                    startTimeMillis = stopEntity.startWallTimeMillis,
+                                    endTimeMillis = stopEntity.endWallTimeMillis,
+                                    letter = stopEntity.letter,
+                                    address = stopEntity.address,
+                                    phone = stopEntity.phone,
+                                    imageUri = stopEntity.imageUri,
+                                    locationLabel = stopEntity.locationLabel,
+                                    tripId = preferenceManager.getTripId(),
+                                    salesExecutiveId = preferenceManager.getSalesExecutiveId().toString()
+                                )
+                            }
+                        }
+                    }
+
+                    // Add markers for all stops
+                    addAllStopMarkersToMap(stopPoints)
+                } else {
+                    Log.d("STOPS", "📭 No stops found in database")
+                }
+            } catch (e: Exception) {
+                Log.e("STOPS", "Error loading stops from database", e)
+            }
+        }
+    }
+
+    private fun addAllStopMarkersToMap(stops: List<StopPoint>) {
+        val map = googleMap ?: return
+
+        // Clear existing stop markers that are not part of current tracking
+        // Be careful not to clear markers that are part of ongoing tracking
+        if (!viewModel.isTracking.value) {
+            clearMapStops()
+        }
+
+        stops.forEachIndexed { index, stop ->
+            val letter = stop.letter ?: "?"
+            val color = getColorForIndex(index)
+            val markerIcon = createMarkerWithLetter(letter, color)
+
+            val marker = map.addMarker(
+                MarkerOptions()
+                    .position(stop.center)
+                    .title("Stop $letter: ${stop.name ?: "Unnamed"}")
+                    .snippet("Duration: ${stop.timeSpentMinutes} min")
+                    .icon(markerIcon)
+            )
+
+            marker?.let {
+                stopMarkers.add(stop.id to it)
+                it.tag = StopMarkerData("STOP", stopPoint = stop)
+            }
+        }
+
+        Log.d("STOPS", "✅ Added ${stops.size} stop markers to map")
+    }
+
     private fun showStartTripProgress() {
         startTripProgressDialog = MaterialAlertDialogBuilder(this)
             .setTitle("Starting Trip")
@@ -786,7 +899,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                 if (errorMessage.contains("already has an ongoing trip")) {
                     if (resource.onGoingTripId != null) {
                         showOngoingTripDialog(resource.onGoingTripId, errorMessage)
-//                        endOngoingTripAndUpdateRoute(resource.onGoingTripId)
                     } else {
                         Toast.makeText(this, "Trip Id Null", Toast.LENGTH_LONG).show()
                     }
@@ -1006,27 +1118,48 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                                                     // ============================================
                                                     // STEP 1: Find the ongoing route in local DB
                                                     // ============================================
-                                                    var ongoingRoute =
-                                                        routeRepository.getOngoingRoute()
+                                                    var ongoingRoute = routeRepository.getOngoingRoute()
 
                                                     // If not found, try to find ANY route without end time
                                                     if (ongoingRoute == null) {
                                                         val allRoutes =
                                                             routeRepository.getAllRoutes()
-                                                        ongoingRoute =
-                                                            allRoutes.firstOrNull { it.endTimeMillis == null }
+                                                        ongoingRoute = allRoutes.firstOrNull { it.endTimeMillis == null }
                                                     }
 
                                                     if (ongoingRoute == null) {
-                                                        Log.e(
+
+                                                        Log.w(
                                                             "TripEnd",
-                                                            "No ongoing route found in database"
+                                                            "No ongoing route found in local DB. Ending trip from server only."
                                                         )
-                                                        Toast.makeText(
-                                                            this@MainActivity,
-                                                            "No active route found to end",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
+                                                        Toast.makeText( this@MainActivity, "No active route found to end", Toast.LENGTH_SHORT ).show()
+
+                                                        viewModel.endTripWithApi(
+                                                            tripId = onGoingTripId,
+                                                            salesExecutiveId = preferenceManager.getSalesExecutiveId().toString(),
+                                                            latitude = latitude,
+                                                            longitude = longitude,
+                                                            onSuccess = { message ->
+
+                                                                updateButtons()
+                                                                dismissGpsDialog()
+                                                                stopLocationUpdates()
+                                                                stopGpsMonitoring()
+                                                                clearMapRoute()
+                                                                viewModel.resetSession()
+
+                                                                Toast.makeText(
+                                                                    this@MainActivity,
+                                                                    "Trip ended successfully",
+                                                                    Toast.LENGTH_LONG
+                                                                ).show()
+                                                            },
+                                                            onError = { errorMsg ->
+                                                                showErrorDialog(errorMsg)
+                                                            }
+                                                        )
+
                                                         return@launch
                                                     }
 
@@ -1807,12 +1940,19 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
         isWaitingForMap = savedInstanceState.getBoolean("isWaitingForMap", false)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        playUpdateManager.onActivityResult(requestCode, resultCode, data)
+    }
+
 
     override fun onResume() {
         super.onResume()
         binding.navView.setCheckedItem(R.id.nav_home)
         dismissAllDialogs()
         viewModel.clearTripStartState()
+        playUpdateManager.onResume()
+        Log.e("MainActivity", "========= BroadcastReceiver REGISTERED in onResume =========")
 
 //        if (!isViewOnlyMode) {
 //            lifecycleScope.launch {
@@ -1957,6 +2097,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
         stopGpsMonitoring()
+        playUpdateManager.onDestroy()
         stopLocationUpdates()
     }
 
@@ -1991,17 +2132,20 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
         selectedMapType = GoogleMap.MAP_TYPE_NORMAL
         googleMap?.mapType = selectedMapType
         Log.d("StartMarker", "🗺️ Map is ready")
+
         // Configure map
         map.uiSettings.isZoomControlsEnabled = true
         map.uiSettings.isMyLocationButtonEnabled = true
         map.uiSettings.isCompassEnabled = true
         map.uiSettings.isMapToolbarEnabled = true
         map.uiSettings.isIndoorLevelPickerEnabled = true
+
         // Enable all map features for rich snapshot
-        map.isTrafficEnabled = false // Disable traffic to reduce clutter
-        map.isBuildingsEnabled = true // Show 3D buildings
-        map.isIndoorEnabled = true // Show indoor maps if available
+        map.isTrafficEnabled = false
+        map.isBuildingsEnabled = true
+        map.isIndoorEnabled = true
         map.setPadding(0, 0, 0, 0)
+
         enableMyLocation()
         applyMapPadding()
         checkLocationSettings()
@@ -2015,6 +2159,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
             isWaitingForMap = false
         }
 
+        // 🔥 NEW: Load and display all stops from database
+        // Only load all stops if not in view-only mode from Places
+        if (!isViewOnlyMode) {
+            loadAndDisplayAllStops()
+        }
+
         Log.d("MAP_DEBUG", "=== Map Ready State ===")
         Log.d("MAP_DEBUG", "pendingShowFullRoute: $pendingShowFullRoute")
         Log.d("MAP_DEBUG", "pendingRouteId: $pendingRouteId")
@@ -2023,20 +2173,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
         Log.d("MAP_DEBUG", "isTracking: ${viewModel.isTracking.value}")
         Log.d("MAP_DEBUG", "routePoints size: ${viewModel.routePoints.value.size}")
         Log.d("MAP_DEBUG", "pendingCenterOnMyLocation: $pendingCenterOnMyLocation")
-
-
-        /*handlePendingStopFromPlaces()
-
-        // Handle camera positioning ONLY if no selected place
-        if (pendingCenterOnPlace == null) {
-            val points = viewModel.routePoints.value
-
-            if (points.isNotEmpty()) {
-                zoomToFullRoute()
-            } else if (pendingCenterOnMyLocation) {
-                centerMapOnCurrentLocationIfPossible()
-            }
-        }*/
 
         // Handle stop from PlacesActivity
         handlePendingStopFromPlaces()
@@ -2051,26 +2187,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                 Log.d("MAP_DEBUG", "🎯 Priority 2: Showing stop from Places")
                 handlePendingStopFromPlaces()
             }
-
-//            viewModel.isTracking.value -> {
-//                Log.d("MAP_DEBUG", "🎯 Priority 3: Restoring ongoing route")
-//                lifecycleScope.launch {
-//                    loadOngoingRouteOnMap()
-//                    // Also restore start marker if needed
-//                    viewModel.startLocation.value?.let { startLatLng ->
-//                        addStartMarkerToMap(startLatLng)
-//                    }
-//                }
-//                // Zoom to current location or last point
-//                centerMapOnCurrentLocation()
-//            }
-
+            // Priority 3: Show active tracking route
             viewModel.isTracking.value && viewModel.routePoints.value.isNotEmpty() -> {
                 Log.d("MAP_DEBUG", "🎯 Priority 3: Showing active tracking route")
                 zoomToFullRoute()
             }
-
-            // Priority 3: Normal map initialization
+            // Priority 4: Normal map initialization
             else -> {
                 Log.d("LOCATION", "📍 Centering on current location (first open)")
                 centerMapOnCurrentLocation()
@@ -4089,7 +4211,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                                 putExtra("longitude", location.longitude)
                                 putExtra("has_location", true)
                             }
-                            startActivity(intent)
+                            attendanceLauncher.launch(intent)
                         } else {
                             val intent = Intent(this, ActivityAttendance::class.java).apply {
                                 putExtra("has_location", false)
@@ -4378,30 +4500,44 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
     }
 
     private fun performLogout() {
+
+        val hasActiveAttendance = preferenceManager.isAttendanceLoggedIn()
+
+        val message = if (hasActiveAttendance) {
+            "You have an active attendance session.\n\nLogging out of the app will NOT close your attendance session. Your last login time will still be visible.\n\nDo you want to proceed?"
+        } else {
+            "Are you sure you want to logout?"
+        }
+
         // Show loading
         MaterialAlertDialogBuilder(this)
-            .setMessage("Logging out...")
-            .setCancelable(false)
-            .create()
+            .setTitle("Confirm Logout")
+            .setMessage(message)
+            .setPositiveButton("Logout") { _, _ ->
+//                performActualLogout()
+                // Clear preferences in background
+                lifecycleScope.launch(Dispatchers.IO) {
+                    // Clear all preferences
+//            preferenceManager.clearAllData()
+                    preferenceManager.clearMainLoginData()
+
+                    clearCache()
+                    viewModel.cancelOngoingRequests()
+
+                    // Switch to main thread for navigation
+                    withContext(Dispatchers.Main) {
+                        // Navigate to login screen
+                        val intent = Intent(this@MainActivity, LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
             .show()
 
-        // Clear preferences in background
-        lifecycleScope.launch(Dispatchers.IO) {
-            // Clear all preferences
-            preferenceManager.clearAllData()
 
-            clearCache()
-            viewModel.cancelOngoingRequests()
-
-            // Switch to main thread for navigation
-            withContext(Dispatchers.Main) {
-                // Navigate to login screen
-                val intent = Intent(this@MainActivity, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-            }
-        }
     }
 
     private fun clearCache() {
@@ -4472,7 +4608,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                     dialog.setMessage("Creating PDF with enhanced formatting...")
                 }
 
-                EnhancedPdfReportGenerator(this@MainActivity).generateDailyReport(reportData) { file ->
+                /*EnhancedPdfReportGenerator(this@MainActivity).generateDailyReport(reportData) { file ->
                     lifecycleScope.launch(Dispatchers.Main) {
                         dialog.dismiss()
                         if (file != null) {
@@ -4483,6 +4619,36 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                             ).show()
                             openPdfFile(file)
                         } else {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "❌ Failed to generate report",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }*/
+
+                EnhancedPdfReportGenerator(this@MainActivity).generateDailyReport(
+                    this@MainActivity,
+                    reportData
+                ) { uri ->
+
+                    lifecycleScope.launch(Dispatchers.Main) {
+
+                        dialog.dismiss()
+
+                        if (uri != null) {
+
+                            Toast.makeText(
+                                this@MainActivity,
+                                "✅ Report saved successfully in Downloads",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                            openPdfFile(uri)
+
+                        } else {
+
                             Toast.makeText(
                                 this@MainActivity,
                                 "❌ Failed to generate report",
@@ -4502,16 +4668,38 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
     }
 
 
-    private fun openPdfFile(file: File) {
+//    private fun openPdfFile(file: File) {
+//        try {
+//            val uri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", file)
+//            val intent = Intent(Intent.ACTION_VIEW).apply {
+//                setDataAndType(uri, "application/pdf")
+//                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//            }
+//            startActivity(intent)
+//        } catch (e: Exception) {
+//            Toast.makeText(this, "No PDF viewer found", Toast.LENGTH_SHORT).show()
+//        }
+//    }
+
+    private fun openPdfFile(uri: Uri) {
+
         try {
-            val uri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", file)
+
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(uri, "application/pdf")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NO_HISTORY
             }
             startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(this, "No PDF viewer found", Toast.LENGTH_SHORT).show()
+
+            Toast.makeText(
+                this,
+                "No PDF viewer app found",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            e.printStackTrace()
         }
     }
 
@@ -5070,6 +5258,24 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
 
     private fun showInfoSnackbar(message: String) {
         showSnackbar(message, Snackbar.LENGTH_SHORT, CreateLeadActivity.SnackbarType.INFO)
+    }
+    private fun setupInAppUpdates() {
+        // Get the update card directly from the inflated layout (no need to inflate again)
+        updateCard = binding.updateCardContainer.updateCard
+
+        playUpdateManager = PlayUpdateManager(
+            activity = this,
+            lifecycleScope = lifecycleScope,
+            updateCard = updateCard
+        )
+
+        // Start periodic update checks
+        playUpdateManager.startPeriodicCheck()
+
+        // Check for update immediately
+        lifecycleScope.launch {
+            playUpdateManager.checkForUpdate()
+        }
     }
 
 

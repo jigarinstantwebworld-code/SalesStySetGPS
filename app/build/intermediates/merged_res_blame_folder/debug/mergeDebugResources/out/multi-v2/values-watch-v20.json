@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.styset.sales.app-mergeDebugResources-50:/values-watch-v20/values-watch-v20.xml",
+            "outputFile": "com.styset.sales.app-mergeDebugResources-51:/values-watch-v20/values-watch-v20.xml",
             "map": [
                 {
                     "source": "C:\\Users\\DM Intern\\.gradle\\caches\\8.9\\transforms\\970a518f73f830d5889a6591debffc81\\transformed\\jetified-play-services-auth-20.7.0\\res\\values-watch-v20\\values.xml",

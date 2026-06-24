@@ -10,18 +10,16 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
         app:elevation="2dp">
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbarPlaces"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:navigationIconTint="@android:color/white"
-            app:titleTextColor="@android:color/white"
-            app:title="Sync"
-            app:navigationIcon="@drawable/ic_back_white"
+            android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            tools:title="Sync" />
+            app:navigationIcon="@drawable/ic_back_white"
+            app:navigationIconTint="@android:color/white"
+            app:title="Sync"
+            app:titleTextColor="@android:color/white" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

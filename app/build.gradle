@@ -8,14 +8,14 @@ plugins {
 
 android {
     namespace = "com.styset.sales.app"
-    compileSdk = 34  // Change from 35 to 34 for stability
+    compileSdk = 35  // Change from 35 to 34 for stability
 
     defaultConfig {
         applicationId = "com.styset.sales.app"
         minSdk = 24
-        targetSdk = 34  // Change from 35 to 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 35  // Change from 35 to 34
+        versionCode = 21
+        versionName = "1.0.21"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -31,13 +31,13 @@ android {
             buildConfigField(
                     "String",
                     "BASE_URL",
-                    "\"https://fc9hnj13t0.execute-api.ap-south-1.amazonaws.com/shopnow/\""
+                    "\"https://bt09kmb8yb.execute-api.us-east-1.amazonaws.com/shopnowee/\""
             )
 
             buildConfigField(
                     "String",
                     "BUCKET_NAME",
-                    "\"salesexecutiveprd\""
+                    "\"salesexecutivestg\""
             )
 
             proguardFiles(
@@ -167,4 +167,10 @@ dependencies {
 
     // Gson
     implementation 'com.google.code.gson:gson:2.10.1'
+
+    // in app update
+    implementation 'com.google.android.play:app-update:2.1.0'
+    implementation 'com.google.android.play:app-update-ktx:2.1.0'
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3'
 }

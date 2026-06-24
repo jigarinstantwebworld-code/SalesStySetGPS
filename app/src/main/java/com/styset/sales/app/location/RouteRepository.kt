@@ -155,7 +155,9 @@ class RouteRepository(context: Context) {
                 phone = e.phone,
                 imageUri = e.imageUri,
                 timeSpentMinutes = e.durationElapsedMinutes,
-                letter = e.letter
+                letter = e.letter,
+                tripId = e.tripId,
+                salesExecutiveId = e.salesExecutiveId.toString()
             )
         }
 
@@ -182,7 +184,9 @@ class RouteRepository(context: Context) {
                 address = e.address,
                 phone = e.phone,
                 imageUri = e.imageUri,
-                timeSpentMinutes = e.durationElapsedMinutes
+                timeSpentMinutes = e.durationElapsedMinutes,
+                tripId = e.tripId,
+                salesExecutiveId = e.salesExecutiveId.toString()
             )
         }
     }

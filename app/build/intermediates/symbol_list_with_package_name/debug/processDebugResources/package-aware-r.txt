@@ -1387,6 +1387,8 @@ color androidx_core_ripple_material_light
 color androidx_core_secondary_text_default_material_light
 color background_floating_material_dark
 color background_floating_material_light
+color background_gradient_end
+color background_gradient_start
 color background_material_dark
 color background_material_light
 color black
@@ -1415,6 +1417,7 @@ color common_google_signin_btn_text_light_disabled
 color common_google_signin_btn_text_light_focused
 color common_google_signin_btn_text_light_pressed
 color common_google_signin_btn_tint
+color danger
 color design_bottom_navigation_shadow_color
 color design_box_stroke_color
 color design_dark_default_color_background
@@ -2172,6 +2175,7 @@ color notification_icon_bg_color
 color notification_material_background_media_default_color
 color orange_dark
 color polyline_color
+color primary
 color primary_dark_material_dark
 color primary_dark_material_light
 color primary_material_dark
@@ -2196,6 +2200,7 @@ color snackbar_success_bg
 color snackbar_text_color
 color snackbar_warning_bg
 color stop_color
+color success
 color switch_thumb_disabled_material_dark
 color switch_thumb_disabled_material_light
 color switch_thumb_material_dark
@@ -3092,8 +3097,12 @@ drawable amu_bubble_shadow
 drawable avd_hide_password
 drawable avd_show_password
 drawable badge_circle
+drawable bg_date
 drawable bg_dialog_rounded
+drawable bg_gradient_background
 drawable bg_info_window
+drawable bg_last_login
+drawable bg_progress_dialog
 drawable bg_status_active
 drawable bg_status_closed
 drawable bg_status_pending
@@ -3141,6 +3150,8 @@ drawable ic_arrow_back_black_24
 drawable ic_arrow_down
 drawable ic_arrow_drop_down
 drawable ic_back_white
+drawable ic_break
+drawable ic_break_end
 drawable ic_calendar
 drawable ic_call
 drawable ic_call_answer
@@ -3158,10 +3169,12 @@ drawable ic_error
 drawable ic_filter
 drawable ic_filter_active
 drawable ic_finish_flag
+drawable ic_history
 drawable ic_keyboard_black_24dp
 drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable ic_lock
+drawable ic_login
 drawable ic_logout
 drawable ic_m3_chip_check
 drawable ic_m3_chip_checked_circle
@@ -3172,6 +3185,7 @@ drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
 drawable ic_notification_location
+drawable ic_refresh
 drawable ic_search
 drawable ic_search_black_24
 drawable ic_sort
@@ -3180,6 +3194,7 @@ drawable ic_start
 drawable ic_start_arrow
 drawable ic_start_flag
 drawable ic_stop
+drawable ic_update
 drawable ic_whatsapp
 drawable m3_avd_hide_password
 drawable m3_avd_show_password
@@ -3366,6 +3381,7 @@ id btnApplyFilters
 id btnBreakIn
 id btnBreakOut
 id btnCall
+id btnCancelUpdate
 id btnCaptureSellerImage
 id btnCheckIn
 id btnCheckOut
@@ -3381,11 +3397,13 @@ id btnLogout
 id btnRefresh
 id btnRefreshLocation
 id btnReset
+id btnRestart
 id btnSort
 id btnStart
 id btnStop
 id btnSubmit
 id btnSync
+id btnUpdate
 id btnViewBreakHistory
 id btnWhatsApp
 id btn_calendar_account
@@ -3737,6 +3755,7 @@ id pressed
 id progressBar
 id progressBarCreate
 id progressOverlay
+id progressSection
 id progress_bar
 id progress_circular
 id progress_horizontal
@@ -3912,11 +3931,13 @@ id tvCreatedBy
 id tvDate
 id tvDuration
 id tvEmpty
+id tvError
 id tvErrorMessage
 id tvFilterSummary
 id tvFollowUp
 id tvId
 id tvLabel
+id tvLastLoginInfo
 id tvLastSyncedTime
 id tvLeadDetails
 id tvLeadName
@@ -3928,6 +3949,7 @@ id tvNoteMeta
 id tvNoteText
 id tvPhone
 id tvProgressMessage
+id tvProgressPercent
 id tvRouteDate
 id tvRouteStats
 id tvRouteSummary
@@ -3944,6 +3966,8 @@ id tvStoreType
 id tvTimer
 id tvTitle
 id tvTotalBreakTime
+id tvUpdateMessage
+id tvUpdateTitle
 id tvValue
 id tvWindow
 id tvWorkTime
@@ -3954,6 +3978,9 @@ id unchecked
 id uniform
 id unlabeled
 id up
+id updateCard
+id updateCardContainer
+id updateProgressBar
 id useLogo
 id vertical_only
 id view_offset_helper
@@ -4148,6 +4175,7 @@ layout item_route_snapshot
 layout item_route_with_stops
 layout item_stop_in_route
 layout item_sync_record
+layout layout_update_card
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title
@@ -5074,6 +5102,7 @@ style Theme_MaterialComponents_Light_NoActionBar
 style Theme_MaterialComponents_Light_NoActionBar_Bridge
 style Theme_MaterialComponents_NoActionBar
 style Theme_MaterialComponents_NoActionBar_Bridge
+style Theme_PlayCore_Transparent
 style Theme_SalesStySetGPS
 style ThemeOverlay_AppCompat
 style ThemeOverlay_AppCompat_ActionBar

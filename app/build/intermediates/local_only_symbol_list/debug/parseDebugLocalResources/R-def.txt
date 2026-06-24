@@ -1,6 +1,9 @@
 R_DEF: Internal format may change without notice
 local
+color background_gradient_end
+color background_gradient_start
 color black
+color danger
 color filter_active_bg
 color filter_active_text
 color filter_inactive_bg
@@ -56,6 +59,7 @@ color md_theme_light_tertiary
 color md_theme_light_tertiaryContainer
 color orange_dark
 color polyline_color
+color primary
 color purple_200
 color purple_500
 color purple_700
@@ -66,13 +70,18 @@ color snackbar_success_bg
 color snackbar_text_color
 color snackbar_warning_bg
 color stop_color
+color success
 color teal_200
 color teal_700
 color transparent
 color white
 drawable badge_circle
+drawable bg_date
 drawable bg_dialog_rounded
+drawable bg_gradient_background
 drawable bg_info_window
+drawable bg_last_login
+drawable bg_progress_dialog
 drawable bg_status_active
 drawable bg_status_closed
 drawable bg_status_pending
@@ -85,6 +94,8 @@ drawable ic_add_white
 drawable ic_arrow_down
 drawable ic_arrow_drop_down
 drawable ic_back_white
+drawable ic_break
+drawable ic_break_end
 drawable ic_calendar
 drawable ic_call
 drawable ic_camera
@@ -94,12 +105,15 @@ drawable ic_error
 drawable ic_filter
 drawable ic_filter_active
 drawable ic_finish_flag
+drawable ic_history
 drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable ic_lock
+drawable ic_login
 drawable ic_logout
 drawable ic_menu_white_24dp
 drawable ic_notification_location
+drawable ic_refresh
 drawable ic_search
 drawable ic_sort
 drawable ic_sort_active
@@ -107,6 +121,7 @@ drawable ic_start
 drawable ic_start_arrow
 drawable ic_start_flag
 drawable ic_stop
+drawable ic_update
 drawable ic_whatsapp
 drawable status_badge
 id address
@@ -116,6 +131,7 @@ id btnApplyFilters
 id btnBreakIn
 id btnBreakOut
 id btnCall
+id btnCancelUpdate
 id btnCaptureSellerImage
 id btnCheckIn
 id btnCheckOut
@@ -131,11 +147,13 @@ id btnLogout
 id btnRefresh
 id btnRefreshLocation
 id btnReset
+id btnRestart
 id btnSort
 id btnStart
 id btnStop
 id btnSubmit
 id btnSync
+id btnUpdate
 id btnViewBreakHistory
 id btnWhatsApp
 id btn_calendar_account
@@ -224,6 +242,7 @@ id photosContainer
 id progressBar
 id progressBarCreate
 id progressOverlay
+id progressSection
 id progress_bar
 id rbA1
 id rbA2
@@ -244,6 +263,7 @@ id rgSellingType
 id routeHeader
 id routePreviewContainer
 id rvSyncHistory
+id scrollView
 id searchEditText
 id searchSortLayout
 id statusIndicator
@@ -278,11 +298,13 @@ id tvCreatedBy
 id tvDate
 id tvDuration
 id tvEmpty
+id tvError
 id tvErrorMessage
 id tvFilterSummary
 id tvFollowUp
 id tvId
 id tvLabel
+id tvLastLoginInfo
 id tvLastSyncedTime
 id tvLeadDetails
 id tvLeadName
@@ -294,6 +316,7 @@ id tvNoteMeta
 id tvNoteText
 id tvPhone
 id tvProgressMessage
+id tvProgressPercent
 id tvRouteDate
 id tvRouteStats
 id tvRouteSummary
@@ -310,12 +333,17 @@ id tvStoreType
 id tvTimer
 id tvTitle
 id tvTotalBreakTime
+id tvUpdateMessage
+id tvUpdateTitle
 id tvValue
 id tvWindow
 id tvWorkTime
 id tv_place_coords
 id tv_place_name
 id tv_place_time
+id updateCard
+id updateCardContainer
+id updateProgressBar
 id view_pager
 layout activity_api
 layout activity_attendance
@@ -352,6 +380,7 @@ layout item_route_snapshot
 layout item_route_with_stops
 layout item_stop_in_route
 layout item_sync_record
+layout layout_update_card
 layout map_info_window
 layout nav_header
 menu drawer_menu

@@ -3,17 +3,29 @@ package com.styset.sales.app
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.res.Configuration
+import android.location.Address
+import android.location.Geocoder
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.annotation.AttrRes
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -43,6 +55,8 @@ import java.util.Locale
 // LeadDetailActivity.kt
 class LeadDetailActivity : BaseActivity<ActivityLeadDetailBinding>() {
 
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
     private lateinit var viewModel: LeadDetailViewModel
     private lateinit var preferenceManager: PreferenceManager
     private lateinit var adapter: LeadDetailAdapter
@@ -65,7 +79,12 @@ class LeadDetailActivity : BaseActivity<ActivityLeadDetailBinding>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        enableEdgeToEdge()
 
+        window.statusBarColor =
+            getThemeColor(com.google.android.material.R.attr.colorPrimary)
+        WindowCompat.getInsetsController(window, window.decorView)
+            .isAppearanceLightStatusBars = !isDarkMode()
         leadId = intent.getIntExtra("lead_id",0)
 
 
@@ -81,14 +100,15 @@ class LeadDetailActivity : BaseActivity<ActivityLeadDetailBinding>() {
                     }
                     is Resource.Success -> {
                         resource.data?.let { data ->
-                            notesData = data
+                            if (isManuallyAddingNote) {
+                                return@let
+                            }
 
+                            notesData = data
                             cachedNotes.clear()
                             cachedNotes.addAll(data.notes)
                             hasAccessDenied = false
-                            if (!isManuallyAddingNote) {
                                 updateAdapterWithBothData()
-                            }
 
                             // Log the data
                             Log.d("Notes", "Total notes: ${data.notes.size}")
@@ -137,9 +157,31 @@ class LeadDetailActivity : BaseActivity<ActivityLeadDetailBinding>() {
 
     override fun setupViews() {
         preferenceManager = PreferenceManager.Companion.getInstance(this)
+        latitude = intent.getDoubleExtra("latitude", 0.0)
+        longitude = intent.getDoubleExtra("longitude", 0.0)
         setupViewModel()
         setupToolbar()
         setupRecyclerView()
+        setupStatusBar()
+    }
+    private fun setupStatusBar() {
+        window.statusBarColor =
+            getThemeColor(com.google.android.material.R.attr.colorPrimary)
+
+        WindowCompat.getInsetsController(window, window.decorView)
+            .isAppearanceLightStatusBars = !isDarkMode()
+    }
+    private fun isDarkMode(): Boolean {
+
+        return resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK ==
+                Configuration.UI_MODE_NIGHT_YES
+    }
+
+    private fun getThemeColor(@AttrRes attrColor: Int): Int {
+        val typedValue = TypedValue()
+        theme.resolveAttribute(attrColor, typedValue, true)
+        return typedValue.data
     }
 
     override fun setupObservers() {
@@ -182,12 +224,34 @@ class LeadDetailActivity : BaseActivity<ActivityLeadDetailBinding>() {
     }
 
     private fun setupToolbar() {
+
         setSupportActionBar(binding.toolbar)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Lead Details"
 
         binding.toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { view, insets ->
+            val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            val toolbarHeight = resources.getDimensionPixelSize(com.google.android.material.R.dimen.m3_appbar_size_compact)
+            view.updatePadding(top = statusBarHeight)
+            view.layoutParams.height = toolbarHeight + statusBarHeight
+            view.requestLayout()
+
+            // IMPORTANT
+//            binding.recyclerView.updatePadding(bottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom)
+            val navigationBarHeight = insets.getInsets(
+                WindowInsetsCompat.Type.navigationBars()
+            ).bottom
+
+            binding.recyclerView.updatePadding(
+                top = toolbarHeight + statusBarHeight,
+                bottom = navigationBarHeight
+            )
+            insets
         }
     }
 
@@ -289,61 +353,88 @@ class LeadDetailActivity : BaseActivity<ActivityLeadDetailBinding>() {
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             val noteText = editTextNote.text.toString().trim()
+            val currentLeadId = leadDetailData?.id ?: notesData?.lead_info?.id ?: 0
+
             if (noteText.isNotEmpty()) {
-                val progressDialog = ProgressDialog(this).apply {
-                    setMessage("Adding note...")
-                    setCancelable(false)
-                    show()
+                getAddressFromLatLng(
+                    this,
+                    latitude,
+                    longitude
+                ) { address ->
+
+                    isManuallyAddingNote = true
+                    runOnUiThread {
+                        val progressDialog = ProgressDialog(this).apply {
+                            setMessage("Adding note...")
+                            setCancelable(false)
+                            show()
+                        }
+                        viewModel.addNote(
+                            leadId = currentLeadId,
+                            notes = noteText,
+                            location = address, // <-- address here
+                            nextFollowUp = selectedDateTime,
+                            onSuccess = { note ->
+
+                                progressDialog.dismiss()
+
+                                Toast.makeText(
+                                    this,
+                                    "Note added successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                dialog.dismiss()
+
+                                val executiveName =
+                                    leadDetailData?.executiveName ?: "Executive"
+
+                                val newNoteData = NoteData(
+                                    id = note.id ?: 0,
+                                    notes = note.notes,
+                                    next_follow_up = note.next_follow_up,
+                                    created_date = note.created_date ?: "",
+                                    modified_date = note.modified_date ?: "",
+                                    created_by = note.sales_executive_id ?: 0,
+                                    modified_by = note.sales_executive_id!!,
+                                    sales_executive = SalesExecutiveInfo(
+                                        id = note.salesExecutive?.id ?: 0,
+                                        name = executiveName
+                                    )
+                                )
+
+                                // Update cache
+                                cachedNotes.add(0, newNoteData)
+
+                                // Update notesData
+                                notesData = notesData?.copy(
+                                    notes = cachedNotes.toMutableList()
+                                )
+
+                                // Refresh adapter
+                                updateAdapterWithBothData()
+
+                                // Scroll to top
+                                binding.recyclerView.post {
+                                    binding.recyclerView.smoothScrollToPosition(0)
+                                }
+
+                                hasAccessDenied = false
+
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    isManuallyAddingNote = false
+                                }, 500)
+                            },
+                            onError = { error ->
+                                progressDialog.dismiss()
+                                // error code
+                            }
+                        )
+                    }
+
+
                 }
 
-                // Set flag to TRUE before adding note
-                isManuallyAddingNote = true
-
-                val currentLeadId = leadDetailData?.id ?: notesData?.lead_info?.id ?: 0
-
-                viewModel.addNote(
-                    leadId = currentLeadId,
-                    notes = noteText,
-                    nextFollowUp = selectedDateTime,
-                    onSuccess = { note ->
-                        progressDialog.dismiss()
-                        Toast.makeText(this, "Note added successfully", Toast.LENGTH_SHORT).show()
-                        dialog.dismiss()
-
-                        // Add note to adapter directly
-                        val executiveName = leadDetailData?.executiveName ?: "Executive"
-                        val newNoteData = NoteData(
-                            id = note.id!!,
-                            notes = note.notes,
-                            next_follow_up = note.next_follow_up,
-                            created_date = note.created_date!!,
-                            modified_date = note.modified_date!!,
-                            created_by = note.sales_executive_id!!,
-                            modified_by = note.sales_executive_id,
-                            sales_executive = SalesExecutiveInfo(
-                                id = note.salesExecutive!!.id,
-                                name = executiveName
-                            )
-                        )
-
-                        // Add to beginning of cache
-                        cachedNotes.add(0, newNoteData)
-                        hasAccessDenied = false
-
-                        // Update adapter with cached notes
-                        adapter.addNewNoteFromResponse(note)
-
-                        // Reset flag after a delay to prevent observer from refreshing
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            isManuallyAddingNote = false
-                        }, 500)
-                    },
-                    onError = { error ->
-                        progressDialog.dismiss()
-                        Toast.makeText(this, "Failed to add note: $error", Toast.LENGTH_SHORT).show()
-                        isManuallyAddingNote = false
-                    }
-                )
             } else {
                 editTextNote.error = "Note cannot be empty"
             }
@@ -385,6 +476,64 @@ class LeadDetailActivity : BaseActivity<ActivityLeadDetailBinding>() {
             outputFormat.format(date ?: Date())
         } catch (e: Exception) {
             dateTime
+        }
+    }
+
+    fun getAddressFromLatLng(
+        context: Context,
+        latitude: Double,
+        longitude: Double,
+        onResult: (String) -> Unit
+    ) {
+        val geocoder = Geocoder(context, Locale.ENGLISH)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+            geocoder.getFromLocation(
+                latitude,
+                longitude,
+                1,
+                object : Geocoder.GeocodeListener {
+
+                    override fun onGeocode(addresses: MutableList<Address>) {
+                        val address = if (addresses.isNotEmpty()) {
+                            addresses[0].getAddressLine(0)
+                        } else {
+                            ""
+                        }
+
+                        onResult(address)
+                    }
+
+                    override fun onError(errorMessage: String?) {
+                        onResult("")
+                    }
+                }
+            )
+
+        } else {
+
+            Thread {
+                try {
+                    val addresses =
+                        geocoder.getFromLocation(latitude, longitude, 1)
+
+                    val address = if (!addresses.isNullOrEmpty()) {
+                        addresses[0].getAddressLine(0)
+                    } else {
+                        ""
+                    }
+
+                    Handler(Looper.getMainLooper()).post {
+                        onResult(address)
+                    }
+
+                } catch (e: Exception) {
+                    Handler(Looper.getMainLooper()).post {
+                        onResult("")
+                    }
+                }
+            }.start()
         }
     }
 

@@ -838,7 +838,8 @@ data class AddNoteRequest(
     val sale_leads_id: Int,
     val notes: String,
     val next_follow_up: String? = null,
-    val sales_executive_id: Int
+    val sales_executive_id: Int,
+    val current_location: String?=null
 )
 
 // Response model

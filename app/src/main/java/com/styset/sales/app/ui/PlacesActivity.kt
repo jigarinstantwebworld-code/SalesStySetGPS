@@ -450,7 +450,9 @@ class PlacesActivity : AppCompatActivity() {
                     phone = stopWithDetails.phone,
                     imageUri = stopWithDetails.imageUri,
                     timeSpentMinutes = totalMinutes,
-                    letter = first.letter  // Keep earliest letter
+                    letter = first.letter,
+                    tripId = first.tripId,
+                    salesExecutiveId = first.salesExecutiveId
                 )
             }
 

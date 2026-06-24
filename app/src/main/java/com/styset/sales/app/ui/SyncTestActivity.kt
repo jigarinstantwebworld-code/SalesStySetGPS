@@ -4,7 +4,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.styset.sales.app.data.local.AppDatabase
@@ -37,6 +41,7 @@ class SyncTestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySyncTestBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        enableEdgeToEdge()
 
         val db = AppDatabase.Companion.get(this)
         stopDao = db.stopDao()
@@ -48,9 +53,9 @@ class SyncTestActivity : AppCompatActivity() {
         setupRecyclerView()
         setupClickListeners()
         loadSyncHistory()
-        setSupportActionBar(binding.toolbarPlaces)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
+//        setSupportActionBar(binding.toolbarPlaces)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setupToolbar()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -62,6 +67,46 @@ class SyncTestActivity : AppCompatActivity() {
         syncRecordAdapter = SyncRecordAdapter(emptyList())
         binding.rvSyncHistory.layoutManager = LinearLayoutManager(this)
         binding.rvSyncHistory.adapter = syncRecordAdapter
+    }
+
+    private fun setupToolbar() {
+
+        setSupportActionBar(binding.toolbarPlaces)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Sync"
+
+        binding.toolbarPlaces.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbarPlaces) { view, insets ->
+
+            val statusBarHeight = insets.getInsets(
+                WindowInsetsCompat.Type.statusBars()
+            ).top
+
+            val navigationBarHeight = insets.getInsets(
+                WindowInsetsCompat.Type.navigationBars()
+            ).bottom
+
+            val toolbarHeight = resources.getDimensionPixelSize(
+                com.google.android.material.R.dimen.m3_appbar_size_compact
+            )
+
+            // Toolbar
+            view.updatePadding(top = statusBarHeight)
+
+            view.layoutParams.height = toolbarHeight + statusBarHeight
+            view.requestLayout()
+
+            // Root content padding
+            binding.rvSyncHistory.updatePadding(
+                bottom = navigationBarHeight
+            )
+
+            insets
+        }
     }
 
     private fun setupClickListeners() {

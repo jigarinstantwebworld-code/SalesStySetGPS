@@ -1,12 +1,12 @@
 1<?xml version="1.0" encoding="utf-8"?>
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 3    package="com.styset.sales.app.debug"
-4    android:versionCode="1"
-5    android:versionName="1.0" >
+4    android:versionCode="21"
+5    android:versionName="1.0.21" >
 6
 7    <uses-sdk
 8        android:minSdkVersion="24"
-9        android:targetSdkVersion="34" />
+9        android:targetSdkVersion="35" />
 10
 11    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 11-->C:\Users\DM Intern\AndroidStudioProjects\SalesStySetGPS\app\src\main\AndroidManifest.xml:5:5-79
@@ -548,7 +548,17 @@
 293-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\DM Intern\.gradle\caches\8.9\transforms\9e935ecf3169602697197a1a81fb582c\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:50:17-95
 293-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\DM Intern\.gradle\caches\8.9\transforms\9e935ecf3169602697197a1a81fb582c\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:50:25-92
 294            </intent-filter>
-295        </receiver>
-296    </application>
-297
-298</manifest>
+295        </receiver> <!-- The activities will be merged into the manifest of the hosting app. -->
+296        <activity
+296-->[com.google.android.play:core-common:2.0.3] C:\Users\DM Intern\.gradle\caches\8.9\transforms\1a084383b6db231fec8ee338005b71ba\transformed\jetified-core-common-2.0.3\AndroidManifest.xml:14:9-18:65
+297            android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity"
+297-->[com.google.android.play:core-common:2.0.3] C:\Users\DM Intern\.gradle\caches\8.9\transforms\1a084383b6db231fec8ee338005b71ba\transformed\jetified-core-common-2.0.3\AndroidManifest.xml:15:13-93
+298            android:exported="false"
+298-->[com.google.android.play:core-common:2.0.3] C:\Users\DM Intern\.gradle\caches\8.9\transforms\1a084383b6db231fec8ee338005b71ba\transformed\jetified-core-common-2.0.3\AndroidManifest.xml:16:13-37
+299            android:stateNotNeeded="true"
+299-->[com.google.android.play:core-common:2.0.3] C:\Users\DM Intern\.gradle\caches\8.9\transforms\1a084383b6db231fec8ee338005b71ba\transformed\jetified-core-common-2.0.3\AndroidManifest.xml:17:13-42
+300            android:theme="@style/Theme.PlayCore.Transparent" />
+300-->[com.google.android.play:core-common:2.0.3] C:\Users\DM Intern\.gradle\caches\8.9\transforms\1a084383b6db231fec8ee338005b71ba\transformed\jetified-core-common-2.0.3\AndroidManifest.xml:18:13-62
+301    </application>
+302
+303</manifest>
