@@ -694,10 +694,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
             binding.tvStatus.setText(if (running) R.string.tracking_status_running else R.string.tracking_status_stopped)
             if (running) {
                 binding.tvTimer.visibility = View.VISIBLE
+                binding.tvStopDebugger.visibility = View.VISIBLE
             } else {
                 binding.tvTimer.visibility = View.GONE
+                binding.tvStopDebugger.visibility = View.GONE
             }
             updateButtons()
+        }
+
+        observeStateFlow(viewModel.stopLogicStatus) { status ->
+            binding.tvStopDebugger.text = "Stop Logic: $status"
         }
 
         // Route points observer - draws polyline
@@ -1299,7 +1305,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                                 // Still stop local tracking
                                 stopGpsMonitoring()
                                 stopLocationUpdates()
-                                viewModel.stopTracking(googleMap)
+                                viewModel.stopTracking()
                                 updateButtons()
                                 dismissGpsDialog()
                             }
@@ -1312,7 +1318,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                             // Still stop tracking even without location
                             stopGpsMonitoring()
                             stopLocationUpdates()
-                            viewModel.stopTracking(googleMap)
+                            viewModel.stopTracking()
                             updateButtons()
                             dismissGpsDialog()
                         }
@@ -1323,7 +1329,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                         // Still stop tracking even without location
                         stopGpsMonitoring()
                         stopLocationUpdates()
-                        viewModel.stopTracking(googleMap)
+                        viewModel.stopTracking()
                         updateButtons()
                         dismissGpsDialog()
                     }
@@ -1516,69 +1522,80 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
 
                 // Use suspendCoroutine to handle callback
                 return@withContext suspendCancellableCoroutine { continuation ->
-                    googleMap.animateCamera(
-                        CameraUpdateFactory.newLatLngBounds(bounds, padding),
-                        object : GoogleMap.CancelableCallback {
-                            override fun onFinish() {
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    googleMap.snapshot { bitmap ->
-                                        if (bitmap != null) {
-                                            CoroutineScope(Dispatchers.IO).launch {
-                                                try {
-                                                    val dir = File(filesDir, "route_screenshots")
-                                                    if (!dir.exists()) dir.mkdirs()
+                    try {
+                        val cameraUpdate = if (bounds.southwest == bounds.northeast) {
+                            CameraUpdateFactory.newLatLngZoom(bounds.southwest, 15f)
+                        } else {
+                            CameraUpdateFactory.newLatLngBounds(bounds, padding)
+                        }
+                        
+                        googleMap.animateCamera(
+                            cameraUpdate,
+                            object : GoogleMap.CancelableCallback {
+                                override fun onFinish() {
+                                    Handler(Looper.getMainLooper()).postDelayed({
+                                        try {
+                                            googleMap.snapshot { bitmap ->
+                                                if (bitmap != null) {
+                                                    lifecycleScope.launch(Dispatchers.IO) {
+                                                        try {
+                                                            val dir = File(filesDir, "route_screenshots")
+                                                            if (!dir.exists()) dir.mkdirs()
 
-                                                    val file = File(dir, "route_$routeId.png")
-                                                    FileOutputStream(file).use { out ->
-                                                        val scaledBitmap =
-                                                            Bitmap.createScaledBitmap(
-                                                                bitmap,
-                                                                bitmap.width * 2,
-                                                                bitmap.height * 2,
-                                                                true
+                                                            val file = File(dir, "route_$routeId.png")
+                                                            FileOutputStream(file).use { out ->
+                                                                bitmap.compress(
+                                                                    Bitmap.CompressFormat.PNG,
+                                                                    100,
+                                                                    out
+                                                                )
+                                                            }
+                                                            bitmap.recycle()
+
+                                                            routeRepository.updateRouteScreenshot(
+                                                                routeId,
+                                                                file.absolutePath
                                                             )
-                                                        scaledBitmap.compress(
-                                                            Bitmap.CompressFormat.PNG,
-                                                            100,
-                                                            out
-                                                        )
-                                                        scaledBitmap.recycle()
+                                                            continuation.resume(file.absolutePath)
+                                                        } catch (e: Throwable) {
+                                                            Log.e("Screenshot", "Error saving screenshot", e)
+                                                            continuation.resume(null)
+                                                        } finally {
+                                                            withContext(Dispatchers.Main) {
+                                                                try {
+                                                                    googleMap.animateCamera(
+                                                                        CameraUpdateFactory.newCameraPosition(
+                                                                            currentPosition
+                                                                        ),
+                                                                        300,
+                                                                        null
+                                                                    )
+                                                                } catch (e: Exception) {}
+                                                            }
+                                                        }
                                                     }
-
-                                                    routeRepository.updateRouteScreenshot(
-                                                        routeId,
-                                                        file.absolutePath
-                                                    )
-                                                    continuation.resume(file.absolutePath)
-                                                } catch (e: Exception) {
-                                                    Log.e("Screenshot", "Error", e)
+                                                } else {
                                                     continuation.resume(null)
-                                                } finally {
-                                                    withContext(Dispatchers.Main) {
-                                                        googleMap.animateCamera(
-                                                            CameraUpdateFactory.newCameraPosition(
-                                                                currentPosition
-                                                            ),
-                                                            300,
-                                                            null
-                                                        )
-                                                    }
                                                 }
                                             }
-                                        } else {
+                                        } catch (e: Throwable) {
+                                            Log.e("Screenshot", "Error taking snapshot", e)
                                             continuation.resume(null)
                                         }
-                                    }
-                                }, 500)
-                            }
+                                    }, 500)
+                                }
 
-                            override fun onCancel() {
-                                continuation.resume(null)
+                                override fun onCancel() {
+                                    continuation.resume(null)
+                                }
                             }
-                        }
-                    )
+                        )
+                    } catch (e: Throwable) {
+                        Log.e("Screenshot", "Error animating camera", e)
+                        continuation.resume(null)
+                    }
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e("Screenshot", "Error: ${e.message}")
                 return@withContext null
             }
@@ -1679,9 +1696,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                                     // First, stop tracking and take screenshot (WAIT FOR IT)
                                     lifecycleScope.launch {
                                         try {
-                                            // Step 1: Stop tracking and get screenshot path
-                                            val screenshotPath =
-                                                viewModel.stopTracking(googleMap).await()
+                                            // Step 1: Get screenshot path
+                                            var screenshotPath: String? = null
+                                            val currentRouteId = viewModel.getCurrentRouteId()
+                                            if (currentRouteId != null) {
+                                                screenshotPath = googleMap?.let { map ->
+                                                    takeMapScreenshotForExistingRoute(currentRouteId, map)
+                                                }
+                                            }
+
+                                            // Step 1.5: Stop tracking
+                                            viewModel.stopTracking(screenshotPath).await()
 //
                                             Log.d("TripEnd", "Screenshot saved at: $screenshotPath")
 
@@ -1710,8 +1735,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
 
                                             // Step 3: Call end trip API
                                             viewModel.endTripWithApi(
-                                                salesExecutiveId = preferenceManager.getSalesExecutiveId()
-                                                    .toString(),
+                                                salesExecutiveId = preferenceManager.getSalesExecutiveId()?.toString() ?: "",
                                                 tripId = tripId,
                                                 latitude = latitude,
                                                 longitude = longitude,
@@ -1719,7 +1743,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                                                     progressDialog.dismiss()
                                                     binding.btnStop.isEnabled = true
                                                     binding.btnStop.text = "Stop"
-//                                                    clearMapRoute()
+                                                    clearMapRoute()
                                                     updateButtons()
                                                     dismissGpsDialog()
                                                     endTrip()
@@ -1759,7 +1783,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                                     // Still stop local tracking
                                     stopGpsMonitoring()
                                     stopLocationUpdates()
-                                    viewModel.stopTracking(googleMap)
+                                    viewModel.stopTracking()
                                     updateButtons()
                                     dismissGpsDialog()
                                 }
@@ -1773,7 +1797,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                                 // Still stop tracking even without location
                                 stopGpsMonitoring()
                                 stopLocationUpdates()
-                                viewModel.stopTracking(googleMap)
+                                viewModel.stopTracking()
                                 updateButtons()
                                 dismissGpsDialog()
                             }
@@ -1785,7 +1809,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                             // Still stop tracking even without location
                             stopGpsMonitoring()
                             stopLocationUpdates()
-                            viewModel.stopTracking(googleMap)
+                            viewModel.stopTracking()
                             updateButtons()
                             dismissGpsDialog()
                         }
@@ -1948,39 +1972,30 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
+        if (!isBindingAvailable) return
         binding.navView.setCheckedItem(R.id.nav_home)
         dismissAllDialogs()
         viewModel.clearTripStartState()
         playUpdateManager.onResume()
         Log.e("MainActivity", "========= BroadcastReceiver REGISTERED in onResume =========")
 
-//        if (!isViewOnlyMode) {
-//            lifecycleScope.launch {
-//                // Check if there's an ongoing trip that needs to be displayed
-//                viewModel.restoreTrackingStateFromDatabase()
-//
-//                if (viewModel.isTracking.value) {
-//                    // Restore the ongoing route on map
-//                    val ongoingRoute = routeRepository.getOngoingRoute()
-//                    if (ongoingRoute != null) {
-//                        refreshOngoingRouteOnMap()
-//                        startGpsMonitoring()
-//                        startLocationUpdates()
-//                    }
-//                }
-//            }
-//        }
-
         if (hasAllPermissions()) {
             prepareMapAfterPermissions()
             checkLocationSettings()
-            if (viewModel.isTracking.value) {
+            
+            if (!isViewOnlyMode) {
+                lifecycleScope.launch {
+                    val ongoingRoute = routeRepository.getOngoingRoute()
+                    if (ongoingRoute != null && ongoingRoute.endTimeMillis == null) {
+                        restoreOngoingRouteAndExitRouteMode()
+                    } else if (viewModel.isTracking.value) {
+                        startGpsMonitoring()
+                        startLocationUpdates()
+                    }
+                }
+            } else if (viewModel.isTracking.value) {
                 startGpsMonitoring()
                 startLocationUpdates()
-//                lifecycleScope.launch {
-//                    restoreOngoingRouteAndExitRouteMode()
-//                }
-
             }
         }
     }
@@ -2023,7 +2038,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                     if (routePoints.isNotEmpty()) {
                         // Draw route polyline
                         drawRoutePolyline(routePoints)
-                        addRouteStartEndMarkers(routePoints)
 
                         // Load and add stops
                         val stops = routeRepository.getStopsForRoute(ongoingRoute.id)
@@ -2104,6 +2118,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
     // ==================== TIMER METHODS ====================
 
     private suspend fun updateTimers() {
+        if (!isBindingAvailable) return
+
         // Current stop timer
         val currentStopTime = viewModel.getCurrentStopTime()
         if (currentStopTime > 0) {
@@ -2122,6 +2138,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
             binding.tvStatus.text = getString(
                 if (viewModel.isTracking.value) R.string.tracking_status_running else R.string.tracking_status_stopped
             ) + "  •  Session: ${mins}:${String.format("%02d", secs)}"
+        } else {
+            binding.tvStatus.text = getString(
+                if (viewModel.isTracking.value) R.string.tracking_status_running else R.string.tracking_status_stopped
+            )
         }
     }
 
@@ -2598,7 +2618,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
         val builder = LatLngBounds.Builder()
         points.forEach { builder.include(it.latLng) }
         val bounds = builder.build()
-        map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80))
+        if (bounds.southwest == bounds.northeast) {
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(bounds.southwest, 15f))
+        } else {
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80))
+        }
     }
 
     // ==================== DIALOG METHODS ====================
@@ -4801,9 +4825,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
 
         val bounds = builder.build()
         val padding = 150
+        val cameraUpdate = if (bounds.southwest == bounds.northeast) {
+            CameraUpdateFactory.newLatLngZoom(bounds.southwest, 15f)
+        } else {
+            CameraUpdateFactory.newLatLngBounds(bounds, padding)
+        }
 
         map.animateCamera(
-            CameraUpdateFactory.newLatLngBounds(bounds, padding),
+            cameraUpdate,
             object : GoogleMap.CancelableCallback {
                 override fun onFinish() {
                     Handler(Looper.getMainLooper()).postDelayed({
@@ -4852,18 +4881,23 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
     }
 
     private fun clearMapRoute() {
-        // Clear the polyline from map
+        // Clear EVERYTHING from the map to ensure no orphaned polylines exist
+        googleMap?.clear()
+
+        // Clear references
         routePolyline?.remove()
         routePolyline = null
-
 
         // Clear start marker
         startMarker?.remove()
         startMarker = null
         isStartMarkerSet = false
 
+        // Clear stop markers references
+        clearMapStops()
+
         // Clear route points in ViewModel
-//        viewModel.resetSession()
+        viewModel.resetSession()
 
         Log.d("MapClear", "✅ Map route and markers cleared")
     }

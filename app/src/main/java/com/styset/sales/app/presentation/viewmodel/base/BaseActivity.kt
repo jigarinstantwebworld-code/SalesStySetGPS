@@ -16,6 +16,7 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
 
     private var _binding: VB? = null
     protected val binding get() = _binding!!
+    protected val isBindingAvailable: Boolean get() = _binding != null
 
     abstract fun getViewBinding(): VB
 

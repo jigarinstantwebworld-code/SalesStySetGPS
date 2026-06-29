@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -49,8 +51,17 @@ class PlacesActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_places)
+
+        delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_NO
+        val mainLayout = findViewById<View>(R.id.main)
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(mainLayout) { v, insets ->
+            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         stopRepository = StopRepository(applicationContext)
         routeRepository = RouteRepository(applicationContext) // Add this
@@ -595,5 +606,60 @@ class PlacesActivity : AppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: android.view.Menu?): Boolean {
+        menuInflater.inflate(R.menu.places_menu, menu)
+        return true
+    }
 
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
+        if (item.itemId == R.id.action_missed_stops) {
+            showMissedStopsDialog()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun showMissedStopsDialog() {
+        val file = java.io.File(filesDir, "missed_stops.json")
+        if (!file.exists()) {
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Exceptions")
+                .setMessage("No missed stops recorded yet.")
+                .setPositiveButton("OK", null)
+                .show()
+            return
+        }
+
+        try {
+            val json = file.readText()
+            val type = object : com.google.gson.reflect.TypeToken<List<com.styset.sales.app.ui.TrackingViewModel.IgnoredStop>>() {}.type
+            val missedStops = com.google.gson.Gson().fromJson<List<com.styset.sales.app.ui.TrackingViewModel.IgnoredStop>>(json, type)
+            
+            if (missedStops.isNullOrEmpty()) {
+                androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Exceptions")
+                    .setMessage("No missed stops recorded yet.")
+                    .setPositiveButton("OK", null)
+                    .show()
+                return
+            }
+
+            val items = missedStops.map { stop ->
+                "⏱️ ${stop.timeStr}\n📍 ${stop.latLngStr}\n⚠️ ${stop.reason}"
+            }.toTypedArray()
+
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Missed Stops / Exceptions")
+                .setItems(items, null)
+                .setPositiveButton("Close", null)
+                .show()
+        } catch (e: Exception) {
+            android.util.Log.e("PlacesActivity", "Failed to parse missed stops", e)
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage("Could not load missed stops.")
+                .setPositiveButton("OK", null)
+                .show()
+        }
+    }
 }

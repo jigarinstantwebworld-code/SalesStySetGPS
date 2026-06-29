@@ -29,7 +29,15 @@ class LocationForegroundService : Service() {
         createNotificationChannel()
     }
 
+    // show notifica
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == "ACTION_UPDATE_NOTIFICATION") {
+            val text = intent.getStringExtra("EXTRA_TEXT") ?: getString(R.string.notification_text)
+            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.notify(1, buildNotification(text))
+            return START_STICKY
+        }
+
         startForeground(1, buildNotification())
         serviceScope.launch {
             repository.locationUpdates().collectLatest {
@@ -62,7 +70,7 @@ class LocationForegroundService : Service() {
         }
     }
 
-    private fun buildNotification(): Notification {
+    private fun buildNotification(customText: String? = null): Notification {
         val channelId = getString(R.string.notification_channel_id)
         val intent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
@@ -72,7 +80,7 @@ class LocationForegroundService : Service() {
 
         return NotificationCompat.Builder(this, channelId)
             .setContentTitle(getString(R.string.notification_title))
-            .setContentText(getString(R.string.notification_text))
+            .setContentText(customText ?: getString(R.string.notification_text))
             .setSmallIcon(R.drawable.ic_notification_location)
             .setContentIntent(pendingIntent)
             .setOngoing(true)

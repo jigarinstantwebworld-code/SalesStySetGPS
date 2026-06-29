@@ -48,6 +48,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -68,7 +69,7 @@ class TrackingViewModel(
 
     }
 
-    private val TEST_MODE = true
+    private val TEST_MODE = false
     private val TEST_STOP_SECONDS = 4
 
     private var currentRouteId: Long? = null
@@ -117,7 +118,7 @@ class TrackingViewModel(
 
     private var movementState = MovementState.MOVING
     private var pointsInsideRadius = 0
-    private val exitRadiusMeters = 70f
+    private val exitRadiusMeters = 10f
     private val walkingMinSpeed = 0.5f
     private val walkingMaxSpeed = 6f
     private val trafficSpeedMin = 2f      // 2 km/h
@@ -134,6 +135,20 @@ class TrackingViewModel(
     private val _isTracking = MutableStateFlow(false)
     val isTracking: StateFlow<Boolean> = _isTracking.asStateFlow()
 
+    private val _stopLogicStatus = MutableStateFlow("Waiting for location...")
+    val stopLogicStatus: StateFlow<String> = _stopLogicStatus.asStateFlow()
+
+    data class IgnoredStop(
+        val timeStr: String,
+        val latLngStr: String,
+        val reason: String
+    )
+    val ignoredStops = mutableListOf<IgnoredStop>()
+
+    fun updateStopLogicStatus(status: String) {
+        _stopLogicStatus.value = status
+    }
+
     val routePoints = sessionState.routePoints
     val stopPoints = sessionState.stopPoints
 
@@ -146,7 +161,7 @@ class TrackingViewModel(
     private var stopCenter: LatLng? = null
     private var stopStartTime: Long? = null // wall time for display only
     private var stopStartElapsed: Long? = null // monotonic clock for duration
-    private val stopRadiusMeters = 30f // 40 to testing 25 is set for production
+    private val stopRadiusMeters = 25f // 40 to testing 25 is set for production
     private val stopThresholdMinutes = 1L // threshold (minutes) 1 for test
     private var isCurrentlyStopped = false
     private var currentStopId: Long? = null
@@ -167,7 +182,7 @@ class TrackingViewModel(
 
     private val maxJumpMeters = 120f          // ignore unrealistic GPS jumps
     private val walkingSpeedThreshold = 8f   // slow movement filter
-    private val minStopPoints = 4            // minimum points before creating stop (4 new location for conform stop user has stop)
+    private val minStopPoints = 2            // minimum points before creating stop (4 new location for conform stop user has stop)
 
     init {
         // Load persisted stops and reflect into session state on app start
@@ -504,43 +519,36 @@ class TrackingViewModel(
         if (_isTracking.value) return
 
         viewModelScope.launch {
-            // Use the existing route instead of creating a new one
-            currentRouteId = existingRouteId
-            currentRouteStartTime = System.currentTimeMillis()
-            sessionStartTimeMillis = System.currentTimeMillis()
+            try {
+                val ongoingRoute = routeRepo.getOngoingRoute() ?: routeRepo.getAllRoutes().firstOrNull { it.id == existingRouteId }
+                if (ongoingRoute != null) {
+                    currentRouteId = ongoingRoute.id
+                    currentRouteStartTime = ongoingRoute.startTimeMillis
+                    sessionStartTimeMillis = ongoingRoute.startTimeMillis
 
-            _isTracking.value = true
-
-            if (!hasActiveSession) {
-                isFirstLocationOfSession = true
-                hasActiveSession = true
-                Log.d("StartMarker", "🆕 Continuing existing trip - will capture start point")
-            }
-
-            startService()
-
-            collectionJob?.cancel()
-            collectionJob = viewModelScope.launch {
-                repository.locationUpdates().collect { location ->
-                    Log.d("LocationFlow", "Received location in flow: $location")
-
-                    if (isFirstLocationOfSession) {
-                        val startLatLng = LatLng(location.latitude, location.longitude)
-                        _startLocation.value = startLatLng
-                        isFirstLocationOfSession = false
-                        Log.d("StartMarker", "📍 Continuing trip start location: $startLatLng")
+                    val routePoints = routeRepo.getRoutePoints(ongoingRoute.id)
+                    sessionState.reset()
+                    routePoints.forEach { point ->
+                        sessionState.addLocation(LocationPoint(LatLng(point.latitude, point.longitude), point.timestamp))
                     }
 
-                    val speedKmh = location.speed * 3.6f
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            getApplication(),
-                            "📍 Speed: ${speedKmh.toInt()} km/h",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    val stops = routeRepo.getStopsForRoute(ongoingRoute.id)
+                    stops.forEach { stop -> sessionState.addOrUpdateStop(stop) }
+
+                    if (routePoints.isNotEmpty()) {
+                        val startPoint = routePoints.first()
+                        _startLocation.value = LatLng(startPoint.latitude, startPoint.longitude)
                     }
-                    handleLocation(location)
+
+                    _isTracking.value = true
+                    hasActiveSession = true
+                    isFirstLocationOfSession = false
+
+                    startService()
+                    startLocationCollectionJob()
                 }
+            } catch (e: Exception) {
+                Log.e("TrackingViewModel", "Error continuing trip", e)
             }
         }
     }
@@ -576,29 +584,32 @@ class TrackingViewModel(
             }
 
             startService()
+            startLocationCollectionJob()
+        }
+    }
 
-            collectionJob?.cancel()
-            collectionJob = viewModelScope.launch {
-                repository.locationUpdates().collect { location ->
-                    Log.d("LocationFlow", "Received location in flow: $location")
+    private fun startLocationCollectionJob() {
+        collectionJob?.cancel()
+        collectionJob = viewModelScope.launch {
+            repository.locationUpdates().collect { location ->
+                Log.d("LocationFlow", "Received location in flow: $location")
 
-                    if (isFirstLocationOfSession) {
-                        val startLatLng = LatLng(location.latitude, location.longitude)
-                        _startLocation.value = startLatLng
-                        isFirstLocationOfSession = false
-                        Log.d("StartMarker", "📍 NEW SESSION start location: $startLatLng")
-                    }
-
-                    val speedKmh = location.speed * 3.6f
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            getApplication(),
-                            "📍 Speed: ${speedKmh.toInt()} km/h",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    handleLocation(location)
+                if (isFirstLocationOfSession) {
+                    val startLatLng = LatLng(location.latitude, location.longitude)
+                    _startLocation.value = startLatLng
+                    isFirstLocationOfSession = false
+                    Log.d("StartMarker", "📍 NEW SESSION start location: $startLatLng")
                 }
+
+                val speedKmh = location.speed * 3.6f
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        getApplication(),
+                        "📍 Speed: ${speedKmh.toInt()} km/h",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                handleLocation(location)
             }
         }
     }
@@ -606,9 +617,13 @@ class TrackingViewModel(
     fun getCurrentTripId(): Int? {
         return preferenceManager.getTripId()?.toIntOrNull()
     }
-    fun getCurrentSalesExecutiveId(): Int? {
-        return preferenceManager.getSalesExecutiveId()
+    fun getCurrentSalesExecutiveId(): String {
+        return preferenceManager.getSalesExecutiveId()?.toString() ?: ""
     }
+
+//    fun getCurrentRouteId(): Long? {
+//        return currentRouteId
+//    }
 
     // In TrackingViewModel.kt - modify existing method
     fun getStopsWithSequence(): List<Pair<String, StopPoint>> {
@@ -713,12 +728,30 @@ class TrackingViewModel(
 //        }
 //    }
 
-    fun stopTracking(googleMap: GoogleMap? = null): Deferred<String?> {
+    fun stopTracking(screenshotPath: String? = null): Deferred<Unit> {
         return viewModelScope.async {
-            if (!_isTracking.value) return@async null
+            if (!_isTracking.value) return@async
 
             val endTime = System.currentTimeMillis()
             val nowElapsed = SystemClock.elapsedRealtime()
+
+            // Check if we were monitoring a stop when the trip ended
+            if (movementState == MovementState.POSSIBLE_STOP && stopCenter != null) {
+                val stayedMins = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 60000)
+                val stayedSecs = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 1000) % 60
+                
+                val reasonStr = if (stayedMins >= stopThresholdMinutes) {
+                    "Trip ended. Stayed ${stayedMins}m ${stayedSecs}s but lacked GPS points (got $pointsInsideRadius/$minStopPoints)"
+                } else {
+                    "Trip ended while monitoring stop (stayed ${stayedMins}m ${stayedSecs}s)"
+                }
+                
+                ignoredStops.add(IgnoredStop(
+                    timeStr = java.text.SimpleDateFormat("hh:mm:ss a", java.util.Locale.US).apply { timeZone = java.util.TimeZone.getTimeZone("Asia/Kolkata") }.format(java.util.Date(endTime)),
+                    latLngStr = "${stopCenter?.latitude}, ${stopCenter?.longitude}",
+                    reason = reasonStr
+                ))
+            }
 
             // =====================================================
             // ✅ STEP 1: FINALIZE ALL OPEN STOPS (DB SOURCE OF TRUTH)
@@ -743,7 +776,7 @@ class TrackingViewModel(
                     phone = stopEntity.phone,
                     imageUri = stopEntity.imageUri,
                     tripId = stopEntity.tripId,
-                    salesExecutiveId = stopEntity.salesExecutiveId!!
+                    salesExecutiveId = stopEntity.salesExecutiveId ?: ""
                 )
 
                 // ✅ Update UI if exists
@@ -776,20 +809,92 @@ class TrackingViewModel(
             val routeStartTime = currentRouteStartTime ?: sessionStartTimeMillis ?: 0
             val stopsInRoute = stopRepo.getStopsInTimeRange(routeStartTime, endTime)
 
-            // Take map screenshot if GoogleMap is available
-            var screenshotPath: String? = null
-            if (googleMap != null) {
-                screenshotPath = takeMapScreenshot(googleMap, currentRouteId ?: 0)
-            }
-
+            // =====================================================
+            // ✅ STEP 2: FINALIZE ROUTE & DB CLEANUP
+            // =====================================================
+            
             // Update the route with end time, stop count, and screenshot path
             currentRouteId?.let { routeId ->
-                routeRepo.finalizeRoute(
-                    routeId = routeId,
-                    endTime = endTime,
-                    stopCount = stopsInRoute.size,
-                    screenshotPath = screenshotPath
-                )
+                try {
+                    routeRepo.finalizeRoute(
+                        routeId = routeId,
+                        endTime = endTime,
+                        stopCount = stopsInRoute.size,
+                        screenshotPath = screenshotPath
+                    )
+                } catch (e: Exception) {
+                    Log.e("StopTracking", "Failed to finalize route in DB", e)
+                }
+            }
+            
+            // ✅ WRITE IGNORED STOPS TO FILE
+            if (ignoredStops.isNotEmpty()) {
+                try {
+                    saveMissedStopsToJson(ignoredStops)
+                    
+                    val resolver = getApplication<android.app.Application>().contentResolver
+                    val fileName = "ignored_stops_trip_${currentRouteId ?: System.currentTimeMillis()}.txt"
+                    
+                    val contentValues = android.content.ContentValues().apply {
+                        put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                        put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "text/plain")
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                            put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_DOWNLOADS)
+                        }
+                    }
+
+                    val uri = resolver.insert(
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) 
+                            android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI 
+                        else 
+                            android.provider.MediaStore.Files.getContentUri("external"), 
+                        contentValues
+                    )
+
+                    if (uri != null) {
+                        resolver.openOutputStream(uri)?.use { outputStream ->
+                            outputStream.write("--- Ignored Stops Report ---\n".toByteArray())
+                            ignoredStops.forEach { ignored ->
+                                outputStream.write("Time: ${ignored.timeStr} | Location: ${ignored.latLngStr}\n".toByteArray())
+                                outputStream.write("Reason: ${ignored.reason}\n".toByteArray())
+                                outputStream.write("---------------------------\n".toByteArray())
+                            }
+                        }
+                        Log.d("StopDebug", "✅ Ignored stops report saved to MediaStore")
+                        withContext(Dispatchers.Main) {
+                            android.widget.Toast.makeText(
+                                getApplication(),
+                                "Ignored Stops saved to Downloads!",
+                                android.widget.Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } else {
+                        // Fallback for older devices or if insert fails
+                        val file = java.io.File(
+                            android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS),
+                            fileName
+                        )
+                        file.printWriter().use { out ->
+                            out.println("--- Ignored Stops Report ---")
+                            ignoredStops.forEach { ignored ->
+                                out.println("Time: ${ignored.timeStr} | Location: ${ignored.latLngStr}")
+                                out.println("Reason: ${ignored.reason}")
+                                out.println("---------------------------")
+                            }
+                        }
+                        Log.d("StopDebug", "✅ Ignored stops report saved to: ${file.absolutePath}")
+                        withContext(Dispatchers.Main) {
+                            android.widget.Toast.makeText(
+                                getApplication(),
+                                "Ignored Stops saved to Downloads!",
+                                android.widget.Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("StopDebug", "Failed to write ignored stops file", e)
+                }
+                ignoredStops.clear()
             }
 
             // Stop tracking
@@ -804,8 +909,7 @@ class TrackingViewModel(
             sessionStartTimeMillis = null
             currentRouteId = null
             currentRouteStartTime = null
-
-            return@async screenshotPath
+            originalStartTimeMillis = null
         }
     }
 
@@ -1039,21 +1143,14 @@ class TrackingViewModel(
                                 val file = File(dir, "route_$routeId.png")
                                 if (file.exists()) file.delete()
 
-                                val scaledBitmap = Bitmap.createScaledBitmap(
-                                    bitmap,
-                                    bitmap.width * 2,
-                                    bitmap.height * 2,
-                                    true
-                                )
-
                                 FileOutputStream(file).use { out ->
-                                    scaledBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
                                 }
 
                                 screenshotPath = file.absolutePath
                                 routeRepo.updateRouteScreenshot(routeId, screenshotPath!!)
                                 Log.d("SCREENSHOT", "✅ Saved: $screenshotPath")
-                                scaledBitmap.recycle()
+                                bitmap.recycle()
 
                             } catch (e: Exception) {
                                 Log.e("SCREENSHOT", "❌ Save error", e)
@@ -1128,6 +1225,7 @@ class TrackingViewModel(
         isFirstLocationOfSession = true
         hasActiveSession = false
         currentRouteId = null
+        originalStartTimeMillis = null
         currentRouteStartTime = null
         // Signal that start marker should be removed
         _startLocation.value = null
@@ -1145,6 +1243,43 @@ class TrackingViewModel(
         val ctx = getApplication<Application>()
         val intent = Intent(ctx, LocationForegroundService::class.java)
         ctx.stopService(intent)
+    }
+
+    private fun updateForegroundNotification(text: String) {
+        val ctx = getApplication<Application>()
+        val intent = Intent(ctx, LocationForegroundService::class.java).apply {
+            action = "ACTION_UPDATE_NOTIFICATION"
+            putExtra("EXTRA_TEXT", text)
+        }
+        ctx.startService(intent)
+    }
+
+    private fun saveMissedStopsToJson(stops: List<IgnoredStop>) {
+        try {
+            val file = java.io.File(getApplication<Application>().filesDir, "missed_stops.json")
+            val gson = com.google.gson.Gson()
+            
+            // Read existing
+            val existingStops = if (file.exists()) {
+                val type = object : com.google.gson.reflect.TypeToken<List<IgnoredStop>>() {}.type
+                val existingJson = file.readText()
+                try {
+                    gson.fromJson<List<IgnoredStop>>(existingJson, type) ?: emptyList()
+                } catch (e: Exception) {
+                    emptyList()
+                }
+            } else {
+                emptyList()
+            }
+            
+            // Append and write
+            val allStops = existingStops + stops
+            val newJson = gson.toJson(allStops)
+            file.writeText(newJson)
+            Log.d("StopDebug", "✅ Missed stops saved to internal JSON: ${allStops.size} total")
+        } catch (e: Exception) {
+            Log.e("StopDebug", "Failed to save missed stops to JSON", e)
+        }
     }
 
 
@@ -1198,8 +1333,12 @@ class TrackingViewModel(
 
                     _isTracking.value = true
                     hasActiveSession = true
+                    isFirstLocationOfSession = false
 
                     Log.d("StateRestore", "✅ Tracking state restored - Route: ${ongoingRoute.id}, Points: ${routePoints.size}, Stops: ${stops.size}")
+                    
+                    startService()
+                    startLocationCollectionJob()
                 } else {
                     Log.d("StateRestore", "No ongoing route found in database")
                     _isTracking.value = false
@@ -1307,8 +1446,8 @@ class TrackingViewModel(
                     endTimeMillis = null,  // Ongoing stop
                     timeSpentMinutes = 0,
                     letter = letter,
-                    tripId = getCurrentTripId().toString(),
-                    salesExecutiveId = getCurrentSalesExecutiveId().toString()
+                    tripId = getCurrentTripId()?.toString() ?: "",
+                    salesExecutiveId = getCurrentSalesExecutiveId()
                 )
 
                 // ✅ Use the new force update method
@@ -1402,6 +1541,13 @@ class TrackingViewModel(
                             sessionState.stopPoints.value.filter { it.endTimeMillis != null }.size
                         showUserToast("📊 Completed stops: $completedStops")
                     }
+                } else {
+                    val stayedSecs = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 1000)
+                    ignoredStops.add(IgnoredStop(
+                        timeStr = java.text.SimpleDateFormat("hh:mm:ss a", java.util.Locale.US).apply { timeZone = java.util.TimeZone.getTimeZone("Asia/Kolkata") }.format(java.util.Date(nowWall)),
+                        latLngStr = "${stopCenter?.latitude}, ${stopCenter?.longitude}",
+                        reason = "TEST_MODE: Moved away before 10s (stayed ${stayedSecs}s)"
+                    ))
                 }
 
                 // Reset for next potential stop
@@ -1540,6 +1686,31 @@ class TrackingViewModel(
                 val distance = GeoUtils.distanceMeters(center, latLng)
                 Log.d("StopDebug", "📏 Distance from stop center: $distance m (radius: $stopRadiusMeters m)")
 
+                val isDriving = speedKmh > movingSpeedThresholdKmh
+                if (isDriving) {
+                    Log.d("StopDebug", "🚗 DRIVING DETECTED - cancelling possible stop")
+                    showUserToast("🚗 Driving away - Stop cancelled")
+                    
+                    val stayedMins = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 60000)
+                    val stayedSecs = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 1000) % 60
+                    
+                    val reasonStr = if (stayedMins >= stopThresholdMinutes) {
+                        "Driving speed detected (${speedKmh.toInt()} km/h). Stayed ${stayedMins}m ${stayedSecs}s but lacked GPS points (got $pointsInsideRadius/$minStopPoints)"
+                    } else {
+                        "Driving speed detected (${speedKmh.toInt()} km/h) before required 5 mins (stayed ${stayedMins}m ${stayedSecs}s)"
+                    }
+                    
+                    ignoredStops.add(IgnoredStop(
+                        timeStr = SimpleDateFormat("hh:mm:ss a", Locale.US).apply { timeZone = TimeZone.getTimeZone("Asia/Kolkata") }.format(Date(nowWall)),
+                        latLngStr = "${center.latitude}, ${center.longitude}",
+                        reason = reasonStr
+                    ))
+                    
+                    resetStopState()
+                    movementState = MovementState.MOVING
+                    return
+                }
+
                 if (distance <= stopRadiusMeters) {
                     pointsInsideRadius++
                     val minutes = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 60000)
@@ -1584,8 +1755,8 @@ class TrackingViewModel(
                             endTimeMillis = null,
                             timeSpentMinutes = minutes,
                             letter = letter,
-                            tripId = getCurrentTripId().toString(),
-                            salesExecutiveId = getCurrentSalesExecutiveId().toString()
+                            tripId = getCurrentTripId()?.toString() ?: "",
+                            salesExecutiveId = getCurrentSalesExecutiveId()
                         )
 
                         sessionState.addOrUpdateStop(stop)
@@ -1608,6 +1779,24 @@ class TrackingViewModel(
                 } else {
                     Log.d("StopDebug", "❌ OUTSIDE RADIUS: $distance m > $stopRadiusMeters m")
                     showUserToast("➡️ Moved away - Stop cancelled (not enough time)")
+
+                    val stayedMins = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 60000)
+                    val stayedSecs = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 1000) % 60
+                    
+                    val reasonStr = if (stayedMins >= stopThresholdMinutes) {
+                        "Moved away (distance: ${distance.toInt()}m). Stayed ${stayedMins}m ${stayedSecs}s but lacked GPS points (got $pointsInsideRadius/$minStopPoints)"
+                    } else {
+                        "Moved away (distance: ${distance.toInt()}m) before required 5 mins (stayed ${stayedMins}m ${stayedSecs}s)"
+                    }
+                    
+                    ignoredStops.add(IgnoredStop(
+                        timeStr = SimpleDateFormat("hh:mm:ss a", Locale.US).apply { timeZone = TimeZone.getTimeZone("Asia/Kolkata") }.format(
+                            Date(nowWall)
+                        ),
+                        latLngStr = "${center.latitude}, ${center.longitude}",
+                        reason = reasonStr
+                    ))
+
                     resetStopState()
                     movementState = MovementState.MOVING
                 }
@@ -1904,6 +2093,9 @@ class TrackingViewModel(
     }
 
     private fun showUserToast(message: String) {
+        updateStopLogicStatus(message)
+        updateForegroundNotification(message)
+
         // Only show toasts that are important for the user
         val importantToasts = listOf(
             "🅿️ Vehicle stopped - Monitoring for stop...",

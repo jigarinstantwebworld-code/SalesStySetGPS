@@ -3337,6 +3337,7 @@ id action_divider
 id action_image
 id action_menu_divider
 id action_menu_presenter
+id action_missed_stops
 id action_mode_bar
 id action_mode_bar_stub
 id action_mode_close_button
@@ -3958,6 +3959,7 @@ id tvSectionTitle
 id tvSellerName
 id tvStatus
 id tvStopAddress
+id tvStopDebugger
 id tvStopDuration
 id tvStopLetter
 id tvStopName
@@ -4249,6 +4251,7 @@ layout select_dialog_multichoice_material
 layout select_dialog_singlechoice_material
 layout support_simple_spinner_dropdown_item
 menu drawer_menu
+menu places_menu
 mipmap ic_launcher
 mipmap ic_launcher_round
 plurals mtrl_badge_content_description

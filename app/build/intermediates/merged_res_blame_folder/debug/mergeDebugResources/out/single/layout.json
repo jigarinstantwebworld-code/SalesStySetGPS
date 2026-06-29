@@ -1,158 +1,154 @@
 [
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\dialog_places.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\dialog_places.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/dialog_places.xml",
+        "source": "com.styset.sales.app-main-55:/layout/dialog_places.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_lead_detail_section.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_lead_detail_section.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_place_card.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_place_card.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_route_snapshot.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_route_snapshot.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/activity_attendance.xml",
+        "source": "com.styset.sales.app-main-55:/layout/activity_attendance.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\activity_lead_detail.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\activity_lead_detail.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_lead.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_lead.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\dialog_add_note.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\dialog_add_note.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/activity_main2.xml",
+        "source": "com.styset.sales.app-main-55:/layout/activity_main2.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\activity_create_lead.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\activity_create_lead.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_sync_record.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_sync_record.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\dialog_stop_form.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\dialog_stop_form.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_route_snapshot.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_route_snapshot.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_lead.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_lead.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/activity_places.xml",
+        "source": "com.styset.sales.app-main-55:/layout/activity_places.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\activity_login.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\activity_login.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_loading.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_loading.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\nav_header.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\nav_header.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_lead_checkbox.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_lead_checkbox.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_loading.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_loading.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/dialog_filter_bottom_sheet.xml",
+        "source": "com.styset.sales.app-main-55:/layout/dialog_filter_bottom_sheet.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\fragment_schedule_calendar.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\fragment_schedule_calendar.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/fragment_schedule_calendar.xml",
+        "source": "com.styset.sales.app-main-55:/layout/fragment_schedule_calendar.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_event.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_event.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/map_info_window.xml",
+        "source": "com.styset.sales.app-main-55:/layout/map_info_window.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_route_with_stops.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_route_with_stops.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_event.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_event.xml"
+    },
+    {
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_lead_detail_field.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_lead_detail_field.xml"
+    },
+    {
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/activity_sync_test.xml",
+        "source": "com.styset.sales.app-main-55:/layout/activity_sync_test.xml"
+    },
+    {
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/activity_api.xml",
+        "source": "com.styset.sales.app-main-55:/layout/activity_api.xml"
     },
     {
         "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/activity_login.xml",
         "source": "com.styset.sales.app-main-55:/layout/activity_login.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\dialog_filter_bottom_sheet.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\dialog_filter_bottom_sheet.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_stop_in_route.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_stop_in_route.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\layout_update_card.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\layout_update_card.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/activity_visit_detail.xml",
+        "source": "com.styset.sales.app-main-55:/layout/activity_visit_detail.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\activity_attendance.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\activity_attendance.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/activity_lead_detail.xml",
+        "source": "com.styset.sales.app-main-55:/layout/activity_lead_detail.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\activity_visit_detail.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\activity_visit_detail.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_place.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_place.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_lead_detail_image.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_lead_detail_image.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_route_with_stops.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_route_with_stops.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\activity_api.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\activity_api.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_lead_detail_section.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_lead_detail_section.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\fragment_upcoming_schedules.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\fragment_upcoming_schedules.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/fragment_upcoming_schedules.xml",
+        "source": "com.styset.sales.app-main-55:/layout/fragment_upcoming_schedules.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\activity_main2.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\activity_main2.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/activity_create_lead.xml",
+        "source": "com.styset.sales.app-main-55:/layout/activity_create_lead.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_lead_checkbox.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_lead_checkbox.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/fragment_today_schedules.xml",
+        "source": "com.styset.sales.app-main-55:/layout/fragment_today_schedules.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\activity_sync_test.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\activity_sync_test.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/dialog_stop_form.xml",
+        "source": "com.styset.sales.app-main-55:/layout/dialog_stop_form.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_lead_detail_note.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_lead_detail_note.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/nav_header.xml",
+        "source": "com.styset.sales.app-main-55:/layout/nav_header.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\activity_places.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\activity_places.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/dialog_add_note.xml",
+        "source": "com.styset.sales.app-main-55:/layout/dialog_add_note.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\activity_main.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\activity_main.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_post.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_post.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_sync_record.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_sync_record.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_lead_detail_add_note.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_lead_detail_add_note.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_lead_detail_field.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_lead_detail_field.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_lead_detail_note.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_lead_detail_note.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_lead_detail_add_note.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_lead_detail_add_note.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/dialog_date_filter_bottom_sheet.xml",
+        "source": "com.styset.sales.app-main-55:/layout/dialog_date_filter_bottom_sheet.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\fragment_today_schedules.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\fragment_today_schedules.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/layout_update_card.xml",
+        "source": "com.styset.sales.app-main-55:/layout/layout_update_card.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_place_card.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_place_card.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/activity_main.xml",
+        "source": "com.styset.sales.app-main-55:/layout/activity_main.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_place.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_place.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/activity_lead.xml",
+        "source": "com.styset.sales.app-main-55:/layout/activity_lead.xml"
     },
     {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_stop_in_route.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_stop_in_route.xml"
-    },
-    {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\item_post.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\item_post.xml"
-    },
-    {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\map_info_window.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\map_info_window.xml"
-    },
-    {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\activity_lead.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\activity_lead.xml"
-    },
-    {
-        "merged": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-mergeDebugResources-52:\\layout\\dialog_date_filter_bottom_sheet.xml",
-        "source": "C:\\Users\\DM Intern\\.gradle\\daemon\\8.9\\com.styset.sales.app-main-55:\\layout\\dialog_date_filter_bottom_sheet.xml"
+        "merged": "com.styset.sales.app-mergeDebugResources-52:/layout/item_lead_detail_image.xml",
+        "source": "com.styset.sales.app-main-55:/layout/item_lead_detail_image.xml"
     }
 ]

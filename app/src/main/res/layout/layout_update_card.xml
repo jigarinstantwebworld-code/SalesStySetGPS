@@ -8,7 +8,7 @@
     android:layout_margin="16dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="8dp"
-    tools:visibility="visible"
+    tools:visibility="gone"
     app:cardBackgroundColor="@android:color/white"
     android:visibility="gone">
 

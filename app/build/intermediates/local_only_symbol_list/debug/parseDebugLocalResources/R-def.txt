@@ -124,6 +124,7 @@ drawable ic_stop
 drawable ic_update
 drawable ic_whatsapp
 drawable status_badge
+id action_missed_stops
 id address
 id btnAddNote
 id btnAddPhoto
@@ -325,6 +326,7 @@ id tvSectionTitle
 id tvSellerName
 id tvStatus
 id tvStopAddress
+id tvStopDebugger
 id tvStopDuration
 id tvStopLetter
 id tvStopName
@@ -384,6 +386,7 @@ layout layout_update_card
 layout map_info_window
 layout nav_header
 menu drawer_menu
+menu places_menu
 mipmap ic_launcher
 mipmap ic_launcher_round
 raw ahmedabad_nehrunagar_vadaj_newranip
