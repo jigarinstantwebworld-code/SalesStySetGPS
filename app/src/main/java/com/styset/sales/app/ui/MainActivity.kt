@@ -1081,6 +1081,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                 updateButtons()
                 startGpsMonitoring()
                 startLocationUpdates()
+                startPeriodicSyncEvery15Minutes()
 
 
             } catch (e: Exception) {
@@ -1857,10 +1858,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
         }
 
         val workManager = WorkManager.getInstance(this)
+        // Cancel any existing schedule first to start a fresh 15-minute timer
+        workManager.cancelUniqueWork("trip_periodic_sync")
 
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresBatteryNotLow(true)
+            // Removed requiresBatteryNotLow to ensure sync works on low battery
             .build()
 
         val periodicWorkRequest = PeriodicWorkRequestBuilder<SyncWorker>(15, TimeUnit.MINUTES)
@@ -1872,7 +1875,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
 
         workManager.enqueueUniquePeriodicWork(
             "trip_periodic_sync",
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
             periodicWorkRequest
         )
 
@@ -2080,6 +2083,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                 if (viewModel.isTracking.value) {
                     startGpsMonitoring()
                     startLocationUpdates()
+                    startPeriodicSyncEvery15Minutes()
                 }
 
                 progressDialog.dismiss()
@@ -4490,6 +4494,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                     updateButtonsForViewMode()
                     startGpsMonitoring()
                     startLocationUpdates()
+                    startPeriodicSyncEvery15Minutes()
                 }
 
                 progressDialog.dismiss()

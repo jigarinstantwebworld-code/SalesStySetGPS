@@ -534,6 +534,9 @@ class TrackingViewModel(
 
                     val stops = routeRepo.getStopsForRoute(ongoingRoute.id)
                     stops.forEach { stop -> sessionState.addOrUpdateStop(stop) }
+                    
+                    // ✅ Restore active stop state if there is an ongoing stop
+                    restoreActiveStopStateFromStops(stops)
 
                     if (routePoints.isNotEmpty()) {
                         val startPoint = routePoints.first()
@@ -649,85 +652,6 @@ class TrackingViewModel(
         return stopRepo.getStopById(stopId)
     }
 
-
-//    fun stopTracking(googleMap: GoogleMap? = null): Deferred<String?> {
-//        return viewModelScope.async {
-//            if (!_isTracking.value) return@async null
-//
-//            val endTime = System.currentTimeMillis()
-//
-//            // Finalize any open stop
-//            val center = stopCenter
-//            val startWall = stopStartTime
-//            val startElapsedLocal = stopStartElapsed
-//            val id = currentStopId
-//
-//            if (center != null && startWall != null && isCurrentlyStopped && id != null && startElapsedLocal != null) {
-//                val nowWall = endTime
-//                val nowElapsed = SystemClock.elapsedRealtime()
-//                val minutes = ((nowElapsed - startElapsedLocal) / 60000)
-//
-//                val existingStop = sessionState.stopPoints.value.firstOrNull { it.id == id }
-//                val stop = StopPoint(
-//                    id = id,
-//                    center = center,
-//                    startTimeMillis = startWall,
-//                    endTimeMillis = nowWall,
-//                    timeSpentMinutes = minutes,
-//                    // ✅ Preserve the letter from existing stop
-//                    letter = existingStop?.letter,
-//                    // ✅ Preserve other fields too
-//                    name = existingStop?.name,
-//                    locationLabel = existingStop?.locationLabel,
-//                    address = existingStop?.address,
-//                    phone = existingStop?.phone,
-//                    imageUri = existingStop?.imageUri
-//                )
-//                resolveLocationNameAsync(stop)
-//                sessionState.addOrUpdateStop(stop)
-//                stopRepo.upsertStop(stop, startElapsedLocal, nowElapsed)
-//            }
-//            _startLocation.value = null
-//
-//
-//            // Get all stops created during this route
-//            val routeStartTime = currentRouteStartTime ?: sessionStartTimeMillis ?: 0
-//            val stopsInRoute = stopRepo.getStopsInTimeRange(routeStartTime, endTime)
-//
-//            // Take map screenshot if GoogleMap is available
-//            var screenshotPath: String? = null
-//            if (googleMap != null) {
-//                screenshotPath = takeMapScreenshot(googleMap, currentRouteId ?: 0)
-//            }
-//
-//            // Update the route with end time, stop count, and screenshot path
-//            currentRouteId?.let { routeId ->
-//                routeRepo.finalizeRoute(
-//                    routeId = routeId,
-//                    endTime = endTime,
-//                    stopCount = stopsInRoute.size,
-//                    screenshotPath = screenshotPath
-//                )
-//            }
-//
-//            // Stop tracking
-//            _isTracking.value = false
-//            collectionJob?.cancel()
-//            collectionJob = null
-//            stopService()
-//
-//            // Reset state for next route
-//            resetStopState()
-////            resetSession()
-//            sessionState.reset()
-//            sessionStartTimeMillis = null
-//            currentRouteId = null
-//            currentRouteStartTime = null
-//
-//            return@async screenshotPath
-//        }
-//    }
-
     fun stopTracking(screenshotPath: String? = null): Deferred<Unit> {
         return viewModelScope.async {
             if (!_isTracking.value) return@async
@@ -759,8 +683,8 @@ class TrackingViewModel(
             val ongoingStops = stopRepo.getOngoingStops()
 
             ongoingStops.forEach { stopEntity ->
-
-                val minutes = ((nowElapsed - (stopEntity.startElapsedRealtimeMillis ?: nowElapsed)) / 60000)
+                val wallDiffMs = endTime - stopEntity.startWallTimeMillis
+                val minutes = if (wallDiffMs > 0) wallDiffMs / 60_000L else 0L
 
                 // 🔁 Convert Entity → Point
                 val stopPoint = StopPoint(
@@ -912,210 +836,6 @@ class TrackingViewModel(
             originalStartTimeMillis = null
         }
     }
-
-    /**
-     * Take a screenshot of the current map and save it to internal storage
-     */
-    /*private fun takeMapScreenshot(googleMap: GoogleMap, routeId: Long): String? {
-        var screenshotPath: String? = null
-        val latch = CountDownLatch(1)
-
-        // Check if we have route points
-        val routePoints = sessionState.routePoints.value
-        val stopPoints = sessionState.stopPoints.value
-
-        // Store current camera position to restore later
-        val currentPosition = googleMap.cameraPosition
-
-        // Function to actually take and save screenshot
-        fun captureAndSave() {
-            googleMap.snapshot { bitmap ->
-                if (bitmap != null) {
-                    viewModelScope.launch(Dispatchers.IO) {
-                        try {
-                            val dir = File(getApplication<Application>().filesDir, "route_screenshots")
-                            if (!dir.exists()) dir.mkdirs()
-
-                            val file = File(dir, "route_$routeId.jpg")
-                            if (file.exists()) file.delete()
-
-                            FileOutputStream(file).use { out ->
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out)
-                            }
-
-                            screenshotPath = file.absolutePath
-                            Log.d("SCREENSHOT", "Screenshot saved: $screenshotPath")
-                            routeRepo.updateRouteScreenshot(routeId, file.absolutePath)
-                        } catch (e: Exception) {
-                            Log.e("SCREENSHOT", "Error saving screenshot", e)
-                        } finally {
-                            // Restore camera position
-                            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(currentPosition), 500, null)
-                            latch.countDown()
-                        }
-                    }
-                } else {
-                    Log.e("SCREENSHOT", "Bitmap is null")
-                    latch.countDown()
-                }
-            }
-        }
-
-        // If we have points, zoom to show everything
-        if (routePoints.isNotEmpty() || stopPoints.isNotEmpty()) {
-            try {
-                val builder = LatLngBounds.Builder()
-                routePoints.forEach { builder.include(it.latLng) }
-                stopPoints.forEach { builder.include(it.center) }
-                startLocation.value?.let { builder.include(it) }
-
-                val bounds = builder.build()
-
-                // Animate to show entire route, then capture
-                googleMap.animateCamera(
-                    CameraUpdateFactory.newLatLngBounds(bounds, 200),
-                    object : GoogleMap.CancelableCallback {
-                        override fun onFinish() {
-                            // Wait for labels to render
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                captureAndSave()
-                            }, 1500)
-                        }
-
-                        override fun onCancel() {
-                            captureAndSave() // Still capture even if cancelled
-                        }
-                    }
-                )
-            } catch (e: Exception) {
-                Log.e("SCREENSHOT", "Error calculating bounds", e)
-                captureAndSave() // Fallback to current view
-            }
-        } else {
-            // No points, just capture current view
-            captureAndSave()
-        }
-
-        try {
-            latch.await(5, TimeUnit.SECONDS) // Wait up to 5 seconds
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
-
-        return screenshotPath
-    }*/
-
-
-    /*private fun takeMapScreenshot(googleMap: GoogleMap, routeId: Long): String? {
-
-        var screenshotPath: String? = null
-        val latch = CountDownLatch(1)
-
-        val routePoints = sessionState.routePoints.value
-        val stopPoints = sessionState.stopPoints.value
-
-        val currentPosition = googleMap.cameraPosition
-
-        fun captureAndSave() {
-            googleMap.snapshot { bitmap ->
-                if (bitmap != null) {
-
-                    viewModelScope.launch(Dispatchers.IO) {
-                        try {
-                            val dir = File(getApplication<Application>().filesDir, "route_screenshots")
-                            if (!dir.exists()) dir.mkdirs()
-
-                            val file = File(dir, "route_$routeId.jpg")
-                            if (file.exists()) file.delete()
-
-                            FileOutputStream(file).use { out ->
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
-                            }
-
-                            screenshotPath = file.absolutePath
-                            routeRepo.updateRouteScreenshot(routeId, screenshotPath!!)
-
-                            Log.d("SCREENSHOT", "✅ Saved: $screenshotPath")
-
-                        } catch (e: Exception) {
-                            Log.e("SCREENSHOT", "❌ Save error", e)
-                        }
-
-                        withContext(Dispatchers.Main) {
-                            googleMap.animateCamera(
-                                CameraUpdateFactory.newCameraPosition(currentPosition)
-                            )
-                            latch.countDown()
-                        }
-                    }
-
-                } else {
-                    Log.e("SCREENSHOT", "❌ Bitmap null")
-                    latch.countDown()
-                }
-            }
-        }
-
-        if (routePoints.isNotEmpty() || stopPoints.isNotEmpty()) {
-            try {
-
-                val allPoints = mutableListOf<LatLng>()
-
-                routePoints.forEach { allPoints.add(it.latLng) }
-                stopPoints.forEach { allPoints.add(it.center) }
-                startLocation.value?.let { allPoints.add(it) }
-
-                if (allPoints.isEmpty()) {
-                    captureAndSave()
-                } else {
-
-                    val builder = LatLngBounds.Builder()
-                    allPoints.forEach { builder.include(it) }
-
-                    val bounds = builder.build()
-
-                    // 🔥 IMPORTANT FIXES
-                    val padding = 300 // more padding for full route
-
-                    googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-                    googleMap.uiSettings.setAllGesturesEnabled(false)
-
-                    // ✅ Reset padding (avoid UI crop)
-                    googleMap.setPadding(0, 0, 0, 0)
-
-                    // ✅ Move instantly (better than animate)
-                    googleMap.moveCamera(
-                        CameraUpdateFactory.newLatLngBounds(bounds, padding)
-                    )
-
-                    // ✅ Extra zoom out (VERY IMPORTANT for large routes)
-                    googleMap.animateCamera(CameraUpdateFactory.zoomOut())
-                    googleMap.animateCamera(CameraUpdateFactory.zoomOut())
-
-                    // ✅ Wait until map fully loaded (BEST FIX)
-                    googleMap.setOnMapLoadedCallback {
-                        Log.d("SCREENSHOT", "Map loaded → capturing")
-                        captureAndSave()
-                    }
-                }
-
-            } catch (e: Exception) {
-                Log.e("SCREENSHOT", "❌ Bounds error", e)
-                captureAndSave()
-            }
-
-        } else {
-            captureAndSave()
-        }
-
-        try {
-            latch.await(10, TimeUnit.SECONDS)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
-
-        return screenshotPath
-    }*/
 
 
     // In TrackingViewModel - Change parameter type from Int to Long
@@ -1324,6 +1044,9 @@ class TrackingViewModel(
                     }
                     Log.d("StateRestore", "✅ Restored ${stops.size} stops to session state")
 
+                    // ✅ Restore active stop state if there is an ongoing stop
+                    restoreActiveStopStateFromStops(stops)
+
                     // Restore start location from route points if available
                     if (routePoints.isNotEmpty()) {
                         val startPoint = routePoints.first()
@@ -1418,17 +1141,6 @@ class TrackingViewModel(
                 // Use the original start time when user first stopped
                 val stopStartTime = stopStartTime ?: nowWall
 
-//                val existingStopsCount = sessionState.stopPoints.value.size
-//                val letter = ('A'.plus(existingStopsCount)).toString()
-//
-//                val stop = StopPoint(
-//                    id = currentStopId!!,
-//                    center = stopCenter!!,
-//                    startTimeMillis = stopStartTime,
-//                    endTimeMillis = null,  // Ongoing stop
-//                    timeSpentMinutes = 0,
-//                    letter = letter
-//                )
 
                 // NEW CODE - Get stops count for current route only
                 val currentRouteStops = if (currentRouteId != null) {
@@ -1802,139 +1514,6 @@ class TrackingViewModel(
                 }
             }
 
-            // Working Fine Main Logic
-            // =================================================================
-            // 🔴 STOPPED STATE
-            // =================================================================
-//            MovementState.STOPPED -> {
-//                Log.d("StopDebug", "🔴 IN STOPPED STATE")
-//
-//                if (center == null) {
-//                    Log.e("StopDebug", "❌ CRITICAL: center is null in STOPPED state")
-//                    resetStopState()
-//                    movementState = MovementState.MOVING
-//                    return
-//                }
-//
-//                // ===========================================
-//                // SAFETY CHECK 1: Handle null currentStopId
-//                // ===========================================
-//                if (currentStopId == null) {
-//                    Log.d("StopDebug", "⚠️ WARNING: currentStopId is null in STOPPED state")
-//                    val minutes = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 60000)
-//
-//                    when {
-//                        minutes >= stopThresholdMinutes -> {
-//                            Log.d("StopDebug", "🆔 RECOVERING: Creating new stop ID")
-//                            // CRITICAL: Set isCurrentlyStopped to true!
-//                            isCurrentlyStopped = true
-//                            currentStopId = System.currentTimeMillis()
-//
-//                            val stop = StopPoint(
-//                                id = currentStopId!!,
-//                                center = center,
-//                                startTimeMillis = stopStartTime ?: nowWall,
-//                                endTimeMillis = null,
-//                                timeSpentMinutes = minutes
-//                            )
-//                            sessionState.addOrUpdateStop(stop)
-//                            showUserToast("✅ Stop recovered - Location saved")
-//                        }
-//
-//                        else -> {
-//                            Log.d("StopDebug", "↩️ Not enough time, returning to POSSIBLE_STOP")
-//                            movementState = MovementState.POSSIBLE_STOP
-//                            return
-//                        }
-//                    }
-//                }
-//
-//                // ===========================================
-//                // SAFETY CHECK 2: Double-check ID still exists
-//                // ===========================================
-//                if (currentStopId == null) {
-//                    Log.e("StopDebug", "❌ CRITICAL: currentStopId still null after recovery!")
-//                    resetStopState()
-//                    movementState = MovementState.MOVING
-//                    return
-//                }
-//
-//                // ===========================================
-//                // Calculate current state
-//                // ===========================================
-//                val distance = GeoUtils.distanceMeters(center, latLng)
-//                val minutes = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 60000)
-//
-//                val isDriving = speedKmh > movingSpeedThresholdKmh
-//                val isWalking = speedKmh in walkingMinSpeed..walkingMaxSpeed
-//
-//                Log.d("StopDebug", "📊 STOPPED STATE - distance: $distance, minutes: $minutes")
-//
-//                // ===========================================
-//                // Handle state transitions with user-friendly toasts
-//                // ===========================================
-//                when {
-//                    isDriving -> {
-//                        Log.d("StopDebug", "🚗 DRIVING DETECTED - ending stop")
-//                        finalizeStop(nowWall, nowElapsed)
-//                        resetStopState()
-//                        movementState = MovementState.MOVING
-//                        showUserToast("🚗 Driving away - Stop saved (${minutes} min)")
-//                        return
-//                    }
-//
-//                    distance > exitRadiusMeters -> {
-//                        Log.d("StopDebug", "🚶 EXIT RADIUS EXCEEDED: $distance m")
-//                        finalizeStop(nowWall, nowElapsed)
-//                        resetStopState()
-//                        movementState = MovementState.MOVING
-//                        showUserToast("👋 Left location - Stop saved (${minutes} min)")
-//                        return
-//                    }
-//
-//                    isWalking -> {
-//                        // Show different messages based on distance
-//                        when {
-//                            distance < stopRadiusMeters -> {
-//                                showUserToast("🚶 Walking inside shop - Stop continues")
-//                            }
-//                            else -> {
-//                                showUserToast("🚶 Walking nearby - Still recording stop")
-//                            }
-//                        }
-//                    }
-//
-//                    else -> {
-//                        // Update user on stop duration every minute
-//                        when {
-//                            minutes == 1L -> showUserToast("📍 Stopped for 1 minute")
-//                            minutes == 2L -> showUserToast("📍 Stopped for 2 minutes")
-//                            minutes == 3L -> showUserToast("📍 Stopped for 3 minutes")
-//                            minutes == 5L -> showUserToast("📍 Stopped for 5 minutes")
-//                            minutes % 5 == 0L -> showUserToast("📍 Stopped for $minutes minutes")
-//                            minutes % 2 == 0L -> showUserToast("📍 Still here - $minutes minutes")
-//                        }
-//                    }
-//                }
-//
-//                // ===========================================
-//                // Update the stop
-//                // ===========================================
-//                try {
-//                    val stop = StopPoint(
-//                        id = currentStopId!!,
-//                        center = center,
-//                        startTimeMillis = stopStartTime ?: nowWall,
-//                        endTimeMillis = null,
-//                        timeSpentMinutes = minutes
-//                    )
-//                    sessionState.addOrUpdateStop(stop)
-//                    Log.d("StopDebug", "✅ Stop updated: $minutes minutes")
-//                } catch (e: Exception) {
-//                    Log.e("StopDebug", "❌ Failed to update stop: ${e.message}")
-//                }
-//            }
-
 
             MovementState.STOPPED -> {
                 Log.d("StopDebug", "🔴 IN STOPPED STATE")
@@ -2139,38 +1718,6 @@ class TrackingViewModel(
     }
 
 
-    // Working Fine
-//    private fun finalizeStop(nowWall: Long, nowElapsed: Long) {
-//        Log.d("StopDebug", "🔚 FINALIZING STOP:")
-//        Log.d("StopDebug", "   stopCenter: $stopCenter")
-//        Log.d("StopDebug", "   currentStopId: $currentStopId")
-//        Log.d("StopDebug", "   stopStartElapsed: $stopStartElapsed")
-//
-//        val center = stopCenter ?: run {
-//            Log.e("StopDebug", "❌ Cannot finalize: stopCenter is null")
-//            return
-//        }
-//
-//        val minutes = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 60000)
-//        Log.d("StopDebug", "   Final minutes: $minutes")
-//
-//        val stop = StopPoint(
-//            id = currentStopId ?: run {
-//                Log.e("StopDebug", "❌ Cannot finalize: currentStopId is null")
-//                return
-//            },
-//            center = center,
-//            startTimeMillis = stopStartTime ?: nowWall,
-//            endTimeMillis = nowWall,
-//            timeSpentMinutes = minutes
-//        )
-//
-//        sessionState.addOrUpdateStop(stop)
-//        resolveLocationNameAsync(stop)
-//        Log.d("StopDebug", "✅ Stop finalized and saved")
-//    }
-
-
     private fun finalizeStop(nowWall: Long, nowElapsed: Long) {
         Log.d("StopDebug", "🔚 FINALIZING STOP:")
         Log.d("StopDebug", "   stopCenter: $stopCenter")
@@ -2274,6 +1821,29 @@ class TrackingViewModel(
         currentStopId = null
         thresholdToastShown = false
     }
+
+    private fun restoreActiveStopStateFromStops(stops: List<StopPoint>) {
+        val ongoingStop = stops.firstOrNull { it.endTimeMillis == null }
+        if (ongoingStop != null) {
+            Log.d("StopDebug", "⚠️ Restoring active stop state: ID=${ongoingStop.id}, StartTime=${ongoingStop.startTimeMillis}")
+            currentStopId = ongoingStop.id
+            stopCenter = ongoingStop.center
+            stopStartTime = ongoingStop.startTimeMillis
+            
+            // Calculate stopStartElapsed relative to elapsedRealtime and wall time diff
+            val elapsedDiff = System.currentTimeMillis() - ongoingStop.startTimeMillis
+            stopStartElapsed = SystemClock.elapsedRealtime() - elapsedDiff
+            
+            isCurrentlyStopped = true
+            pointsInsideRadius = minStopPoints // Assume minimum points met
+            movementState = MovementState.STOPPED
+            thresholdToastShown = true
+        } else {
+            resetStopState()
+            movementState = MovementState.MOVING
+        }
+    }
+
 
     /**
      * Resolve a human-readable location name (\"latLng name\") for a stop using reverse geocoding.
@@ -2424,6 +1994,9 @@ class TrackingViewModel(
             currentRouteId = existingRouteId
             currentRouteStartTime = originalStartTime  // ← Use original time
             sessionStartTimeMillis = originalStartTime  // ← Use original time
+
+            // ✅ Restore active stop state if there is an ongoing stop in sessionState
+            restoreActiveStopStateFromStops(sessionState.stopPoints.value)
 
             _isTracking.value = true
 

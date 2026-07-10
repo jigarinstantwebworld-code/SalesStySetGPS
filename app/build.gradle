@@ -14,8 +14,8 @@ android {
         applicationId = "com.styset.sales.app"
         minSdk = 24
         targetSdk = 35  // Change from 35 to 34
-        versionCode = 24
-        versionName = "1.0.24"
+        versionCode = 26
+        versionName = "1.0.26"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
