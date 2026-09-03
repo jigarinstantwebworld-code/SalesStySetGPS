@@ -198,6 +198,10 @@ class PerformanceLocationRepository(
             }
         }
 
+
+
+
+
         fusedClient.requestLocationUpdates(request, callback, appContext.mainLooper)
 
         // Start periodic performance monitoring
