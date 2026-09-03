@@ -8,14 +8,14 @@ plugins {
 
 android {
     namespace = "com.styset.sales.app"
-    compileSdk = 35  // Change from 35 to 34 for stability
+    compileSdk = 36  // Change from 35 to 34 for stability
 
     defaultConfig {
         applicationId = "com.styset.sales.app"
         minSdk = 24
-        targetSdk = 35  // Change from 35 to 34
-        versionCode = 26
-        versionName = "1.0.26"
+        targetSdk = 36  // Change from 35 to 34
+        versionCode = 29
+        versionName = "1.0.29"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -31,13 +31,13 @@ android {
             buildConfigField(
                     "String",
                     "BASE_URL",
-                    "\"https://bt09kmb8yb.execute-api.us-east-1.amazonaws.com/shopnowee/\""
+                    "\"https://api.showmyfashion.com/prd/\""
             )
 
             buildConfigField(
                     "String",
                     "BUCKET_NAME",
-                    "\"salesexecutivestg\""
+                    "\"salesexecutiveprd\""
             )
 
             proguardFiles(
@@ -58,7 +58,7 @@ android {
             buildConfigField(
                     "String",
                     "BASE_URL",
-                    "\"https://bt09kmb8yb.execute-api.us-east-1.amazonaws.com/shopnowee/\""
+                    "\"https://apitest.showmyfashion.com/Test/\""
             )
         }
     }

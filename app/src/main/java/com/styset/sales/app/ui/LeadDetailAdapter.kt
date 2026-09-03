@@ -101,45 +101,66 @@ class LeadDetailAdapter(
             }else{
                 items.add(DetailItem.Field("Shop Name", "No shop name"))
             }
-            items.add(DetailItem.Field("Contact Person", lead.contactPerson))
-            items.add(DetailItem.Field("Mobile Number", lead.mobileNumber, true) {
-                openDialer(lead.mobileNumber)
-            })
+            if (!lead.contactPerson.isNullOrEmpty()){
+                items.add(DetailItem.Field("Contact Person", lead.contactPerson))
+            }
+            if (!lead.mobileNumber.isNullOrEmpty()){
+                items.add(DetailItem.Field("Mobile Number", lead.mobileNumber, true) {
+                    openDialer(lead.mobileNumber)
+                })
+            }
+
             if (!lead.emailId.isNullOrEmpty()){
                 items.add(DetailItem.Field("Email ID", lead.emailId ?: "-", true) {
                     sendEmail(lead.emailId)
                 })
             }
 
-            items.add(DetailItem.Field("Area", lead.area))
+            if (!lead.area.isNullOrEmpty()){
+                items.add(DetailItem.Field("Area", lead.area))
+            }
             if (!lead.sellerAddress.isNullOrEmpty()){
                 items.add(DetailItem.Field("Seller Address", lead.sellerAddress ?: "-"))
             }
 
             // Lead Details Section
             items.add(DetailItem.SectionHeader("Lead Details"))
-            items.add(DetailItem.Field("Selling Type", getSellingTypeName(lead.sellingType)))
+            if (!lead.sellingType.isNullOrEmpty()){
+                items.add(DetailItem.Field("Selling Type", getSellingTypeName(lead.sellingType)))
+            }
             if (!lead.demo.isNullOrEmpty()){
                 items.add(DetailItem.Field("Demo", lead.demo ?: "-"))
             }
             if (!lead.remark.isNullOrEmpty()){
                 items.add(DetailItem.Field("Remark", lead.remark ?: "-"))
             }
-            if (lead.paidAmount !=0){
-                items.add(DetailItem.Field("Paid Amount", "₹${lead.paidAmount}"))
-            }
+//            if (lead.paidAmount !=0){
+//                items.add(DetailItem.Field("Paid Amount", "₹${lead.paidAmount}"))
+//            }
             items.add(DetailItem.Field("Status", lead.status))
         } else if (notesData != null) {
             // Use lead_info from notes API when lead detail is not available
             val leadInfo = notesData.lead_info
             items.add(DetailItem.SectionHeader("Shop Information"))
-            items.add(DetailItem.Field("Shop Name", leadInfo.name_of_shop))
-            items.add(DetailItem.Field("Contact Person", leadInfo.contact_person))
-            items.add(DetailItem.Field("Mobile Number", leadInfo.mobile_number, true) {
-                openDialer(leadInfo.mobile_number)
-            })
-            items.add(DetailItem.Field("Area", leadInfo.area))
-            items.add(DetailItem.Field("Status", leadInfo.status))
+            if (!leadInfo.name_of_shop.isNullOrEmpty()){
+                items.add(DetailItem.Field("Shop Name", leadInfo.name_of_shop))
+            }
+            if (!leadInfo.contact_person.isNullOrEmpty()){
+                items.add(DetailItem.Field("Contact Person", leadInfo.contact_person))
+            }
+
+            if (!leadInfo.mobile_number.isNullOrEmpty()){
+                items.add(DetailItem.Field("Mobile Number", leadInfo.mobile_number, true) {
+                    openDialer(leadInfo.mobile_number)
+                })
+            }
+
+            if (!leadInfo.area.isNullOrEmpty()){
+                items.add(DetailItem.Field("Area", leadInfo.area))
+            }
+            if (!leadInfo.status.isNullOrEmpty()){
+                items.add(DetailItem.Field("Status", leadInfo.status))
+            }
         }
 
         // Notes Section
@@ -186,7 +207,7 @@ class LeadDetailAdapter(
             items.add(
                 DetailItem.Field(
                     "No Access",
-                    "You don't have access to this lead's notes",
+                    "No Notes Found for this lead",
                     false, null
                 )
             )
@@ -219,9 +240,15 @@ class LeadDetailAdapter(
 
             // Dates Section
             items.add(DetailItem.SectionHeader("Dates Information"))
-            items.add(DetailItem.Field("Date", formatDate(lead.date)))
-            items.add(DetailItem.Field("Created Date", formatDateTime(lead.createdDate)))
-            items.add(DetailItem.Field("Modified Date", formatDateTime(lead.modifiedDate)))
+            if (!lead.date.isNullOrEmpty()){
+                items.add(DetailItem.Field("Date", formatDate(lead.date)))
+            }
+            if (!lead.createdDate.isNullOrEmpty()){
+                items.add(DetailItem.Field("Created Date", formatDateTime(lead.createdDate)))
+            }
+            if (!lead.modifiedDate.isNullOrEmpty()){
+                items.add(DetailItem.Field("Modified Date", formatDateTime(lead.modifiedDate)))
+            }
 
             // Executive Information Section
             items.add(DetailItem.SectionHeader("Executive Information"))

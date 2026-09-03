@@ -15,8 +15,10 @@ import com.google.gson.annotations.SerializedName
 import com.styset.sales.app.SyncWorker
 import com.styset.sales.app.models.Resource
 import com.styset.sales.app.repository.SyncRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 
@@ -80,10 +82,11 @@ class SyncManager(private val context: Context) {
         )
     }
 
-    suspend fun performImmediateSyncAndAwait(): SyncResult {
+
+    suspend fun performImmediateSyncAndAwait(): SyncResult = withContext(Dispatchers.Main) {
         Log.d("Sync", "🚀 Starting immediate sync and awaiting result...")
 
-        return suspendCancellableCoroutine { continuation ->
+        return@withContext suspendCancellableCoroutine { continuation ->
             val workManager = WorkManager.getInstance(context)
 
             // Cancel any existing immediate sync to avoid duplicates
@@ -101,7 +104,7 @@ class SyncManager(private val context: Context) {
                 .build()
 
             // Observe the work info
-            val workInfoFlow = workManager.getWorkInfoByIdLiveData(immediateSyncRequest.id)
+            val liveData = workManager.getWorkInfoByIdLiveData(immediateSyncRequest.id)
 
             val observer = object : Observer<WorkInfo?> {
                 override fun onChanged(workInfo: WorkInfo?) {
@@ -114,7 +117,7 @@ class SyncManager(private val context: Context) {
                             val message = outputData.getString("sync_message") ?: ""
                             val syncedCount = outputData.getInt("synced_count", 0)
 
-                            workManager.getWorkInfoByIdLiveData(immediateSyncRequest.id).removeObserver(this)
+                            liveData.removeObserver(this)
 
                             if (continuation.isActive) {
                                 continuation.resume(SyncResult(
@@ -127,7 +130,7 @@ class SyncManager(private val context: Context) {
                         }
 
                         WorkInfo.State.FAILED -> {
-                            workManager.getWorkInfoByIdLiveData(immediateSyncRequest.id).removeObserver(this)
+                            liveData.removeObserver(this)
 
                             if (continuation.isActive) {
                                 continuation.resume(SyncResult(0, "Sync failed", 0))
@@ -136,7 +139,7 @@ class SyncManager(private val context: Context) {
                         }
 
                         WorkInfo.State.CANCELLED -> {
-                            workManager.getWorkInfoByIdLiveData(immediateSyncRequest.id).removeObserver(this)
+                            liveData.removeObserver(this)
 
                             if (continuation.isActive) {
                                 continuation.resume(SyncResult(0, "Sync cancelled", 0))
@@ -152,7 +155,7 @@ class SyncManager(private val context: Context) {
                 }
             }
 
-            workManager.getWorkInfoByIdLiveData(immediateSyncRequest.id).observeForever(observer)
+            liveData.observeForever(observer)
 
             // Enqueue the work
             workManager.enqueueUniqueWork(
@@ -163,14 +166,14 @@ class SyncManager(private val context: Context) {
 
             // Set timeout after 60 seconds
             continuation.invokeOnCancellation {
-                workManager.getWorkInfoByIdLiveData(immediateSyncRequest.id).removeObserver(observer)
+                liveData.removeObserver(observer)
                 workManager.cancelWorkById(immediateSyncRequest.id)
                 Log.w("Sync", "⏰ Sync timeout or cancelled")
             }
 
             // Optional: Set a timeout
             if (!continuation.isActive) {
-                workManager.getWorkInfoByIdLiveData(immediateSyncRequest.id).removeObserver(observer)
+                liveData.removeObserver(observer)
             }
         }
     }

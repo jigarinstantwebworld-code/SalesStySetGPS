@@ -304,35 +304,24 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
                 showInfoSnackbar("Getting upload URL...")
                 ivImagePreview.setImageURI(uri)
 
-                val originalFile = copyUriToTempFile(this, uri)
-
-                val compressedFile = compressImageFromFile(
-                    context = this,
-                    inputFile = originalFile,
-                    quality = 70
-                )
-
-                fileMain = compressedFile
-
-                // Compress image
                 lifecycleScope.launch {
-                    compressedImageFile = withContext(Dispatchers.IO) {
-                        compressImageFromFile(this@MainActivity, file, 70)
+                    val compressedFile = withContext(Dispatchers.IO) {
+                        val originalFile = copyUriToTempFile(this@MainActivity, uri)
+                        compressImageFromFile(
+                            context = this@MainActivity,
+                            inputFile = originalFile,
+                            quality = 70
+                        )
                     }
+                    fileMain = compressedFile
+                    compressedImageFile = compressedFile
 
-                    val compressedFile = compressImageFromFile(
-                        context = this@MainActivity,
-                        inputFile = file,
-                        quality = 70
-                    )
-                    fileMain = compressImageFromFile(this@MainActivity, file, 70)
                     val folderName = "input"
                     val objectKey =
                         "$folderName/${preferenceManager.getSalesExecutiveId()}/${compressedFile.name}"
 
                     getPresignedUrlAndUpload(
                         BuildConfig.BUCKET_NAME,
-//                        "salesexecutivestg",// salesexecutiveprd
                         compressedFile.nameWithoutExtension,
                         objectKey
                     )
@@ -1985,6 +1974,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
         if (hasAllPermissions()) {
             prepareMapAfterPermissions()
             checkLocationSettings()
+            checkBatteryOptimizationPrompt()
             
             if (!isViewOnlyMode) {
                 lifecycleScope.launch {
@@ -1999,6 +1989,44 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnMapReadyCallback {
             } else if (viewModel.isTracking.value) {
                 startGpsMonitoring()
                 startLocationUpdates()
+            }
+        }
+    }
+
+    private fun checkBatteryOptimizationPrompt() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val powerManager = getSystemService(Context.POWER_SERVICE) as? android.os.PowerManager
+            val isIgnored = powerManager?.isIgnoringBatteryOptimizations(packageName) ?: true
+            if (!isIgnored) {
+                val prefs = getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+                val hasPrompted = prefs.getBoolean("battery_prompt_shown", false)
+                if (!hasPrompted) {
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle("Unrestricted Battery Required 🔋")
+                        .setMessage("To ensure continuous GPS tracking during long background shifts without missing stops, please set battery usage to 'Unrestricted' for SalesStySet GPS.")
+                        .setPositiveButton("Open Settings") { dialog, _ ->
+                            dialog.dismiss()
+                            prefs.edit().putBoolean("battery_prompt_shown", true).apply()
+                            try {
+                                val intent = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                                    data = android.net.Uri.parse("package:$packageName")
+                                }
+                                startActivity(intent)
+                            } catch (e: Exception) {
+                                try {
+                                    val intent = Intent(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                                    startActivity(intent)
+                                } catch (ex: Exception) {
+                                    Toast.makeText(this, "Please allow Unrestricted battery usage in App Settings", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        }
+                        .setNegativeButton("Later") { dialog, _ ->
+                            dialog.dismiss()
+                            prefs.edit().putBoolean("battery_prompt_shown", true).apply()
+                        }
+                        .show()
+                }
             }
         }
     }

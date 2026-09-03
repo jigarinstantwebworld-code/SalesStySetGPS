@@ -320,59 +320,36 @@ class PerformanceLocationRepository(
     }
 
     private fun getBatteryInfo(): BatteryInfo {
-        val batteryManager = appContext.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
+        val batteryIntent = try {
+            appContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        } catch (e: Exception) {
+            null
+        }
 
-        // Get battery level
         val level = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+            val batteryManager = appContext.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
+            val capacity = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+            if (capacity > 0 && capacity != Integer.MAX_VALUE) capacity else (batteryIntent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1)
         } else {
-            val intent = appContext.registerReceiver(
-                null,
-                IntentFilter(Intent.ACTION_BATTERY_CHANGED)
-            )
-            intent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
+            batteryIntent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
         }
 
-        // Get temperature (works on all versions)
-        val temperature = try {
-            val intent =
-                appContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
-            (intent?.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) ?: 0) / 10f
-        } catch (e: Exception) {
-            25f // Default room temperature
-        }
+        val temperature = (batteryIntent?.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) ?: 0) / 10f
+        val voltage = batteryIntent?.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 3800) ?: 3800
 
-        // Get voltage
-        val voltage = try {
-            val intent =
-                appContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
-            intent?.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0) ?: 0
-        } catch (e: Exception) {
-            3800 // Default 3.8V
-        }
+        val status = batteryIntent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+        val isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL
 
-        // Check if charging
-        val isCharging = try {
-            val intent =
-                appContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
-            val status = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
-            status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                    status == BatteryManager.BATTERY_STATUS_FULL
-        } catch (e: Exception) {
-            false
-        }
+        val health = batteryIntent?.getIntExtra(BatteryManager.EXTRA_HEALTH, BatteryManager.BATTERY_HEALTH_UNKNOWN)
+            ?: BatteryManager.BATTERY_HEALTH_UNKNOWN
 
-        // Get battery health
-        val health = try {
-            val intent =
-                appContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
-            intent?.getIntExtra(BatteryManager.EXTRA_HEALTH, BatteryManager.BATTERY_HEALTH_UNKNOWN)
-                ?: BatteryManager.BATTERY_HEALTH_UNKNOWN
-        } catch (e: Exception) {
-            BatteryManager.BATTERY_HEALTH_UNKNOWN
-        }
-
-        return BatteryInfo(level, temperature, voltage, isCharging, health)
+        return BatteryInfo(
+            level = if (level > 0) level else 50,
+            temperature = if (temperature > 0f) temperature else 25f,
+            voltage = voltage,
+            isCharging = isCharging,
+            health = health
+        )
     }
 
     suspend fun startSession() {

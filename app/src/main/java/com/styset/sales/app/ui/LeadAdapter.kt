@@ -150,12 +150,22 @@ class LeadAdapter(
 
                     // Format date
                     val formattedDate = formatDate(lead.date)
-                    val amount = "${lead.paidAmount ?: "N/A"}"
-                    if (amount.toInt()!=0){
-                        tvAmountMain.visibility = View.VISIBLE
-                        tvAmount.visibility = View.VISIBLE
-                        tvAmount.text = "₹${amount}"
-                    }
+//                    val amount = "${lead.paidAmount ?: "N/A"}"
+//                    if (amount.toInt()!=0){
+//                        tvAmountMain.visibility = View.VISIBLE
+//                        tvAmount.visibility = View.VISIBLE
+//                        tvAmount.text = "₹${amount}"
+//                    }
+
+//                    val paidAmount = lead.paidAmount ?: 0
+//                    if (paidAmount != 0) {
+//                        tvAmountMain.visibility = View.VISIBLE
+//                        tvAmount.visibility = View.VISIBLE
+//                        tvAmount.text = "₹$paidAmount"
+//                    } else {
+//                        tvAmountMain.visibility = View.GONE
+//                        tvAmount.visibility = View.GONE
+//                    }
 
                     tvDate.text = "📅 Date: $formattedDate"
                 } catch (e: Exception) {

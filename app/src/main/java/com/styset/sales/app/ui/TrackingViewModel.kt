@@ -593,7 +593,7 @@ class TrackingViewModel(
 
     private fun startLocationCollectionJob() {
         collectionJob?.cancel()
-        collectionJob = viewModelScope.launch {
+        collectionJob = viewModelScope.launch(Dispatchers.IO) {
             repository.locationUpdates().collect { location ->
                 Log.d("LocationFlow", "Received location in flow: $location")
 
@@ -974,7 +974,7 @@ class TrackingViewModel(
         ctx.startService(intent)
     }
 
-    private fun saveMissedStopsToJson(stops: List<IgnoredStop>) {
+    private suspend fun saveMissedStopsToJson(stops: List<IgnoredStop>) = withContext(Dispatchers.IO) {
         try {
             val file = java.io.File(getApplication<Application>().filesDir, "missed_stops.json")
             val gson = com.google.gson.Gson()
@@ -1111,7 +1111,7 @@ class TrackingViewModel(
                     }
                 }
 
-                showUserToast("🧪 TEST MODE: Waiting 10 seconds")
+//                showUserToast("🧪 TEST MODE: Waiting 10 seconds")
 
                 return
             }
@@ -1180,11 +1180,11 @@ class TrackingViewModel(
                 movementState = MovementState.STOPPED
 
                 Log.d("StopDebug", "🧪 STOP CREATED: ID=$currentStopId, StartTime=$stopStartTime")
-                showUserToast("🧪 STOP CREATED after 10 seconds - Red marker should appear now!")
+//                showUserToast("🧪 STOP CREATED after 10 seconds - Red marker should appear now!")
 
                 // Show current stop count
                 val stopCount = sessionState.stopPoints.value.size
-                showUserToast("📍 Total stops so far: $stopCount")
+//                showUserToast("📍 Total stops so far: $stopCount")
             }
 
             // =====================================================
@@ -1206,7 +1206,7 @@ class TrackingViewModel(
 
                     // Show timer every 10 seconds
                     if (seconds % 10 == 0L) {
-                        showUserToast("⏱️ Stop duration: ${minutes}m ${seconds}s")
+//                        showUserToast("⏱️ Stop duration: ${minutes}m ${seconds}s")
                     }
                 }
             }
@@ -1246,12 +1246,12 @@ class TrackingViewModel(
                         }
 
                         Log.d("StopDebug", "✅ Stop FINALIZED: ${minutes}m ${seconds}s")
-                        showUserToast("✅ Stop finished: ${minutes}m ${seconds}s")
+//                        showUserToast("✅ Stop finished: ${minutes}m ${seconds}s")
 
                         // Show updated stop count
                         val completedStops =
                             sessionState.stopPoints.value.filter { it.endTimeMillis != null }.size
-                        showUserToast("📊 Completed stops: $completedStops")
+//                        showUserToast("📊 Completed stops: $completedStops")
                     }
                 } else {
                     val stayedSecs = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 1000)
@@ -1268,7 +1268,7 @@ class TrackingViewModel(
                 stopCenter = null
 
                 Log.d("StopDebug", "🧪 Ready for next stop")
-                showUserToast("👋 Moved away - Ready for next stop")
+//                showUserToast("👋 Moved away - Ready for next stop")
             }
 
             // =====================================================
@@ -1303,10 +1303,10 @@ class TrackingViewModel(
 
             when {
                 location.accuracy > 200f -> {
-                    showUserToast("📡 Very poor GPS signal - Move to open area")
+//                    showUserToast("📡 Very poor GPS signal - Move to open area")
                 }
                 location.accuracy > minAccuracyMeters -> {
-                    showUserToast("📡 Weak GPS signal (${location.accuracy.toInt()}m) - Waiting for better accuracy")
+//                    showUserToast("📡 Weak GPS signal (${location.accuracy.toInt()}m) - Waiting for better accuracy")
                 }
             }
 
@@ -1355,17 +1355,17 @@ class TrackingViewModel(
                 when {
                     speedKmh > movingSpeedThresholdKmh -> {
                         Log.d("StopDebug", "🚗 DRIVING: $speedKmh > $movingSpeedThresholdKmh")
-                        showUserToast("🚗 Driving - No stop detection")
+//                        showUserToast("🚗 Driving - No stop detection")
                     }
 
                     speedKmh in walkingMinSpeed..walkingMaxSpeed -> {
                         Log.d("StopDebug", "🚶 WALKING SPEED: $speedKmh km/h")
-                        showUserToast("🚶 Walking - Will detect when you stop")
+//                        showUserToast("🚶 Walking - Will detect when you stop")
                     }
 
                     speedKmh in trafficSpeedMin..trafficSpeedMax -> {
                         Log.d("StopDebug", "🚦 TRAFFIC SPEED: $speedKmh km/h")
-                        showUserToast("🚦 Slow traffic - Stop detection active")
+//                        showUserToast("🚦 Slow traffic - Stop detection active")
                     }
                 }
 
@@ -1380,7 +1380,7 @@ class TrackingViewModel(
                     movementState = MovementState.POSSIBLE_STOP
 
                     Log.d("StopDebug", "✅ STATE CHANGED: MOVING → POSSIBLE_STOP")
-                    showUserToast("🅿️ Vehicle stopped - Monitoring for stop...")
+//                    showUserToast("🅿️ Vehicle stopped - Monitoring for stop...")
                 }
             }
 
@@ -1401,7 +1401,7 @@ class TrackingViewModel(
                 val isDriving = speedKmh > movingSpeedThresholdKmh
                 if (isDriving) {
                     Log.d("StopDebug", "🚗 DRIVING DETECTED - cancelling possible stop")
-                    showUserToast("🚗 Driving away - Stop cancelled")
+//                    showUserToast("🚗 Driving away - Stop cancelled")
                     
                     val stayedMins = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 60000)
                     val stayedSecs = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 1000) % 60
@@ -1435,13 +1435,13 @@ class TrackingViewModel(
 
                     when (pointsInsideRadius) {
                         1 -> {
-                            showUserToast("📍 Stop location detected - Need ${pointsNeeded} more GPS readings")
+//                            showUserToast("📍 Stop location detected - Need ${pointsNeeded} more GPS readings")
                         }
                         2 -> {
-                            showUserToast("📍 Still at location - ${pointsNeeded} more readings needed")
+//                            showUserToast("📍 Still at location - ${pointsNeeded} more readings needed")
                         }
                         3 -> {
-                            showUserToast("📍 Almost there! One more GPS reading needed")
+//                            showUserToast("📍 Almost there! One more GPS reading needed")
                         }
                     }
 
@@ -1486,11 +1486,11 @@ class TrackingViewModel(
                         Log.d("StopDebug", "✅ STATE CHANGED: POSSIBLE_STOP → STOPPED")
 
                         // 🎉 SUCCESS TOAST - Red marker appears!
-                        showUserToast("✅ STOP CONFIRMED! Location saved (${minutes} min)")
+//                        showUserToast("✅ STOP CONFIRMED! Location saved (${minutes} min)")
                     }
                 } else {
                     Log.d("StopDebug", "❌ OUTSIDE RADIUS: $distance m > $stopRadiusMeters m")
-                    showUserToast("➡️ Moved away - Stop cancelled (not enough time)")
+//                    showUserToast("➡️ Moved away - Stop cancelled (not enough time)")
 
                     val stayedMins = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 60000)
                     val stayedSecs = ((nowElapsed - (stopStartElapsed ?: nowElapsed)) / 1000) % 60
@@ -1548,7 +1548,7 @@ class TrackingViewModel(
                                 salesExecutiveId = getCurrentSalesExecutiveId().toString()
                             )
                             sessionState.addOrUpdateStop(stop)
-                            showUserToast("✅ Stop recovered - Location saved")
+//                            showUserToast("✅ Stop recovered - Location saved")
                         }
 
                         else -> {
@@ -1588,7 +1588,7 @@ class TrackingViewModel(
                         finalizeStop(nowWall, nowElapsed)
                         resetStopState()
                         movementState = MovementState.MOVING
-                        showUserToast("🚗 Driving away - Stop saved (${minutes} min)")
+//                        showUserToast("🚗 Driving away - Stop saved (${minutes} min)")
                         return
                     }
 
@@ -1597,17 +1597,17 @@ class TrackingViewModel(
                         finalizeStop(nowWall, nowElapsed)
                         resetStopState()
                         movementState = MovementState.MOVING
-                        showUserToast("👋 Left location - Stop saved (${minutes} min)")
+//                        showUserToast("👋 Left location - Stop saved (${minutes} min)")
                         return
                     }
 
                     isWalking -> {
                         when {
                             distance < stopRadiusMeters -> {
-                                showUserToast("🚶 Walking inside shop - Stop continues")
+//                                showUserToast("🚶 Walking inside shop - Stop continues")
                             }
                             else -> {
-                                showUserToast("🚶 Walking nearby - Still recording stop")
+//                                showUserToast("🚶 Walking nearby - Still recording stop")
                             }
                         }
                     }
@@ -1689,7 +1689,9 @@ class TrackingViewModel(
 
         // Check if this is an important toast or we're in debug mode
         if (importantToasts.any { message.contains(it) }) {
-            Toast.makeText(getApplication(), message, Toast.LENGTH_SHORT).show()
+            viewModelScope.launch(Dispatchers.Main) {
+                Toast.makeText(getApplication(), message, Toast.LENGTH_SHORT).show()
+            }
         }
 
         // Always log

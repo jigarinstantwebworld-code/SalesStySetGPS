@@ -36,6 +36,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
+import androidx.activity.enableEdgeToEdge
+
 class LeadActivity : BaseActivity<ActivityLeadBinding>() {
 
     private lateinit var paginationScrollListener: PaginationScrollListener
@@ -66,6 +68,7 @@ class LeadActivity : BaseActivity<ActivityLeadBinding>() {
     override fun getViewBinding(): ActivityLeadBinding = ActivityLeadBinding.inflate(layoutInflater)
 
     override fun setupViews() {
+        enableEdgeToEdge()
         setupToolbar()
         setupRecycler()
         setupSortButton()
@@ -158,9 +161,7 @@ class LeadActivity : BaseActivity<ActivityLeadBinding>() {
 
             // Refresh with current filters
             if (currentSearchQuery.isNotEmpty()) {
-                viewModel.refreshLeads(
-
-                )
+                viewModel.refreshLeads()
             } else {
                 viewModel.refreshLeads()
             }
@@ -319,6 +320,17 @@ class LeadActivity : BaseActivity<ActivityLeadBinding>() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.recyclerViewLeads) { view, insets ->
             val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             view.updatePadding(bottom = bottomInset)
+            insets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.fabCreateLead) { view, insets ->
+            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val baseMargin = (16 * resources.displayMetrics.density).toInt()
+            (view.layoutParams as? android.view.ViewGroup.MarginLayoutParams)?.let { lp ->
+                lp.bottomMargin = baseMargin + systemBarsInsets.bottom
+                lp.rightMargin = baseMargin + systemBarsInsets.right
+                view.layoutParams = lp
+            }
             insets
         }
     }

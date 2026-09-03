@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="6dp">
@@ -132,6 +133,13 @@
                             android:text="16 Apr 2026"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/textView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="tvAmount" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -148,6 +156,7 @@
                         android:layout_height="wrap_content"
                         android:text="Amount"
                         android:visibility="gone"
+                        tools:visibility="visible"
                         android:textStyle="bold"
                         android:textSize="12sp"
                          />
@@ -156,7 +165,7 @@
                         android:id="@+id/tvAmount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="₹78"
+                        tools:text="₹78"
                         android:visibility="gone"
                         android:textSize="22sp"
                         android:textStyle="bold"

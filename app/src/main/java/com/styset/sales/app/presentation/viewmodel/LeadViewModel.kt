@@ -167,6 +167,7 @@ class LeadViewModel(
                     is Resource.Success -> {
                         response.data?.let { data ->
                             if (data.success == 1) {
+                                allLeads.clear()
                                 allLeads.addAll(data.data.leads)
                                 _leads.value = allLeads.toList()
                                 totalPages = data.data.pagination.totalPages
@@ -582,7 +583,7 @@ class LeadViewModel(
     }
 
     companion object {
-        private const val PAGE_SIZE = 10
+        private const val PAGE_SIZE = 40
     }
 }
 

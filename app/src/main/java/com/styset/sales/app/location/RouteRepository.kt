@@ -9,24 +9,15 @@ import com.styset.sales.app.data.local.RouteEntity
 import com.styset.sales.app.data.local.RoutePointEntity
 import com.styset.sales.app.data.local.RouteStopRelation
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 class RouteRepository(context: Context) {
     private val dao = AppDatabase.Companion.get(context).routePointDao()
     private val stopDao = AppDatabase.Companion.get(context).stopDao()
 
-//    suspend fun add(point: LocationPoint) {
-//        dao.insert(
-//            RoutePointEntity(
-//                timestampMillis = point.timestampMillis,
-//                lat = point.latLng.latitude,
-//                lng = point.latLng.longitude
-//            )
-//        )
-//    }
-
-    suspend fun addPoint(routeId: Long, point: LocationPoint) {
-        // You need a table for route points
+    suspend fun addPoint(routeId: Long, point: LocationPoint) = withContext(Dispatchers.IO) {
         val routePoint = RoutePointEntity(
             routeId = routeId,
             latitude = point.latLng.latitude,
@@ -36,12 +27,11 @@ class RouteRepository(context: Context) {
         dao.insertRoutePoint(routePoint)
     }
 
-    suspend fun createRoute(route: RouteEntity): Long {
-        return dao.insertRoute(route)
+    suspend fun createRoute(route: RouteEntity): Long = withContext(Dispatchers.IO) {
+        dao.insertRoute(route)
     }
 
-
-    suspend fun linkStopToRoute(routeId: Long, stopId: Long) {
+    suspend fun linkStopToRoute(routeId: Long, stopId: Long) = withContext(Dispatchers.IO) {
         val relation = RouteStopRelation(
             routeId = routeId,
             stopId = stopId
@@ -50,17 +40,8 @@ class RouteRepository(context: Context) {
         Log.d("ROUTE_DEBUG", "✅ Linked stop $stopId to route $routeId")
     }
 
-    /*suspend fun finalizeRoute(routeId: Long, endTime: Long, stopCount: Int) {
-        val route = dao.getRouteById(routeId) ?: return
-        val updatedRoute = route.copy(
-            endTimeMillis = endTime,
-            durationSeconds = (endTime - route.startTimeMillis) / 1000,
-            stopCount = stopCount
-        )
-        dao.updateRoute(updatedRoute)
-    }*/
-    suspend fun finalizeRoute(routeId: Long, endTime: Long, stopCount: Int, screenshotPath: String? = null) {
-        val route = dao.getRouteById(routeId) ?: return
+    suspend fun finalizeRoute(routeId: Long, endTime: Long, stopCount: Int, screenshotPath: String? = null) = withContext(Dispatchers.IO) {
+        val route = dao.getRouteById(routeId) ?: return@withContext
         val updatedRoute = route.copy(
             endTimeMillis = endTime,
             durationSeconds = (endTime - route.startTimeMillis) / 1000,
@@ -70,35 +51,17 @@ class RouteRepository(context: Context) {
         dao.updateRoute(updatedRoute)
     }
 
-
     fun observeAllRoutes(): Flow<List<RouteEntity>> = dao.observeAllRoutes()
 
-    suspend fun getRouteById(routeId: Long): RouteEntity? = dao.getRouteById(routeId)
-
-    suspend fun getRoutePoints(routeId: Long): List<RoutePointEntity> {
-        return dao.getRoutePoints(routeId)
+    suspend fun getRouteById(routeId: Long): RouteEntity? = withContext(Dispatchers.IO) {
+        dao.getRouteById(routeId)
     }
 
+    suspend fun getRoutePoints(routeId: Long): List<RoutePointEntity> = withContext(Dispatchers.IO) {
+        dao.getRoutePoints(routeId)
+    }
 
-    /*suspend fun getStopsForRoute(routeId: Long): List<StopPoint> {
-        val stopEntities = dao.getStopsForRoute(routeId)
-        return stopEntities.map { e ->
-            StopPoint(
-                id = e.id,
-                center = LatLng(e.lat, e.lng),
-                startTimeMillis = e.startWallTimeMillis,
-                endTimeMillis = e.endWallTimeMillis,
-                name = e.name,
-                locationLabel = e.locationLabel,
-                address = e.address,
-                phone = e.phone,
-                imageUri = e.imageUri,
-                timeSpentMinutes = e.durationElapsedMinutes
-            )
-        }
-    }*/
-
-    suspend fun getStopsForRoute(routeId: Long): List<StopPoint> {
+    suspend fun getStopsForRoute(routeId: Long): List<StopPoint> = withContext(Dispatchers.IO) {
         Log.d("LETTER_FLOW", "=== getStopsForRoute($routeId) ===")
 
         val stopEntities = dao.getStopsForRoute(routeId)
@@ -168,12 +131,12 @@ class RouteRepository(context: Context) {
             Log.d("LETTER_FLOW", "  Final Stop $index - ID: ${stop.id}, Letter: '${stop.letter}', Name: '${stop.name}'")
         }
 
-        return result
+        result
     }
 
-    suspend fun getStopsInTimeRange(startTime: Long, endTime: Long): List<StopPoint> {
+    suspend fun getStopsInTimeRange(startTime: Long, endTime: Long): List<StopPoint> = withContext(Dispatchers.IO) {
         val stopEntities = stopDao.getStopsInTimeRange(startTime, endTime)
-        return stopEntities.map { e ->
+        stopEntities.map { e ->
             StopPoint(
                 id = e.id,
                 center = LatLng(e.lat, e.lng),
@@ -191,37 +154,32 @@ class RouteRepository(context: Context) {
         }
     }
 
-    suspend fun updateRouteScreenshot(routeId: Long, path: String) {
+    suspend fun updateRouteScreenshot(routeId: Long, path: String) = withContext(Dispatchers.IO) {
         dao.updateScreenshotPath(routeId, path)
     }
 
-    // Alternative: Update entire route
-    suspend fun updateRouteWithScreenshot(routeId: Long, path: String) {
-        val route = dao.getRouteById(routeId) ?: return
+    suspend fun updateRouteWithScreenshot(routeId: Long, path: String) = withContext(Dispatchers.IO) {
+        val route = dao.getRouteById(routeId) ?: return@withContext
         val updatedRoute = route.copy(screenshotPath = path)
         dao.updateRoute(updatedRoute)
     }
 
-    // In RouteRepository.kt
-
-    suspend fun getRoutesInTimeRange(startMillis: Long, endMillis: Long): List<RouteEntity> {
-        return dao.getRoutesInTimeRange(startMillis, endMillis)
+    suspend fun getRoutesInTimeRange(startMillis: Long, endMillis: Long): List<RouteEntity> = withContext(Dispatchers.IO) {
+        dao.getRoutesInTimeRange(startMillis, endMillis)
     }
 
-    suspend fun getOngoingRoute(): RouteEntity? {
-        return dao.getOngoingRoute()
+    suspend fun getOngoingRoute(): RouteEntity? = withContext(Dispatchers.IO) {
+        dao.getOngoingRoute()
     }
 
-    suspend fun getAllRoutes(): List<RouteEntity> {
-        return dao.getAllRoutes()
+    suspend fun getAllRoutes(): List<RouteEntity> = withContext(Dispatchers.IO) {
+        dao.getAllRoutes()
     }
 
-
-
-    suspend fun createOrGetOngoingRoute(): RouteEntity {
+    suspend fun createOrGetOngoingRoute(): RouteEntity = withContext(Dispatchers.IO) {
         val ongoingRoute = getOngoingRoute()
         if (ongoingRoute != null) {
-            return ongoingRoute
+            return@withContext ongoingRoute
         }
         val routeId = createRoute(
             RouteEntity(
@@ -229,7 +187,7 @@ class RouteRepository(context: Context) {
                 stopCount = 0
             )
         )
-        return dao.getRouteById(routeId) ?: throw Exception("Failed to create route")
+        dao.getRouteById(routeId) ?: throw Exception("Failed to create route")
     }
 
 

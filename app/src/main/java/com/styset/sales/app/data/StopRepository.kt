@@ -32,7 +32,7 @@ class StopRepository(context: Context) {
         }
     }
 
-    suspend fun upsertStop(stop: StopPoint, startElapsed: Long, endElapsed: Long?) {
+    suspend fun upsertStop(stop: StopPoint, startElapsed: Long, endElapsed: Long?) = withContext(Dispatchers.IO) {
         // Check if stop already exists in database
         val existingStop = dao.getStopById(stop.id)
 
@@ -58,14 +58,16 @@ class StopRepository(context: Context) {
         dao.upsert(e)
     }
 
-    suspend fun updateStopName(id: Long, name: String) { dao.updateName(id, name) }
-
-
-    suspend fun getAllStops(): List<StopEntity> {
-        return dao.getAllStops()
+    suspend fun updateStopName(id: Long, name: String) = withContext(Dispatchers.IO) {
+        dao.updateName(id, name)
     }
 
-    suspend fun getStopsInTimeRange(startTime: Long, endTime: Long): List<StopPoint> {
+
+    suspend fun getAllStops(): List<StopEntity> = withContext(Dispatchers.IO) {
+        dao.getAllStops()
+    }
+
+    suspend fun getStopsInTimeRange(startTime: Long, endTime: Long): List<StopPoint> = withContext(Dispatchers.IO) {
         Log.d("LETTER_FLOW", "=== getStopsInTimeRange ===")
         Log.d("LETTER_FLOW", "Start: $startTime, End: $endTime")
 
@@ -100,7 +102,7 @@ class StopRepository(context: Context) {
             Log.d("LETTER_FLOW", "  Converted StopPoint - ID: ${stop.id}, Letter: '${stop.letter}'")
         }
 
-        return result
+        result
     }
 
     suspend fun getStopById(stopId: Long): StopPoint? {
@@ -132,11 +134,11 @@ class StopRepository(context: Context) {
         }
     }
 
-    suspend fun getOngoingStops() : List<StopEntity> {
-      return  dao.getOngoingStops()
+    suspend fun getOngoingStops(): List<StopEntity> = withContext(Dispatchers.IO) {
+        dao.getOngoingStops()
     }
 
-    suspend fun clearAll() {
+    suspend fun clearAll() = withContext(Dispatchers.IO) {
         dao.clearAll()
     }
 }

@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -35,9 +36,11 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".LeadDetailActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".ui.LoginActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,30 +50,37 @@
         </activity>
         <activity
             android:name=".ui.CreateLeadActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <activity
             android:name=".ui.ActivityAttendance"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <activity
             android:name=".ui.SyncTestActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <activity
             android:name=".ui.ApiActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <activity
             android:name=".ui.LeadActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <activity
             android:name=".VisitDetailActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <activity
             android:name=".MainActivity2"
+            android:screenOrientation="portrait"
             android:exported="true" />
 
         <meta-data
@@ -97,9 +107,11 @@
         <!-- tools:node="remove" /> -->
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true"></activity>
+            android:screenOrientation="portrait"
+            android:exported="true" />
         <activity
             android:name=".ui.PlacesActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
 
         <provider
